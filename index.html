@@ -38,29 +38,37 @@ button{font:inherit;cursor:pointer;color:inherit}
   background-image:repeating-linear-gradient(90deg,var(--fibra) 0 1px,transparent 1px 18px),repeating-linear-gradient(0deg,var(--fibra) 0 1px,transparent 1px 22px)}
 #app{position:fixed;inset:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;
   padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
-.topo{display:flex;align-items:center;gap:12px;padding:4px 10px 4px 16px;background:var(--tinta);color:var(--papiro);border-bottom:4px solid var(--verm);min-height:52px}
-.topo .lugar{font-family:"Cinzel",Georgia,serif;font-size:15px;letter-spacing:.04em;white-space:nowrap}
-.topo .obj{flex:1;font-style:italic;font-size:15px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topo{display:flex;align-items:center;gap:12px;padding:4px 10px 4px 14px;background:var(--tinta);color:var(--papiro);border-bottom:4px solid var(--verm);height:66px}
+.onde{display:flex;flex-direction:column;line-height:1.15;flex:none}
+.onde .lugar{font-family:"Cinzel",Georgia,serif;font-size:15px;letter-spacing:.04em;white-space:nowrap}
+.onde .meta{font-style:italic;font-size:13px;opacity:.8;white-space:nowrap}
 .bt-topo{min-height:44px;padding:0 14px;border:1.5px solid var(--papiro);border-radius:4px;background:transparent;font-family:"Cinzel",Georgia,serif;font-size:13px;color:var(--papiro)}
 .bt-topo.claro{background:var(--papiro);color:var(--tinta)}
-.palco{position:relative;min-height:0;overflow:hidden}
-#cena{position:absolute;inset:0;width:100%;height:100%}
-.coluna{position:absolute;left:8px;top:8px;width:min(236px,42%);display:flex;flex-direction:column;gap:6px;z-index:2}
-.bolha{background:var(--papiro);border:1.5px solid var(--tinta);border-radius:6px;padding:4px 6px 2px}
+.fala{flex:1;min-width:0;max-height:100%;overflow-y:auto;font-style:italic;font-size:14px;line-height:1.22;padding:2px 10px;border-left:1.5px solid color-mix(in srgb,var(--papiro) 35%,transparent)}
+.fala b{font-style:normal;font-family:"Cinzel",Georgia,serif;font-weight:700;color:var(--papiro3);margin-right:6px;font-size:13px;letter-spacing:.04em}
+.fala.nova{animation:acende .7s ease}
+@keyframes acende{from{background:color-mix(in srgb,var(--papiro3) 40%,transparent)}to{background:transparent}}
+.palco{display:grid;grid-template-columns:minmax(160px,min(220px,28%)) minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:8px;padding:8px 8px 4px;min-height:0;overflow:hidden}
+.lado{display:flex;flex-direction:column;gap:6px;min-height:0;overflow-y:auto}
+#cena{display:block;width:100%;height:100%;min-height:0}
+.bolha{background:var(--papiro);border:1.5px solid var(--tinta);border-radius:6px;padding:4px 6px 2px;flex:none}
 .bolha-tit{font-size:13px;color:var(--tinta2)}
 #perto{display:block;width:100%;height:auto}
-.medidas{background:color-mix(in srgb,var(--papiro) 92%,transparent);border:1px solid var(--tinta2);border-radius:6px;padding:4px 8px;font-size:14px;line-height:1.35}
+.medidas{background:var(--papiro);border:1px solid var(--tinta2);border-radius:6px;padding:4px 8px;font-size:14px;line-height:1.3;flex:none}
 .medidas:empty{display:none}
-.medidas .velha{opacity:.55;font-style:italic}
-.fala{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);max-width:min(560px,92%);background:var(--papiro2);border:1.5px solid var(--tinta);border-radius:6px;padding:8px 12px;font-style:italic;font-size:16px;line-height:1.35;z-index:3}
-.fala[hidden]{display:none}
-.fala b{font-style:normal;font-family:"Cinzel",Georgia,serif;font-weight:500;color:var(--verm);margin-right:6px;font-size:14px}
-.barra{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 10px;background:var(--papiro2);border-top:1.5px solid var(--tinta)}
-.hora{flex:1 1 200px;display:flex;flex-direction:column;min-width:160px}
+.medidas .m-tit{font-family:"Cinzel",Georgia,serif;font-size:11px;letter-spacing:.06em;color:var(--tinta2)}
+.medidas .m{display:flex;align-items:baseline;gap:6px;padding:2px 0}
+.medidas .m span{flex:1;min-width:0}
+.medidas .m b{font-family:"Cinzel",Georgia,serif;font-weight:700;color:var(--verm)}
+.medidas .m small{font-size:12px;color:var(--tinta2);white-space:nowrap}
+.medidas .velha{opacity:.5}
+.medidas .velha b{text-decoration:line-through}
+.barra{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;padding:4px 10px 6px;background:var(--papiro2);border-top:1.5px solid var(--tinta)}
+.hora{flex:1 1 140px;display:flex;flex-direction:column;min-width:120px}
 .hora label{font-size:13px;color:var(--tinta2)}
 .hora b{font-family:"Cinzel",Georgia,serif;color:var(--verm);font-weight:700}
 .hora input{width:100%;accent-color:var(--verm);height:28px}
-.ferr{min-height:44px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;border:1.5px solid var(--tinta);border-radius:4px;background:transparent;font-size:16px}
+.ferr{min-height:44px;display:inline-flex;align-items:center;gap:6px;padding:0 10px;border:1.5px solid var(--tinta);border-radius:4px;background:transparent;font-size:15px;white-space:nowrap;flex:none}
 .ferr svg{width:20px;height:20px;flex:none}
 .ferr.forte{background:var(--tinta);color:var(--papiro);font-family:"Cinzel",Georgia,serif;font-size:14px}
 .cobre{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) 16px max(16px,env(safe-area-inset-bottom,0px))}
@@ -96,29 +104,38 @@ button{font:inherit;cursor:pointer;color:inherit}
 .sabe{border-top:1px solid var(--tinta2);padding-top:10px;margin-top:6px;font-size:15px}
 .sabe li{margin-bottom:6px;line-height:1.45}
 @media (prefers-reduced-motion: reduce){ .abertura .linha{transition:none} }
-@media (orientation: portrait){ .topo .obj{display:none} .coluna{width:min(220px,58%)} }
-@media (orientation: landscape){ .fala{top:8px;bottom:auto;left:calc(min(236px,42%) + 18px);right:24%;transform:none;max-width:none} }
+@media (orientation: landscape) and (max-width: 700px){ .fala{font-size:13px} .onde .meta{display:none} }
+@media (orientation: portrait){
+  .topo{flex-wrap:wrap;height:auto;row-gap:2px;padding-top:6px;padding-bottom:6px}
+  .onde{flex:1}
+  .fala{order:3;flex:1 1 100%;height:4.2em;max-height:none;border-left:0;border-top:1.5px solid color-mix(in srgb,var(--papiro) 35%,transparent);padding:4px 0 0}
+  .palco{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}
+  .lado{order:2;flex-direction:row;align-items:flex-start;overflow:visible}
+  .lado .bolha{flex:1 1 50%;min-width:0}
+  .lado .medidas{flex:1 1 50%;min-width:0}
+  .barra{flex-wrap:wrap}
+  .hora{flex-basis:100%}
+}
 </style>
 </head>
 <body>
 <div id="app" class="fibras">
   <header class="topo">
-    <span class="lugar">600 a.C., Gizé</span>
-    <span class="obj">Descubra a altura da pirâmide sem subir nela</span>
+    <div class="onde"><span class="lugar">600 a.C., Gizé</span><span class="meta">Meta: a altura da pirâmide</span></div>
+    <div class="fala" id="fala" role="status" aria-live="polite"><b>Tales</b>Descubra a altura da pirâmide sem subir nela.</div>
     <button type="button" class="bt-topo" id="b-dica">Dica</button>
     <button type="button" class="bt-topo claro" id="b-caderno">Caderno</button>
   </header>
 
   <main class="palco">
-    <svg id="cena" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A Grande Pirâmide e a sombra dela no chão, com o sol que muda de lugar conforme a hora"></svg>
-    <div class="coluna">
+    <div class="lado">
       <div class="bolha">
         <div class="bolha-tit">Perto de você: a estaca de 2 passos</div>
-        <svg id="perto" viewBox="0 0 240 130" role="img" aria-label="Tales ao lado da estaca e a sombra da estaca"></svg>
+        <svg id="perto" viewBox="0 40 240 88" role="img" aria-label="Tales ao lado da estaca e a sombra da estaca"></svg>
       </div>
       <div class="medidas" id="medidas" aria-live="polite"></div>
     </div>
-    <div class="fala" id="fala" role="status" aria-live="polite" hidden></div>
+    <svg id="cena" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A Grande Pirâmide e a sombra dela no chão, com o sol que muda de lugar conforme a hora"></svg>
   </main>
 
   <footer class="barra">
@@ -126,9 +143,9 @@ button{font:inherit;cursor:pointer;color:inherit}
       <label for="r-hora">Hora do dia: <b id="t-hora">13:30</b></label>
       <input id="r-hora" type="range" min="0" max="240" step="2" value="30">
     </div>
-    <button type="button" class="ferr" data-medir="estaca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="19"></line><line x1="5" y1="21" x2="19" y2="21"></line></svg>Medir a estaca</button>
-    <button type="button" class="ferr" data-medir="pir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M2 14 C6 8 9 20 13 14 S20 8 22 14"></path><circle cx="6" cy="12" r="1.3" fill="currentColor"></circle><circle cx="17" cy="13" r="1.3" fill="currentColor"></circle></svg>Medir a sombra da pirâmide</button>
-    <button type="button" class="ferr" data-medir="base"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 18 L12 6 L21 18 Z"></path><line x1="3" y1="21" x2="21" y2="21"></line></svg>Medir a base</button>
+    <button type="button" class="ferr" data-medir="estaca" aria-label="Medir a sombra da estaca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="19"></line><line x1="5" y1="21" x2="19" y2="21"></line></svg>Estaca</button>
+    <button type="button" class="ferr" data-medir="pir" aria-label="Medir a sombra da pirâmide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M2 14 C6 8 9 20 13 14 S20 8 22 14"></path><circle cx="6" cy="12" r="1.3" fill="currentColor"></circle><circle cx="17" cy="13" r="1.3" fill="currentColor"></circle></svg>Sombra da pirâmide</button>
+    <button type="button" class="ferr" data-medir="base" aria-label="Medir a base da pirâmide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 18 L12 6 L21 18 Z"></path><line x1="3" y1="21" x2="21" y2="21"></line></svg>Base</button>
     <button type="button" class="ferr forte" id="b-responder">Responder</button>
   </footer>
 </div>
@@ -225,7 +242,7 @@ function desenha(){
   esc.style.display=est.dica>=3?'':'none';
   const tip2=SX-sombraEstaca(est.v)*K2;
   sEst.setAttribute('x1',tip2); sEst.setAttribute('x2',SX);
-  const t2=Math.min((TOPO2-6)/s,(236-SX)/c);
+  const t2=Math.min((TOPO2-44)/s,(236-SX)/c);
   raio2.setAttribute('x1',SX+t2*c); raio2.setAttribute('y1',TOPO2-t2*s); raio2.setAttribute('x2',tip2); raio2.setAttribute('y2',CH2);
   const m=est.med;
   if(m.estaca&&m.estaca.v===est.v) corda(cordaE,tip2,SX,CH2+11,n1(m.estaca.val)+' passos'); else cordaE.innerHTML='';
@@ -235,20 +252,20 @@ function desenha(){
 }
 function listaMedidas(){
   const m=est.med, out=[];
-  const lin=(txt,v)=>{ const velha=v!==undefined&&v!==est.v; return '<div'+(velha?' class="velha"':'')+'>'+txt+(v!==undefined?' <span>('+(velha?'medida às '+horaTxt(v)+', outra hora':horaTxt(v))+')</span>':'')+'</div>'; };
-  if(m.estaca) out.push(lin('Sombra da estaca: '+n1(m.estaca.val)+' passos',m.estaca.v));
-  if(m.pir) out.push(lin('Sombra da pirâmide (a parte que aparece): '+n0(m.pir.val)+' passos',m.pir.v));
-  if(m.base) out.push(lin('Base da pirâmide: 230 passos'));
-  $('#medidas').innerHTML=out.join('');
+  const lin=(nome,val,v)=>{ const velha=v!==undefined&&v!==est.v;
+    return '<div class="m'+(velha?' velha':'')+'"><span>'+nome+'</span><b>'+val+'</b>'+(v!==undefined?'<small>'+horaTxt(v)+(velha?' ✗':'')+'</small>':'')+'</div>'; };
+  if(m.estaca) out.push(lin('Sombra da estaca',n1(m.estaca.val),m.estaca.v));
+  if(m.pir) out.push(lin('Sombra da pirâmide',n0(m.pir.val),m.pir.v));
+  if(m.base) out.push(lin('Base',String(BASE)));
+  const velhas=(m.estaca&&m.estaca.v!==est.v)||(m.pir&&m.pir.v!==est.v);
+  $('#medidas').innerHTML=out.length?'<div class="m-tit">'+(velhas?'MEDIDAS · ✗ = OUTRA HORA':'SUAS MEDIDAS, EM PASSOS')+'</div>'+out.join(''):'';
 }
 
 /* ---------- fala ---------- */
-let tFala=null;
 function fala(txt,quem){
-  const f=$('#fala'); f.innerHTML='<b>'+(quem||'Tales')+'</b>'+txt; f.hidden=false;
-  clearTimeout(tFala); tFala=setTimeout(()=>{ f.hidden=true; },9000);
+  const f=$('#fala'); f.innerHTML='<b>'+(quem||'Tales')+'</b>'+txt; f.scrollTop=0;
+  f.classList.remove('nova'); void f.offsetWidth; f.classList.add('nova');
 }
-$('#fala').addEventListener('click',()=>{ $('#fala').hidden=true; });
 
 /* ---------- ações ---------- */
 let avisouHora=false;

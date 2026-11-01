@@ -66,6 +66,7 @@ Versão para jogar no navegador (não instala): https://claude.ai/artifact/D8FmV
 
 - **Abertura:** o texto aparece aos poucos; tocar pula a animação.
 - **Cena:** a pirâmide com a sombra no chão, e um quadro "Perto de você" com Tales e a estaca de 2 passos (a estaca é pequena demais para aparecer na mesma escala da pirâmide).
+- **Layout (celular deitado):** nada fica por cima de nada. A fala do Tales e as dicas ficam numa faixa fixa no topo, entre "600 a.C., Gizé" e os botões (não somem sozinhas). À esquerda, o quadro da estaca e a lista "Suas medidas" (medidas de outra hora aparecem riscadas com ✗). À direita, a cena. Embaixo, uma linha só: barra da hora, Estaca, Sombra da pirâmide, Base e Responder. Testado em 640×360, 740×360, 800×360, 873×393 e em pé (390×844).
 - **Barra "Hora do dia":** de 13:00 a 17:00, em passos de 2 minutos. Elevação do sol: `73.92 * sin(π * (hora − 6) / 12)` graus. Às 15:30 o sol fica exatamente a 45°, e a sombra de tudo fica do tamanho da coisa.
 - **Números do mundo:** pirâmide com 146 passos de altura e 230 de base (medidas reais da Grande Pirâmide em metros; 1 passo = 1 metro). Estaca com 2 passos.
 - **Medidas:** sombra da estaca (1 casa decimal), parte visível da sombra da pirâmide (inteiro) e base (230). Antes de ~15h a sombra da pirâmide fica toda escondida embaixo dela, e o jogo avisa. Se a hora muda depois de medir, as medidas antigas aparecem como "de outra hora".

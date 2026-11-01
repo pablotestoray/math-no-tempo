@@ -1,0 +1,17 @@
+{
+  "name": "Matemática no Tempo",
+  "short_name": "Mat. no Tempo",
+  "description": "Redescubra a matemática com quem a descobriu. Capítulo 1: Tales e a sombra da pirâmide.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#E9D8AE",
+  "theme_color": "#2A1C10",
+  "lang": "pt-BR",
+  "icons": [
+    {"src": "icone-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icone-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icone-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

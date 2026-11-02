@@ -442,7 +442,7 @@ function mostraSabe(){
     '<li>A Grande Pirâmide tinha cerca de 146 metros de altura quando foi construída, e cada lado da base mede cerca de 230 metros. Hoje ela é mais baixa, porque perdeu o topo e o revestimento.</li>'+
     '<li>No jogo, 1 passo vale 1 metro, para simplificar.</li>'+
     '<li>Lenda ou não, a matemática funciona: medir alturas por sombras e proporções é usado até hoje.</li></ul>'+
-    '<p style="margin-top:10px">Fim do capítulo 1. Próximo capítulo, em breve: Eratóstenes mede o tamanho da Terra, também com sombras.</p>'+
+    '<p style="margin-top:10px">Fim do capítulo 1. Próximo capítulo: Eratóstenes mede o tamanho da Terra, também com sombras. Ele já está nos estudos.</p>'+
     '<div class="linha-bts"><button type="button" class="ferr forte" id="b-denovo">Jogar de novo</button><button type="button" class="ferr" id="b-fc2">Voltar ao jogo</button><button type="button" class="ferr" id="b-fc3">Voltar aos estudos</button></div>';
   $('#b-denovo').addEventListener('click',()=>{ est.med={}; est.dica=0; est.tentativas=0; est.v=30; $('#r-hora').value=30; $('#i-resp').value=''; fecha(mCad); desenha(); fala('De novo: a pirâmide está aí, e o sol também.'); });
   $('#b-fc2').addEventListener('click',()=>fecha(mCad));
@@ -467,7 +467,7 @@ desenha();
 /* ---------- telas: início, estudos, capítulo ---------- */
 const CAPS=[
   {n:1, t:'Tales e a pirâmide', aberto:true},
-  {n:2, t:'Eratóstenes e a Terra'},
+  {n:2, t:'Eratóstenes e a Terra', aberto:true},
   {n:3, t:'O Papiro de Rhind'},
   {n:4, t:'A tábua da Babilônia'},
   {n:5, t:'Cordas e música'},
@@ -613,10 +613,11 @@ function arteCap(n){
   }
   return '';
 }
+function cap2Feito(){ try{ const g=JSON.parse(localStorage.getItem('mnt-cap2')||'null'); return !!(g&&g.resolvido); }catch(e){ return false; } }
 const CADEADO='<span class="cadeado" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11 V8 a4 4 0 0 1 8 0 V11"/></svg></span>';
 function montaTrilho(){
   $('#trilho').innerHTML=CAPS.map(c=>{
-    const feito=c.n===1&&est.resolvido;
+    const feito=(c.n===1&&est.resolvido)||(c.n===2&&cap2Feito());
     const situ=c.aberto?(feito?'<span class="card-est feito">✓ Concluído</span>':'<span class="card-est">Tocar para jogar</span>'):'<span class="card-est">Em breve</span>';
     return '<button type="button" class="card'+(c.aberto?'':' trancado')+'" data-cap="'+c.n+'" aria-label="Capítulo '+c.n+': '+c.t+(c.aberto?'':' (em breve)')+'">'+
       '<span class="card-img" style="color:var(--sepia)"><svg viewBox="0 0 100 100" aria-hidden="true">'+arteCap(c.n)+'</svg>'+(c.aberto?'':CADEADO)+'</span>'+
@@ -624,8 +625,9 @@ function montaTrilho(){
   }).join('');
   $$('#trilho .card').forEach(b=>b.addEventListener('click',()=>{
     const n=+b.dataset.cap, c=CAPS[n-1];
+    if(n===2){ try{ history.replaceState({tela:'estudos'},'','#estudos'); }catch(e){} location.href='cap2.html'; return; }
     if(c.aberto){ vaiPara('cap1'); return; }
-    const e=b.querySelector('.card-est'); e.textContent=n===2?'É o próximo a ficar pronto':'Ainda está sendo feito'; e.classList.add('aviso'); e.setAttribute('role','status');
+    const e=b.querySelector('.card-est'); e.textContent=n===3?'É o próximo a ficar pronto':'Ainda está sendo feito'; e.classList.add('aviso'); e.setAttribute('role','status');
   }));
   atualizaSetas();
 }
@@ -666,7 +668,8 @@ window.addEventListener('popstate',e=>{ const t=(e.state&&e.state.tela)||'inicio
 $('#b-entrar').addEventListener('click',()=>vaiPara('estudos'));
 $('#b-inicio').addEventListener('click',()=>volta('inicio'));
 $('#b-sair').addEventListener('click',()=>volta('estudos'));
-try{ history.replaceState({tela:'inicio'},''); }catch(e){}
+const voltouDeCapitulo=location.hash==='#estudos';
+try{ history.replaceState({tela:'inicio'},'','./'); }catch(e){}
 // diminui o título até caber, depois que a fonte de verdade carrega
 function ajustaTitulo(){
   const t=$('.ini-tit'); if(!t||$('#inicio').hidden) return;
@@ -679,6 +682,9 @@ if(document.fonts&&document.fonts.ready) document.fonts.ready.then(ajustaTitulo)
 mostraTela('inicio');
 arteInicio();
 ajustaTitulo();
+if(voltouDeCapitulo) vaiPara('estudos');
+// ao voltar de outro capítulo pelo "voltar", o navegador pode reaproveitar a página: atualiza os cartões
+window.addEventListener('pageshow',e=>{ if(e.persisted&&!$('#estudos').hidden) montaTrilho(); });
 if('serviceWorker' in navigator && location.protocol==='https:' && !/claude/.test(location.hostname)){
   window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
 }

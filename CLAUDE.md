@@ -26,7 +26,7 @@ Um jogo para aprender matemática do zero até o cálculo, redescobrindo as idei
 ### Linha do tempo planejada (do mais fácil ao cálculo, não em ordem de data)
 
 1. Tales, ~600 a.C.: altura da pirâmide pela sombra (proporção). **Feito: capítulo 1.**
-2. Eratóstenes, ~240 a.C.: o tamanho da Terra com duas sombras. **Próximo capítulo.**
+2. Eratóstenes, ~240 a.C.: o tamanho da Terra com duas sombras. **Feito: capítulo 2.**
 3. Egito, Papiro de Rhind (~1650 a.C.): frações e áreas de campos.
 4. Babilônia (~1800 a.C.): trios como 3-4-5 e a conta de √2.
 5. Pitagóricos: cordas e música (frações 2:1, 3:2); a corda de 12 nós e o canto reto.
@@ -64,9 +64,10 @@ Arquivos do app (todos na raiz, sem pastas):
 
 | Arquivo | Para que serve |
 |---|---|
-| `index.html` | O jogo inteiro: HTML, CSS e JavaScript num arquivo só. |
+| `index.html` | Tela inicial, Estudos e o capítulo 1 (HTML, CSS e JavaScript num arquivo só). |
+| `cap2.html` | Capítulo 2 (Eratóstenes), num arquivo próprio para não arriscar o capítulo 1. Copia o CSS do `index.html`; se mudar o visual comum, mude nos dois. |
 | `manifest.webmanifest` | Faz o jogo ser instalável (nome, ícones, tela cheia, celular deitado). |
-| `sw.js` | Service worker: guarda os arquivos para o jogo abrir sem internet. Busca a página primeiro na internet (para o app receber atualizações) e só usa a cópia guardada quando está sem internet. A cada versão nova, mude o nome do cache (hoje `mat-no-tempo-v4`). |
+| `sw.js` | Service worker: guarda os arquivos para o jogo abrir sem internet. Busca a página primeiro na internet (para o app receber atualizações) e só usa a cópia guardada quando está sem internet. A cada versão nova, mude o nome do cache (hoje `mat-no-tempo-v8`) e ponha os arquivos novos na lista `ARQUIVOS`. |
 | `icone-192.png`, `icone-512.png`, `icone-maskable.png` | Ícones do app. |
 | `CLAUDE.md` | Este arquivo. |
 
@@ -82,6 +83,19 @@ Arquivos do app (todos na raiz, sem pastas):
 - **Lições de teste (02/11/2026):**
   - Testar sempre com as fontes reais do Google carregadas. Com fonte de reserva, o título "Mathematica" parecia caber, mas na Cinzel real ele invadia a coluna do desenho. Hoje o título diminui sozinho até caber (`ajustaTitulo`).
   - No Chrome do Android, os cartões do carrossel apareciam com pedaços faltando. A causa provável é recorte com canto arredondado, `color-mix` e transparência dentro de uma área que rola. Foi trocado por cores fixas (`--sombra-card`, `--apagado`) e `contain: paint`. Evitar esses efeitos em listas que rolam.
+
+### Como o capítulo 2 funciona (`cap2.html`)
+
+- O cartão 2 dos Estudos abre `cap2.html`. Antes de sair, o `index.html` grava `#estudos` no endereço; o botão voltar do capítulo 2 faz `history.back()`, e o `index.html` abre direto nos Estudos quando vê `#estudos`.
+- **Abertura:** 240 a.C., Alexandria. Eratóstenes lê que em Siena, ao meio-dia do dia mais longo do ano, o sol ilumina o fundo de um poço.
+- **Mundo:** dia do solstício (declinação 24°), Alexandria a 31,2° e Siena a 24° de latitude. Ao meio-dia o sol fica a 7,2° do alto em Alexandria (1/50 do círculo) e bem no alto em Siena. Altura do sol pela fórmula de verdade (`zenite`). Estaca de 2 passos; distância Siena–Alexandria de 5.000 estádios (dada).
+- **Barra "Hora do dia":** 10:00 a 14:00, passos de 2 minutos. Ao meio-dia a sombra da estaca dá 0,25 passos, a mais curta.
+- **Coluna da esquerda:** o poço de Siena na mesma hora (a luz só chega ao fundo inteiro ao meio-dia) e as medidas.
+- **Botões:** Sombra (mede a estaca e diz se diminuiu ou aumentou), Tigela (anima a sombra sendo marcada em volta do círculo e conta quantos pedaços cabem: 50 ao meio-dia, ~37 às 11:30), De longe (troca a cena pela Terra redonda com raios paralelos; a barra passa a mover Alexandria na curva, e a coluna mostra **a conta ao vivo**: pedaços na volta, 5.000 × N e a volta da Terra; avisa quando fica igual à tigela do jogador).
+- **Resposta:** aceita 250.000 ± 5% (pode escrever com ponto). Respostas erradas com explicação: 5.000 (só a distância), 50 (só os pedaços), 100 (dividiu), conta certa com tigela fora do meio-dia, zeros a mais ou a menos.
+- **4 dicas progressivas.** Todas as falas e dicas foram testadas para caber em 3 linhas de 640 a 873 de largura.
+- **Caderno:** Descoberta 2, "Fração do círculo" (pedaço/círculo = 5.000/volta), com os números do jogador, o atalho dos 7,2 graus e a ferramenta "tigela de sol". Depois, "O que se sabe de verdade" (Cleomedes, incertezas do estádio, 39.000 a 46.000 km contra 40.000 km de verdade).
+- Progresso salvo no `localStorage` (chave `mnt-cap2`); o cartão 2 mostra "✓ Concluído".
 
 ### Como o capítulo 1 funciona
 
@@ -115,7 +129,7 @@ Lembre: um passo por vez, com print antes de seguir.
 
 1. Ele testar o capítulo 1 sem pedir dica e contar onde travou e se teve o "aha" quando a sombra da estaca deu 2 passos. Ajustar o capítulo com base nisso.
 2. Mostrar para 1 ou 2 pessoas e observar sem ajudar. Se elas descobrirem sozinhas e gostarem, a ideia funciona.
-3. Capítulo 2: Eratóstenes mede a Terra (também com sombras; reaproveita o medidor de sombras).
+3. ✅ Capítulo 2: Eratóstenes mede a Terra (feito em 02/11/2026; falta ele jogar no celular).
 4. Capítulo com a corda de 12 nós (canto reto, 3-4-5).
 5. Oficina pequena (a aba Criar), só com as ferramentas já descobertas e 2 ou 3 pedidos.
 6. APK de verdade montado pelo GitHub Actions (empacotando o jogo web), já pensando na Play Store. Não usar sites que "transformam site em APK": muitos colocam anúncios ou rastreadores.

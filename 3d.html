@@ -11,44 +11,49 @@
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:var(--papiro);touch-action:none;-webkit-user-select:none;user-select:none;font-family:"EB Garamond",Georgia,serif;color:var(--tinta)}
 canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block}
-.ui{position:fixed;left:0;right:0;pointer-events:none}
-.topo{top:0;display:flex;align-items:center;gap:10px;padding:6px 10px 6px 12px;background:var(--tinta);color:var(--papiro);border-bottom:4px solid var(--verm);min-height:50px}
-.topo .t{font-family:"Cinzel",Georgia,serif;font-size:15px;letter-spacing:.05em;flex:1}
-.topo .d{font-style:italic;font-size:13px;opacity:.85;flex:2;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-button,a.btn{pointer-events:auto;min-height:44px;padding:0 14px;border:1.5px solid var(--tinta);border-radius:4px;background:transparent;color:inherit;font-family:"Cinzel",Georgia,serif;font-size:14px;letter-spacing:.03em;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
-.topo button,.topo a.btn{border-color:var(--papiro);color:var(--papiro)}
-.painel{top:64px;left:10px;width:min(270px,44vw);background:color-mix(in srgb,var(--papiro) 92%,transparent);border:1.5px solid var(--tinta);border-radius:6px;padding:6px 10px;font-size:15px;line-height:1.3}
-.painel b{font-family:"Cinzel",Georgia,serif;font-weight:700;color:var(--verm)}
-.painel small{display:block;color:var(--tinta2);font-size:12.5px}
-.barra{bottom:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 10px 8px;background:var(--papiro3);border-top:1.5px solid var(--tinta)}
-.barra .hora{flex:1 1 180px;min-width:150px;display:flex;flex-direction:column;pointer-events:auto}
-.barra .hora label{font-size:14px;color:var(--tinta2)}
-.barra .hora b{font-family:"Cinzel",Georgia,serif;color:var(--verm)}
-.barra input{width:100%;accent-color:var(--verm);height:28px;pointer-events:auto}
-.dica{top:auto;bottom:118px;left:12px;right:12px;text-align:center;font-style:italic;font-size:14px;color:var(--tinta);text-shadow:0 0 6px var(--papiro),0 0 2px var(--papiro)}
+.ui{position:fixed;pointer-events:none}
+.topo{top:10px;left:10px;display:flex;align-items:center;gap:10px}
+.btn-ico{pointer-events:auto;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--tinta);background:color-mix(in srgb,var(--papiro) 88%,transparent);color:var(--tinta);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:24px;line-height:1}
+.nome{font-family:"Cinzel",Georgia,serif;font-size:13px;letter-spacing:.06em;color:var(--tinta);text-shadow:0 0 6px var(--papiro),0 0 2px var(--papiro)}
+.medidas{top:10px;right:10px;display:flex;gap:6px;flex-direction:column;align-items:flex-end}
+.chip{background:color-mix(in srgb,var(--papiro) 90%,transparent);border:1px solid var(--tinta2);border-radius:14px;padding:3px 12px;font-size:15px;line-height:1.3;white-space:nowrap}
+.chip b{font-family:"Cinzel",Georgia,serif;font-weight:700;color:var(--verm);font-size:15px}
+.chip span{color:var(--tinta2);font-size:13px;margin-right:4px}
+.chip.sub{font-size:13px;opacity:.9}
+.barra{bottom:0;left:0;right:0;display:flex;align-items:center;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--papiro3) 92%,transparent) 40%);pointer-events:none}
+.hora{flex:1;min-width:120px;display:flex;align-items:center;gap:8px;pointer-events:auto}
+.hora b{font-family:"Cinzel",Georgia,serif;color:var(--verm);font-size:14px;min-width:3.6em}
+.hora input{flex:1;accent-color:var(--verm);height:28px;margin:0}
+button{pointer-events:auto;height:40px;padding:0 12px;border:1.5px solid var(--tinta);border-radius:20px;background:color-mix(in srgb,var(--papiro) 88%,transparent);color:var(--tinta);font-family:"Cinzel",Georgia,serif;font-size:13px;letter-spacing:.03em;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+button.forte{background:var(--tinta);color:var(--papiro)}
+button svg{width:16px;height:16px;flex:none}
+.dica{left:0;right:0;top:52%;text-align:center;font-style:italic;font-size:15px;color:var(--tinta);text-shadow:0 0 6px var(--papiro),0 0 2px var(--papiro);transition:opacity 1.2s}
+.dica.sumiu{opacity:0}
+@media (orientation: portrait){ .medidas{top:auto;bottom:124px;right:10px;left:10px;flex-direction:row;justify-content:center} .barra{flex-wrap:wrap} .hora{flex-basis:100%} }
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 
 <header class="ui topo">
-  <a class="btn" id="b-volta" href="index.html#estudos">&lsaquo; Estudos</a>
-  <span class="t">Tales em Gizé</span>
-  <span class="d">Protótipo 3D: ande e olhe em volta.</span>
+  <a class="btn-ico" id="b-volta" href="index.html#estudos" aria-label="Voltar aos estudos">&lsaquo;</a>
+  <span class="nome">Tales em Gizé</span>
 </header>
 
-<div class="ui painel" id="painel" aria-live="polite"></div>
-<div class="ui dica" id="dica">Arraste à esquerda para andar. Arraste à direita para olhar. No computador: WASD e setas.</div>
+<div class="ui medidas" id="medidas" aria-live="polite"></div>
+<div class="ui dica" id="dica">Arraste à esquerda para andar · à direita para olhar</div>
 
 <footer class="ui barra">
   <div class="hora">
-    <label for="r-hora">Hora do dia: <b id="t-hora">13:30</b></label>
-    <input id="r-hora" type="range" min="0" max="240" step="2" value="30">
+    <input id="r-hora" type="range" min="0" max="240" step="2" value="30" aria-label="Hora do dia">
+    <b id="t-hora">13:30</b>
   </div>
-  <button type="button" id="b-subir" title="Olhar de mais alto">Olhar de cima</button>
-  <button type="button" id="b-descer">Olhar de gente</button>
-  <button type="button" id="b-estaca">Plantar estaca aqui</button>
-  <button type="button" id="b-tirar">Tirar estaca</button>
+  <button type="button" id="b-olhar" aria-label="Alternar altura do olhar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="5" r="2"/><path d="M12 9v11M8 13h8"/></svg><span id="t-olhar">Olhar de cima</span>
+  </button>
+  <button type="button" id="b-estaca" class="forte" aria-label="Plantar ou tirar a estaca">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="21"/><line x1="7" y1="21" x2="17" y2="21"/></svg><span id="t-estaca">Plantar estaca</span>
+  </button>
 </footer>
 
 <script>
@@ -155,8 +160,6 @@ function draw(){
   for(const q of fs) poly3(q.f,q.cor,'#2A1C10',1.2);
   // rótulos
   const topo=scr(toView(PT));
-  if(toView(PT)[2]>NEAR){ ctx.font='14px "Cinzel",Georgia,serif'; ctx.fillStyle='#2A1C10'; ctx.fillText('pirâmide',topo[0]+10,topo[1]+4); }
-  if(st.stick){ const tv=toView([st.stick.x,EST_H,st.stick.z]); if(tv[2]>NEAR){ const p=scr(tv); ctx.font='13px "EB Garamond",Georgia,serif'; ctx.fillStyle='#9E3B26'; ctx.fillText('sua estaca, 2 passos',p[0]+8,p[1]); } }
   if(!sobe){ ctx.fillStyle='rgba(20,12,6,.35)'; ctx.fillRect(0,0,W,H); }
   // joystick
   if(joy.on){ ctx.beginPath(); ctx.arc(joy.cx,joy.cy,56,0,Math.PI*2); ctx.strokeStyle='rgba(42,28,16,.5)'; ctx.lineWidth=2; ctx.stroke(); ctx.beginPath(); ctx.arc(joy.cx+st.jx*56,joy.cy+st.jy*-56,22,0,Math.PI*2); ctx.fillStyle='rgba(158,59,38,.6)'; ctx.fill(); }
@@ -165,18 +168,18 @@ function draw(){
 /* ---------- painel com as medidas (ao vivo) ---------- */
 let ultimoPainel='';
 function painel(){
-  const S=sunDir(st.v), e=elev(st.v), sobe=S[1]>0.01;
-  const tg=Math.tan(e);
-  let h='<b>Medidas, em passos</b><br>';
-  if(!sobe) h+='O sol já se pôs.<br>';
+  const S=sunDir(st.v), e=elev(st.v), sobe=S[1]>0.01, tg=Math.tan(e);
+  let h='';
+  if(!sobe) h='<div class="chip">O sol já se pôs</div>';
   else{
-    if(st.stick){ h+='Sombra da estaca: <b>'+(EST_H/tg).toFixed(2).replace('.',',')+'</b><small>(estaca de 2 passos)</small>'; }
-    else h+='<small>Plante a estaca para medir a sombra dela.</small>';
     const vis=ALT/tg-HB;
-    h+='<br>Sombra da pirâmide que aparece: <b>'+(vis>0.5?Math.round(vis):0)+'</b>'+(vis>0.5?'':'<small>escondida embaixo da pirâmide</small>');
+    h+=st.stick?'<div class="chip"><span>estaca</span><b>'+(EST_H/tg).toFixed(2).replace('.',',')+'</b></div>':'<div class="chip sub"><span>plante a estaca para medir</span></div>';
+    h+='<div class="chip"><span>pirâmide</span><b>'+(vis>0.5?Math.round(vis):'0')+'</b>'+(vis>0.5?'':' <span>escondida</span>')+'</div>';
   }
-  if(h!==ultimoPainel){ document.getElementById('painel').innerHTML=h; ultimoPainel=h; }
+  if(h!==ultimoPainel){ document.getElementById('medidas').innerHTML=h; ultimoPainel=h; }
   document.getElementById('t-hora').textContent=horaTxt(st.v);
+  document.getElementById('t-estaca').textContent=st.stick?'Tirar estaca':'Plantar estaca';
+  document.getElementById('t-olhar').textContent=st.eye>EYE?'Olhar de gente':'Olhar de cima';
 }
 
 /* ---------- movimento ---------- */
@@ -215,10 +218,8 @@ addEventListener('keydown',e=>{ if(e.key==='r'||e.key==='R') st.eye=80; if(e.key
 
 /* ---------- botões ---------- */
 document.getElementById('r-hora').addEventListener('input',e=>{ st.v=+e.target.value; });
-document.getElementById('b-estaca').addEventListener('click',()=>{ st.stick={x:st.x,z:st.z}; });
-document.getElementById('b-tirar').addEventListener('click',()=>{ st.stick=null; });
-document.getElementById('b-subir').addEventListener('click',()=>{ st.eye=80; });
-document.getElementById('b-descer').addEventListener('click',()=>{ st.eye=EYE; });
+document.getElementById('b-estaca').addEventListener('click',()=>{ if(st.stick) st.stick=null; else st.stick={x:st.x,z:st.z}; });
+document.getElementById('b-olhar').addEventListener('click',()=>{ st.eye=st.eye>EYE?EYE:80; });
 
 /* ---------- laço principal ---------- */
 let last=performance.now();
@@ -228,6 +229,8 @@ function frame(t){
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
+setTimeout(()=>document.getElementById('dica').classList.add('sumiu'),6000);
+cv.addEventListener('pointerdown',()=>document.getElementById('dica').classList.add('sumiu'),{once:true});
 
 // para testes automáticos
 window.__mnt3d={ st, get CAM(){ return CAM; }, hull, shadowOnGround, PA, PT, sunDir, toView, scr };

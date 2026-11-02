@@ -65,9 +65,10 @@ Arquivos do app (todos na raiz, sem pastas):
 | Arquivo | Para que serve |
 |---|---|
 | `index.html` | Tela inicial, Estudos e o capítulo 1 (HTML, CSS e JavaScript num arquivo só). |
+| `3d.html` | **Protótipo 3D do capítulo 1** (não está ligado aos Estudos; abre por endereço direto `/3d.html`). Sem biblioteca: desenha em 2D com projeção de perspectiva. Andar com o joystick ou WASD, olhar arrastando à direita, plantar estaca, mexer a hora (o sol e as sombras se movem de verdade), botão "Olhar de cima" (tecla R) para ver as sombras do chão. Testado no navegador: as medidas batem com o capítulo 1 (15:30: estaca 2,00 e pirâmide 31). Ainda sem a corda e sem caderno. |
 | `cap2.html` | Capítulo 2 (Eratóstenes), num arquivo próprio para não arriscar o capítulo 1. Copia o CSS do `index.html`; se mudar o visual comum, mude nos dois. |
 | `manifest.webmanifest` | Faz o jogo ser instalável (nome, ícones, tela cheia, celular deitado). |
-| `sw.js` | Service worker: guarda os arquivos para o jogo abrir sem internet. Busca a página primeiro na internet (para o app receber atualizações) e só usa a cópia guardada quando está sem internet. A cada versão nova, mude o nome do cache (hoje `mat-no-tempo-v8`) e ponha os arquivos novos na lista `ARQUIVOS`. |
+| `sw.js` | Service worker: guarda os arquivos para o jogo abrir sem internet. Busca a página primeiro na internet (para o app receber atualizações) e só usa a cópia guardada quando está sem internet. A cada versão nova, mude o nome do cache (hoje `mat-no-tempo-v9`) e ponha os arquivos novos na lista `ARQUIVOS`. |
 | `icone-192.png`, `icone-512.png`, `icone-maskable.png` | Ícones do app. |
 | `CLAUDE.md` | Este arquivo. |
 

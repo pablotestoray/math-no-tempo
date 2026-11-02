@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#2A1C10">
+<title>Mathematica: protótipo 3D, Tales em Gizé</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--papiro:#E9D8AE;--papiro3:#D4B271;--tinta:#2A1C10;--tinta2:#4A3420;--verm:#9E3B26;--sombra:#6B4A26;--perg:#EFE3C4}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--papiro);touch-action:none;-webkit-user-select:none;user-select:none;font-family:"EB Garamond",Georgia,serif;color:var(--tinta)}
+canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block}
+.ui{position:fixed;left:0;right:0;pointer-events:none}
+.topo{top:0;display:flex;align-items:center;gap:10px;padding:6px 10px 6px 12px;background:var(--tinta);color:var(--papiro);border-bottom:4px solid var(--verm);min-height:50px}
+.topo .t{font-family:"Cinzel",Georgia,serif;font-size:15px;letter-spacing:.05em;flex:1}
+.topo .d{font-style:italic;font-size:13px;opacity:.85;flex:2;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+button,a.btn{pointer-events:auto;min-height:44px;padding:0 14px;border:1.5px solid var(--tinta);border-radius:4px;background:transparent;color:inherit;font-family:"Cinzel",Georgia,serif;font-size:14px;letter-spacing:.03em;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
+.topo button,.topo a.btn{border-color:var(--papiro);color:var(--papiro)}
+.painel{top:64px;left:10px;width:min(270px,44vw);background:color-mix(in srgb,var(--papiro) 92%,transparent);border:1.5px solid var(--tinta);border-radius:6px;padding:6px 10px;font-size:15px;line-height:1.3}
+.painel b{font-family:"Cinzel",Georgia,serif;font-weight:700;color:var(--verm)}
+.painel small{display:block;color:var(--tinta2);font-size:12.5px}
+.barra{bottom:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 10px 8px;background:var(--papiro3);border-top:1.5px solid var(--tinta)}
+.barra .hora{flex:1 1 180px;min-width:150px;display:flex;flex-direction:column;pointer-events:auto}
+.barra .hora label{font-size:14px;color:var(--tinta2)}
+.barra .hora b{font-family:"Cinzel",Georgia,serif;color:var(--verm)}
+.barra input{width:100%;accent-color:var(--verm);height:28px;pointer-events:auto}
+.dica{top:auto;bottom:118px;left:12px;right:12px;text-align:center;font-style:italic;font-size:14px;color:var(--tinta);text-shadow:0 0 6px var(--papiro),0 0 2px var(--papiro)}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<header class="ui topo">
+  <a class="btn" id="b-volta" href="index.html#estudos">&lsaquo; Estudos</a>
+  <span class="t">Tales em Gizé</span>
+  <span class="d">Protótipo 3D: ande e olhe em volta.</span>
+</header>
+
+<div class="ui painel" id="painel" aria-live="polite"></div>
+<div class="ui dica" id="dica">Arraste à esquerda para andar. Arraste à direita para olhar. No computador: WASD e setas.</div>
+
+<footer class="ui barra">
+  <div class="hora">
+    <label for="r-hora">Hora do dia: <b id="t-hora">13:30</b></label>
+    <input id="r-hora" type="range" min="0" max="240" step="2" value="30">
+  </div>
+  <button type="button" id="b-subir" title="Olhar de mais alto">Olhar de cima</button>
+  <button type="button" id="b-descer">Olhar de gente</button>
+  <button type="button" id="b-estaca">Plantar estaca aqui</button>
+  <button type="button" id="b-tirar">Tirar estaca</button>
+</footer>
+
+<script>
+(function(){
+'use strict';
+const cv=document.getElementById('c'), ctx=cv.getContext('2d');
+let W=0,H=0,DPR=1,FP=1;
+function resize(){ DPR=Math.min(2,window.devicePixelRatio||1); W=innerWidth; H=innerHeight; cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR); ctx.setTransform(DPR,0,0,DPR,0,0); FP=(H/2)/Math.tan(34*Math.PI/180); }
+addEventListener('resize',resize); resize();
+
+/* ---------- mundo (1 unidade = 1 passo = 1 metro) ---------- */
+const ALT=146, HB=115, NEAR=0.25, EST_H=2, EYE=1.7;
+const rad=d=>d*Math.PI/180, clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const norm=a=>{ const l=Math.hypot(a[0],a[1],a[2])||1; return [a[0]/l,a[1]/l,a[2]/l]; };
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]], sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], mul=(a,k)=>[a[0]*k,a[1]*k,a[2]*k];
+
+// mesma conta do capítulo 1: 73,92 × sen(π × (hora − 6) / 12)
+function elev(v){ const h=13+v/60; return rad(73.92*Math.sin(Math.PI*(h-6)/12)); }
+function sunDir(v){ const e=elev(v); return [0,Math.sin(e),-Math.cos(e)]; } // do chão até o sol; sul = −z, norte = +z
+function horaTxt(v){ const m=780+v; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
+
+// começa a leste da pirâmide, olhando para o oeste: a sombra aparece de perfil
+const st={ x:190, z:40, yaw:-Math.PI/2, pitch:-0.32, eye:EYE, v:30, stick:null, jx:0, jy:0, keys:{} };
+
+/* ---------- câmera e projeção ---------- */
+let CAM=null;
+function makeCam(){
+  const cy=Math.cos(st.yaw), sy=Math.sin(st.yaw), cp=Math.cos(st.pitch), sp=Math.sin(st.pitch);
+  const F=[sy*cp,sp,cy*cp], R=[cy,0,-sy], U=cross(F,R);
+  return {F,R,U,E:[st.x,st.eye,st.z]};
+}
+function toView(p){ const d=sub(p,CAM.E); return [dot(d,CAM.R),dot(d,CAM.U),dot(d,CAM.F)]; }
+function scr(v){ return [W/2+FP*v[0]/v[2], H/2-FP*v[1]/v[2]]; }
+function clipPoly(vs){
+  const out=[];
+  for(let i=0;i<vs.length;i++){
+    const a=vs[i], b=vs[(i+1)%vs.length], ai=a[2]>=NEAR, bi=b[2]>=NEAR;
+    if(ai) out.push(a);
+    if(ai!==bi){ const t=(NEAR-a[2])/(b[2]-a[2]); out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,NEAR]); }
+  }
+  return out;
+}
+function poly3(pts,fill,stroke,lw){
+  const vs=clipPoly(pts.map(toView)); if(vs.length<3) return;
+  ctx.beginPath(); vs.forEach((v,i)=>{ const s=scr(v); i?ctx.lineTo(s[0],s[1]):ctx.moveTo(s[0],s[1]); }); ctx.closePath();
+  if(fill){ ctx.fillStyle=fill; ctx.fill(); }
+  if(stroke){ ctx.strokeStyle=stroke; ctx.lineWidth=lw||1; ctx.stroke(); }
+}
+function seg3(a,b,color,lw){
+  let A=toView(a), B=toView(b);
+  if(A[2]<NEAR&&B[2]<NEAR) return;
+  if(A[2]<NEAR){ const t=(NEAR-A[2])/(B[2]-A[2]); A=[A[0]+(B[0]-A[0])*t,A[1]+(B[1]-A[1])*t,NEAR]; }
+  if(B[2]<NEAR){ const t=(NEAR-B[2])/(A[2]-B[2]); B=[B[0]+(A[0]-B[0])*t,B[1]+(A[1]-B[1])*t,NEAR]; }
+  const p=scr(A), q=scr(B);
+  ctx.beginPath(); ctx.moveTo(p[0],p[1]); ctx.lineTo(q[0],q[1]); ctx.strokeStyle=color; ctx.lineWidth=lw; ctx.lineCap='round'; ctx.stroke();
+}
+function hull(pts){ // casco convexo no plano do chão (x, z)
+  const p=pts.map(q=>[q[0],q[2]]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+  const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+  const lo=[], up=[];
+  for(const q of p){ while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],q)<=0) lo.pop(); lo.push(q); }
+  for(let i=p.length-1;i>=0;i--){ const q=p[i]; while(up.length>1&&cr(up[up.length-2],up[up.length-1],q)<=0) up.pop(); up.push(q); }
+  up.pop(); lo.pop(); return lo.concat(up).map(q=>[q[0],0,q[1]]);
+}
+function shadowOnGround(p,S){ const k=p[1]/S[1]; return [p[0]-S[0]*k,0,p[2]-S[2]*k]; }
+
+/* ---------- pirâmide ---------- */
+const PA=[[-HB,0,-HB],[HB,0,-HB],[HB,0,HB],[-HB,0,HB]], PT=[0,ALT,0];
+const FACES=[[PA[0],PA[1],PT],[PA[1],PA[2],PT],[PA[2],PA[3],PT],[PA[3],PA[0],PT]];
+const C_LUZ=[0xD4,0xB2,0x71], C_SOMB=[0x6B,0x4A,0x26];
+function mixCor(t){ return 'rgb('+C_SOMB.map((c,i)=>Math.round(c+(C_LUZ[i]-c)*t)).join(',')+')'; }
+
+/* ---------- desenho ---------- */
+function draw(){
+  const S=sunDir(st.v), e=elev(st.v), sobe=S[1]>0.01;
+  CAM=makeCam();
+  const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#D9C48F'); g.addColorStop(0.6,'#EFE3C4'); g.addColorStop(1,'#E2CC98');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  // sol
+  if(sobe){ const sp=add(CAM.E,mul(S,900)), v=toView(sp); if(v[2]>NEAR){ const p=scr(v); const gl=ctx.createRadialGradient(p[0],p[1],6,p[0],p[1],90); gl.addColorStop(0,'rgba(158,59,38,.35)'); gl.addColorStop(1,'rgba(158,59,38,0)'); ctx.fillStyle=gl; ctx.fillRect(p[0]-90,p[1]-90,180,180); ctx.beginPath(); ctx.arc(p[0],p[1],16,0,Math.PI*2); ctx.fillStyle='#9E3B26'; ctx.fill(); } }
+  // chão
+  poly3([[-900,0,-900],[900,0,-900],[900,0,900],[-900,0,900]],'#E2CC98');
+  for(let i=-400;i<=400;i+=20){ seg3([i,0,-400],[i,0,400],'rgba(42,28,16,.16)',1); seg3([-400,0,i],[400,0,i],'rgba(42,28,16,.16)',1); }
+  // sombras no chão
+  if(sobe){
+    poly3(hull([...PA,shadowOnGround(PT,S)]),'rgba(42,28,16,.38)');
+    if(st.stick){ const b=[st.stick.x,0,st.stick.z], tip=shadowOnGround([st.stick.x,EST_H,st.stick.z],S); seg3(b,tip,'rgba(42,28,16,.55)',5); }
+  }
+  // estaca plantada
+  if(st.stick){ const b=[st.stick.x,0,st.stick.z], t=[st.stick.x,EST_H,st.stick.z]; seg3(b,t,'#2A1C10',5); }
+  // pirâmide: só as faces de frente, de trás para a frente
+  const fs=[];
+  for(const f of FACES){
+    const c=mul(add(add(f[0],f[1]),f[2]),1/3);
+    let n=norm(cross(sub(f[1],f[0]),sub(f[2],f[0])));
+    if(dot(n,sub(c,[0,ALT*0.3,0]))<0) n=mul(n,-1);
+    if(dot(n,sub(CAM.E,c))<=0) continue;
+    const lit=sobe?Math.max(0,dot(n,S)):0;
+    fs.push({f,c,dist:Math.hypot(...sub(CAM.E,c)),cor:mixCor(0.2+0.8*lit)});
+  }
+  fs.sort((a,b)=>b.dist-a.dist);
+  for(const q of fs) poly3(q.f,q.cor,'#2A1C10',1.2);
+  // rótulos
+  const topo=scr(toView(PT));
+  if(toView(PT)[2]>NEAR){ ctx.font='14px "Cinzel",Georgia,serif'; ctx.fillStyle='#2A1C10'; ctx.fillText('pirâmide',topo[0]+10,topo[1]+4); }
+  if(st.stick){ const tv=toView([st.stick.x,EST_H,st.stick.z]); if(tv[2]>NEAR){ const p=scr(tv); ctx.font='13px "EB Garamond",Georgia,serif'; ctx.fillStyle='#9E3B26'; ctx.fillText('sua estaca, 2 passos',p[0]+8,p[1]); } }
+  if(!sobe){ ctx.fillStyle='rgba(20,12,6,.35)'; ctx.fillRect(0,0,W,H); }
+  // joystick
+  if(joy.on){ ctx.beginPath(); ctx.arc(joy.cx,joy.cy,56,0,Math.PI*2); ctx.strokeStyle='rgba(42,28,16,.5)'; ctx.lineWidth=2; ctx.stroke(); ctx.beginPath(); ctx.arc(joy.cx+st.jx*56,joy.cy+st.jy*-56,22,0,Math.PI*2); ctx.fillStyle='rgba(158,59,38,.6)'; ctx.fill(); }
+}
+
+/* ---------- painel com as medidas (ao vivo) ---------- */
+let ultimoPainel='';
+function painel(){
+  const S=sunDir(st.v), e=elev(st.v), sobe=S[1]>0.01;
+  const tg=Math.tan(e);
+  let h='<b>Medidas, em passos</b><br>';
+  if(!sobe) h+='O sol já se pôs.<br>';
+  else{
+    if(st.stick){ h+='Sombra da estaca: <b>'+(EST_H/tg).toFixed(2).replace('.',',')+'</b><small>(estaca de 2 passos)</small>'; }
+    else h+='<small>Plante a estaca para medir a sombra dela.</small>';
+    const vis=ALT/tg-HB;
+    h+='<br>Sombra da pirâmide que aparece: <b>'+(vis>0.5?Math.round(vis):0)+'</b>'+(vis>0.5?'':'<small>escondida embaixo da pirâmide</small>');
+  }
+  if(h!==ultimoPainel){ document.getElementById('painel').innerHTML=h; ultimoPainel=h; }
+  document.getElementById('t-hora').textContent=horaTxt(st.v);
+}
+
+/* ---------- movimento ---------- */
+function update(dt){
+  const k=st.keys;
+  let f=(k.w||k.ArrowUp?1:0)-(k.s||k.ArrowDown?1:0)+st.jy;
+  let s=(k.d?1:0)-(k.a?1:0)+st.jx;
+  const yawKey=(k.ArrowRight||k.e?1:0)-(k.ArrowLeft||k.q?1:0);
+  if(yawKey) st.yaw+=yawKey*dt*1.6;
+  f=clamp(f,-1,1); s=clamp(s,-1,1);
+  const sp=9*dt, sy=Math.sin(st.yaw), cy=Math.cos(st.yaw);
+  let dx=(f*sy+s*cy)*sp, dz=(f*cy-s*sy)*sp;
+  let nx=st.x+dx, nz=st.z+dz;
+  // a pirâmide não deixa passar
+  const m=HB+6;
+  if(Math.abs(nx)<m&&Math.abs(nz)<m){ if(m-Math.abs(nx)<m-Math.abs(nz)) nx=Math.sign(nx||1)*m; else nz=Math.sign(nz||1)*m; }
+  st.x=clamp(nx,-700,700); st.z=clamp(nz,-700,700);
+}
+
+/* ---------- toque e mouse ---------- */
+const joy={on:false,id:null,cx:0,cy:0}, look={id:null,x:0,y:0};
+cv.addEventListener('pointerdown',e=>{
+  cv.setPointerCapture(e.pointerId);
+  if(e.clientX<W*0.5){ joy.on=true; joy.id=e.pointerId; joy.cx=e.clientX; joy.cy=e.clientY; st.jx=0; st.jy=0; }
+  else { look.id=e.pointerId; look.x=e.clientX; look.y=e.clientY; }
+});
+cv.addEventListener('pointermove',e=>{
+  if(joy.on&&e.pointerId===joy.id){ const dx=(e.clientX-joy.cx)/56, dy=(e.clientY-joy.cy)/56, l=Math.hypot(dx,dy)||1, m=Math.min(1,l); st.jx=dx/l*m; st.jy=-dy/l*m; }
+  if(look.id===e.pointerId){ st.yaw+=(e.clientX-look.x)*0.006; st.pitch=clamp(st.pitch-(e.clientY-look.y)*0.004,-1.2,1.0); look.x=e.clientX; look.y=e.clientY; }
+});
+function acaba(e){ if(joy.id===e.pointerId){ joy.on=false; joy.id=null; st.jx=0; st.jy=0; } if(look.id===e.pointerId) look.id=null; }
+cv.addEventListener('pointerup',acaba); cv.addEventListener('pointercancel',acaba);
+addEventListener('keydown',e=>{ st.keys[e.key.length===1?e.key.toLowerCase():e.key]=true; if(e.key.startsWith('Arrow')||e.key===' ') e.preventDefault(); });
+addEventListener('keyup',e=>{ st.keys[e.key.length===1?e.key.toLowerCase():e.key]=false; });
+addEventListener('keydown',e=>{ if(e.key==='r'||e.key==='R') st.eye=80; if(e.key==='f'||e.key==='F') st.eye=EYE; });
+
+/* ---------- botões ---------- */
+document.getElementById('r-hora').addEventListener('input',e=>{ st.v=+e.target.value; });
+document.getElementById('b-estaca').addEventListener('click',()=>{ st.stick={x:st.x,z:st.z}; });
+document.getElementById('b-tirar').addEventListener('click',()=>{ st.stick=null; });
+document.getElementById('b-subir').addEventListener('click',()=>{ st.eye=80; });
+document.getElementById('b-descer').addEventListener('click',()=>{ st.eye=EYE; });
+
+/* ---------- laço principal ---------- */
+let last=performance.now();
+function frame(t){
+  const dt=Math.min(0.05,(t-last)/1000); last=t;
+  update(dt); draw(); painel();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// para testes automáticos
+window.__mnt3d={ st, get CAM(){ return CAM; }, hull, shadowOnGround, PA, PT, sunDir, toView, scr };
+})();
+</script>
+</body>
+</html>

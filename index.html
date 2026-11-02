@@ -114,14 +114,13 @@ button{font:inherit;font-variant-numeric:lining-nums;cursor:pointer;color:inheri
 .tela[hidden]{display:none}
 .quadric{background-color:var(--papiro);
   background-image:linear-gradient(var(--grade) 1px,transparent 1px),linear-gradient(90deg,var(--grade) 1px,transparent 1px);background-size:28px 28px}
-.inicio{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px))}
-.ini-texto{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;max-width:100%;flex:none;text-align:center}
-.ini-sobre{font-family:"Cinzel",Georgia,serif;font-size:13px;letter-spacing:.18em;color:var(--verm)}
-.ini-tit{font-family:"Cinzel",Georgia,serif;font-weight:700;font-size:clamp(28px,min(6vw,11vh),56px);line-height:1;letter-spacing:.02em;margin:2px 0 4px;color:var(--tinta);white-space:nowrap;max-width:100%}
-.ini-linha{width:min(200px,60%);height:2px;background:var(--verm);margin:2px 0 0}
-.bt-entrar{flex:none;min-height:48px;padding:0 26px;border:2px solid var(--tinta);border-radius:4px;background:var(--tinta);color:var(--papiro);font-family:"Cinzel",Georgia,serif;font-size:17px;letter-spacing:.06em}
-.ini-arte{flex:1 1 auto;width:100%;min-height:0;display:block}
-.ini-arte .espiral{stroke-dasharray:1200;stroke-dashoffset:1200;animation:desenha 3.2s .3s ease forwards}
+.inicio{padding:0;overflow:hidden}
+.ini-texto{position:absolute;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;min-width:0;text-align:center;padding:0 12px}
+.ini-sobre{font-family:"Cinzel",Georgia,serif;font-size:var(--sobre,13px);letter-spacing:.18em;color:var(--verm);white-space:nowrap}
+.ini-tit{font-family:"Cinzel",Georgia,serif;font-weight:700;font-size:clamp(28px,min(6vw,11vh),56px);line-height:1;letter-spacing:.02em;margin:1px 0 0;color:var(--tinta);white-space:nowrap;max-width:100%}
+.bt-entrar{position:absolute;z-index:1;transform:translate(-50%,-50%);white-space:nowrap;min-height:46px;padding:0 26px;border:2px solid var(--tinta);border-radius:4px;background:var(--tinta);color:var(--papiro);font-family:"Cinzel",Georgia,serif;font-size:17px;letter-spacing:.06em}
+.ini-arte{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ini-arte .espiral{stroke-dasharray:1;stroke-dashoffset:1;animation:desenha 3.2s .3s ease forwards}
 @keyframes desenha{to{stroke-dashoffset:0}}
 .estudos{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
 .est-topo{display:flex;align-items:center;gap:10px;padding:4px 10px 4px 12px;background:var(--tinta);color:var(--papiro);border-bottom:4px solid var(--verm);min-height:52px}
@@ -157,8 +156,6 @@ button{font:inherit;font-variant-numeric:lining-nums;cursor:pointer;color:inheri
 .trancado-box h2{font-family:"Cinzel",Georgia,serif;font-size:18px;margin:6px 0}
 .trancado-box p{margin:0;line-height:1.45}
 @media (orientation: portrait){
-  .inicio{gap:18px;padding:24px}
-  .ini-arte{flex:0 1 auto;height:auto;max-height:55vh}
   .trilho{--lado:min(62vw,260px)}
   .est-marca{display:none}
 }
@@ -243,9 +240,8 @@ button{font:inherit;font-variant-numeric:lining-nums;cursor:pointer;color:inheri
   <div class="ini-texto">
     <div class="ini-sobre">Um jogo de descobertas</div>
     <h1 class="ini-tit">Mathematica</h1>
-    <div class="ini-linha" aria-hidden="true"></div>
   </div>
-  <svg class="ini-arte" id="ini-arte" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Um filósofo grego aponta para uma esfera desenhada a tinta, com a espiral de ouro, entre duas colunas, com o mar ao fundo"></svg>
+  <svg class="ini-arte" id="ini-arte" viewBox="0 0 800 360" preserveAspectRatio="none" role="img" aria-label="Um filósofo grego aponta para uma esfera desenhada a tinta, com a espiral de ouro, entre duas colunas, com o mar ao fundo"></svg>
   <button type="button" class="bt-entrar" id="b-entrar">Entrar nos estudos</button>
 </section>
 
@@ -499,47 +495,77 @@ function espiralOuro(x,y,w,passos){
   return {quad:quad,arco:arco};
 }
 function arteInicio(){
-  const x0=137, y0=72, W=156, fi=(1+Math.sqrt(5))/2, e=espiralOuro(x0,y0,W,8);
-  let colunas='';
-  [[14,44],[356,386]].forEach(c=>{
-    const [a,b]=c; colunas+='<rect x="'+(a-5)+'" y="14" width="'+(b-a+10)+'" height="9" fill="var(--perg)" stroke="var(--sepia)" stroke-width="1.4"/>'+
-      '<rect x="'+(a-2)+'" y="23" width="'+(b-a+4)+'" height="5" fill="var(--perg)" stroke="var(--sepia)" stroke-width="1.2"/>'+
-      '<rect x="'+a+'" y="28" width="'+(b-a)+'" height="226" fill="var(--perg)" stroke="var(--sepia)" stroke-width="1.4"/>';
-    for(let k=1;k<5;k++){ const xx=a+(b-a)*k/5; colunas+='<line x1="'+xx+'" y1="32" x2="'+xx+'" y2="250" stroke="var(--sepia)" stroke-width=".8" opacity=".55"/>'; }
-    colunas+='<rect x="'+(a-4)+'" y="254" width="'+(b-a+8)+'" height="6" fill="var(--perg)" stroke="var(--sepia)" stroke-width="1.4"/>';
+  const svg=$('#ini-arte'), w=svg.clientWidth, h=svg.clientHeight;
+  if(!w||!h) return;
+  svg.setAttribute('viewBox','0 0 '+w+' '+h);
+  const k=Math.min(h/360,w/420,1.5), f=n=>n.toFixed(1);
+  const R=(x,y,ww,hh,ex)=>'<rect x="'+f(x)+'" y="'+f(y)+'" width="'+f(ww)+'" height="'+f(hh)+'" '+(ex||'fill="var(--perg)" stroke="var(--sepia)" stroke-width="1.4"')+'/>';
+  // medidas principais
+  const cw=Math.max(24,Math.min(42,w*.045)), mx=Math.max(14,w*.02);
+  const cL=mx, cR=w-mx-cw;                       // colunas nas pontas
+  const vigaY=8*k, vigaH=Math.max(58,74*k);       // friso onde fica o título
+  const capH=12*k, fusteY=vigaY+vigaH+capH;
+  const baseH=Math.max(70,74*k), pisoY=h-baseH;   // base onde fica o botão
+  const dentro0=cL+cw, dentro1=cR, meio=w/2;
+  const ceuH=pisoY-fusteY;
+  const horiz=pisoY-ceuH*.26;
+  const r=Math.min(ceuH*.42,(dentro1-dentro0)*.2), cy=fusteY+ceuH*.46;
+  let a='<defs><linearGradient id="g-mar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--mar)" stop-opacity="0"/><stop offset="1" stop-color="var(--mar)" stop-opacity=".4"/></linearGradient></defs>';
+  // mar, ilhas e barco
+  a+=R(dentro0,horiz-ceuH*.55,dentro1-dentro0,ceuH*.55,'fill="url(#g-mar)"');
+  a+='<path d="M'+f(meio+r*.6)+' '+f(horiz)+' Q'+f(meio+r*1.6)+' '+f(horiz-22*k)+' '+f(meio+r*2.6)+' '+f(horiz-9*k)+' Q'+f(dentro1-10)+' '+f(horiz-6*k)+' '+f(dentro1)+' '+f(horiz)+' Z" fill="var(--mar)" opacity=".45"/>';
+  a+='<path d="M'+f(dentro0)+' '+f(horiz)+' L'+f(dentro0)+' '+f(horiz-8*k)+' Q'+f(dentro0+60*k)+' '+f(horiz-16*k)+' '+f(dentro0+130*k)+' '+f(horiz)+' Z" fill="var(--mar)" opacity=".35"/>';
+  a+='<line x1="'+f(dentro0)+'" y1="'+f(horiz)+'" x2="'+f(dentro1)+'" y2="'+f(horiz)+'" stroke="var(--sepia)" stroke-width="1" opacity=".6"/>';
+  const bx=meio+r+(dentro1-meio-r)*.42;
+  a+='<g transform="translate('+f(bx)+' '+f(horiz-14*k)+') scale('+f(k)+')" fill="var(--sepia)"><path d="M-12 12 H12 L8 16 H-8 Z"/><line x1="0" y1="12" x2="0" y2="-12" stroke="var(--sepia)" stroke-width="1.2"/><path d="M1 -11 L11 9 L1 9 Z" fill="var(--perg)" stroke="var(--sepia)" stroke-width="1"/></g>';
+  // ciprestes (como na ilustração do mar)
+  const cipreste=(x,alt)=>'<path d="M'+f(x)+' '+f(pisoY)+' C'+f(x-11*k)+' '+f(pisoY-alt*.45)+' '+f(x-7*k)+' '+f(pisoY-alt*.85)+' '+f(x)+' '+f(pisoY-alt)+' C'+f(x+7*k)+' '+f(pisoY-alt*.85)+' '+f(x+11*k)+' '+f(pisoY-alt*.45)+' '+f(x)+' '+f(pisoY)+' Z" fill="var(--sombra)" opacity=".55" stroke="var(--sepia)" stroke-width="1"/>';
+  if(w>560){ a+=cipreste(dentro0+(meio-r-dentro0)*.22,ceuH*.78)+cipreste(dentro0+(meio-r-dentro0)*.22+16*k,ceuH*.58); a+=cipreste(dentro1-(dentro1-meio-r)*.16,ceuH*.66); }
+  // triângulo de 10 pontos
+  const tx=dentro0+(meio-r-dentro0)*.5, ty=fusteY+ceuH*.08;
+  for(let i2=0;i2<4;i2++) for(let c=0;c<=i2;c++) a+='<circle cx="'+f(tx+(c-i2/2)*9*k)+'" cy="'+f(ty+i2*8*k)+'" r="'+f(1.8*k)+'" fill="var(--sepia)"/>';
+  // esfera com a espiral de ouro
+  const fi=(1+Math.sqrt(5))/2, gw=2*r, e=espiralOuro(meio-r,cy-gw/fi/2,gw,8);
+  a+='<g stroke="var(--sepia)" fill="none" stroke-width="1.6">'+
+    '<circle cx="'+f(meio)+'" cy="'+f(cy)+'" r="'+f(r)+'" fill="var(--perg)" fill-opacity=".7"/>'+
+    '<ellipse cx="'+f(meio)+'" cy="'+f(cy)+'" rx="'+f(r)+'" ry="'+f(r*.26)+'" opacity=".45" stroke-width="1"/>'+
+    '<ellipse cx="'+f(meio)+'" cy="'+f(cy)+'" rx="'+f(r*.44)+'" ry="'+f(r)+'" opacity=".45" stroke-width="1"/>'+
+    '<ellipse cx="'+f(meio)+'" cy="'+f(cy)+'" rx="'+f(r*.8)+'" ry="'+f(r)+'" opacity=".3" stroke-width="1"/>'+
+    R(meio-r,cy-gw/fi/2,gw,gw/fi,'stroke-width=".9" opacity=".7"')+
+    '<path d="'+e.quad+'" stroke-width=".9" opacity=".7"/>'+
+    '<path class="espiral" pathLength="1" d="'+e.arco+'" stroke="var(--verm)" stroke-width="2"/></g>';
+  // filósofo (silhueta de vaso grego) e compasso
+  const s2=Math.min(ceuH*.6/107,1.6), fx=meio-r-40*s2;
+  a+='<g transform="translate('+f(fx-98*s2)+' '+f(pisoY-258*s2)+') scale('+f(s2)+')" fill="var(--tinta)">'+
+    '<circle cx="98" cy="160" r="8.5"/><path d="M92 164 Q95 178 104 166 Z"/>'+
+    '<path d="M90 170 Q82 200 80 232 L78 258 L114 258 Q113 232 111 206 Q116 186 108 170 Z"/>'+
+    '<path d="M104 174 L132 146" stroke="var(--tinta)" stroke-width="5" stroke-linecap="round"/>'+
+    '<path d="M84 186 Q98 196 110 190 L112 198 Q96 204 82 194 Z" fill="var(--papiro3)" opacity=".8"/></g>';
+  const kx=meio+r+(dentro1-meio-r)*.62;
+  a+='<g transform="translate('+f(kx-318*s2)+' '+f(pisoY-258*s2)+') scale('+f(s2)+')" stroke="var(--sepia)" stroke-width="1.6" stroke-linecap="round" fill="none"><line x1="318" y1="214" x2="304" y2="258"/><line x1="318" y1="214" x2="334" y2="258"/><circle cx="318" cy="212" r="3" fill="var(--perg)"/><path d="M308 246 Q320 240 330 246"/></g>';
+  // colunas
+  [cL,cR].forEach(x=>{
+    a+=R(x-4*k,fusteY-capH,cw+8*k,capH*.6)+R(x-1.5*k,fusteY-capH*.4,cw+3*k,capH*.4,'fill="var(--perg)" stroke="var(--sepia)" stroke-width="1.2"')+R(x,fusteY,cw,pisoY-fusteY);
+    for(let q=1;q<5;q++){ const xx=x+cw*q/5; a+='<line x1="'+f(xx)+'" y1="'+f(fusteY+4)+'" x2="'+f(xx)+'" y2="'+f(pisoY-4)+'" stroke="var(--sepia)" stroke-width=".8" opacity=".55"/>'; }
   });
-  let meandro='M48 266';
-  for(let x=48;x<350;x+=16) meandro+=' H'+(x+12)+' V274 H'+(x+4)+' V270 H'+(x+8)+' M'+(x+12)+' 266 H'+(x+16);
-  let tetra='';
-  for(let r=0;r<4;r++) for(let c=0;c<=r;c++) tetra+='<circle cx="'+(78+(c-r/2)*9)+'" cy="'+(30+r*8)+'" r="1.8" fill="var(--sepia)"/>';
-  $('#ini-arte').innerHTML=
-    '<defs><linearGradient id="g-mar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--mar)" stop-opacity="0"/><stop offset="1" stop-color="var(--mar)" stop-opacity=".38"/></linearGradient></defs>'+
-    '<rect x="44" y="120" width="312" height="86" fill="url(#g-mar)"/>'+
-    '<path d="M250 206 Q285 186 330 195 Q360 199 356 206 Z" fill="var(--mar)" opacity=".45"/>'+
-    '<path d="M60 206 Q78 196 104 202 L104 206 Z" fill="var(--mar)" opacity=".35"/>'+
-    '<line x1="44" y1="206" x2="356" y2="206" stroke="var(--sepia)" stroke-width="1" opacity=".6"/>'+
-    '<g transform="translate(300 186)" fill="var(--sepia)"><path d="M-12 12 H12 L8 16 H-8 Z"/><line x1="0" y1="12" x2="0" y2="-12" stroke="var(--sepia)" stroke-width="1.2"/><path d="M1 -11 L11 9 L1 9 Z" fill="var(--perg)" stroke="var(--sepia)" stroke-width="1"/></g>'+
-    tetra+
-    '<g stroke="var(--sepia)" fill="none" stroke-width="1.6">'+
-      '<circle cx="215" cy="120" r="78" fill="color-mix(in srgb,var(--perg) 70%,transparent)"/>'+
-      '<ellipse cx="215" cy="120" rx="78" ry="20" opacity=".45" stroke-width="1"/>'+
-      '<ellipse cx="215" cy="120" rx="34" ry="78" opacity=".45" stroke-width="1"/>'+
-      '<ellipse cx="215" cy="120" rx="62" ry="78" opacity=".3" stroke-width="1"/>'+
-      '<rect x="'+x0+'" y="'+y0+'" width="'+W+'" height="'+(W/fi).toFixed(2)+'" stroke-width=".9" opacity=".7"/>'+
-      '<path d="'+e.quad+'" stroke-width=".9" opacity=".7"/>'+
-      '<path class="espiral" d="'+e.arco+'" stroke="var(--verm)" stroke-width="2"/>'+
-    '</g>'+
-    colunas+
-    '<line x1="44" y1="260" x2="356" y2="260" stroke="var(--sepia)" stroke-width="1.6"/>'+
-    '<path d="'+meandro+'" stroke="var(--sepia)" fill="none" stroke-width="1.2" opacity=".7"/>'+
-    '<g fill="var(--tinta)">'+
-      '<circle cx="98" cy="160" r="8.5"/>'+
-      '<path d="M92 164 Q95 178 104 166 Z"/>'+
-      '<path d="M90 170 Q82 200 80 232 L78 258 L114 258 Q113 232 111 206 Q116 186 108 170 Z"/>'+
-      '<path d="M104 174 L132 146" stroke="var(--tinta)" stroke-width="5" stroke-linecap="round"/>'+
-      '<path d="M84 186 Q98 196 110 190 L112 198 Q96 204 82 194 Z" fill="var(--papiro3)" opacity=".8"/>'+
-    '</g>'+
-    '<g stroke="var(--sepia)" stroke-width="1.6" stroke-linecap="round" fill="none"><line x1="318" y1="214" x2="304" y2="258"/><line x1="318" y1="214" x2="334" y2="258"/><circle cx="318" cy="212" r="3" fill="var(--perg)"/><path d="M308 246 Q320 240 330 246"/></g>';
+  // friso de cima (o título fica escrito nele) e dentículos
+  const vx=cL-8*k, vw=cR+cw+8*k-vx;
+  a+=R(vx-4*k,vigaY-5*k,vw+8*k,5*k)+R(vx,vigaY,vw,vigaH);
+  a+='<line x1="'+f(vx+6)+'" y1="'+f(vigaY+4*k)+'" x2="'+f(vx+vw-6)+'" y2="'+f(vigaY+4*k)+'" stroke="var(--sepia)" stroke-width=".8" opacity=".6"/>';
+  a+='<line x1="'+f(vx+6)+'" y1="'+f(vigaY+vigaH-4*k)+'" x2="'+f(vx+vw-6)+'" y2="'+f(vigaY+vigaH-4*k)+'" stroke="var(--sepia)" stroke-width=".8" opacity=".6"/>';
+  let dent=''; for(let x=vx+4;x<vx+vw-8;x+=12*k) dent+='M'+f(x)+' '+f(vigaY+vigaH)+' h'+f(7*k)+' v'+f(5*k)+' h'+f(-7*k)+' Z ';
+  a+='<path d="'+dent+'" fill="var(--sepia)" opacity=".55"/>';
+  // base (o botão fica nela) com o meandro grego
+  a+=R(cL-10*k,pisoY,cR+cw+20*k-cL,h-pisoY+2)+'<line x1="0" y1="'+f(pisoY)+'" x2="'+w+'" y2="'+f(pisoY)+'" stroke="var(--sepia)" stroke-width="1.6"/>';
+  const my=pisoY+5*k, mh=8*k, step=16*k; let meandro='';
+  for(let x=cL;x<cR+cw-step;x+=step) meandro+='M'+f(x)+' '+f(my)+' H'+f(x+12*k)+' V'+f(my+mh)+' H'+f(x+4*k)+' V'+f(my+mh/2)+' H'+f(x+8*k)+' M'+f(x+12*k)+' '+f(my)+' H'+f(x+step)+' ';
+  a+='<path d="'+meandro+'" stroke="var(--sepia)" fill="none" stroke-width="1.2" opacity=".7"/>';
+  svg.innerHTML=a;
+  // posiciona título e botão em cima do desenho
+  const t=$('.ini-texto'); t.style.left=f(vx)+'px'; t.style.width=f(vw)+'px'; t.style.top=f(vigaY+4*k)+'px'; t.style.height=f(vigaH-8*k)+'px';
+  t.style.setProperty('--sobre',f(Math.max(11,12*k))+'px');
+  $('.ini-tit').style.maxHeight=''; t.dataset.max=f((vigaH-8*k)*.62);
+  const b=$('#b-entrar'); b.style.left=f(meio)+'px'; b.style.top=f(pisoY+mh+5*k+(h-pisoY-mh-5*k)/2)+'px';
 }
 function arteCap(n){
   const S2=(d,ex)=>'<path d="'+d+'" '+tinta+(ex||'')+'/>';
@@ -626,7 +652,7 @@ $('#aba-criar').addEventListener('click',()=>abaAtiva('criar'));
 
 function mostraTela(t){
   $('#inicio').hidden=t!=='inicio';
-  if(t==='inicio') requestAnimationFrame(ajustaTitulo);
+  if(t==='inicio') requestAnimationFrame(()=>{ arteInicio(); ajustaTitulo(); });
   $('#estudos').hidden=t!=='estudos';
   if(t==='estudos') montaTrilho();
   if(t==='cap1') abreCapitulo1();
@@ -645,12 +671,13 @@ try{ history.replaceState({tela:'inicio'},''); }catch(e){}
 function ajustaTitulo(){
   const t=$('.ini-tit'); if(!t||$('#inicio').hidden) return;
   t.style.fontSize=''; let fs=parseFloat(getComputedStyle(t).fontSize);
+  const lim=parseFloat(t.parentElement.dataset.max||'0'); if(lim&&fs>lim){ fs=lim; t.style.fontSize=fs+'px'; }
   while(t.scrollWidth>t.clientWidth+1&&fs>20){ fs-=1; t.style.fontSize=fs+'px'; }
 }
-window.addEventListener('resize',ajustaTitulo);
+window.addEventListener('resize',()=>{ arteInicio(); ajustaTitulo(); });
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(ajustaTitulo);
-arteInicio();
 mostraTela('inicio');
+arteInicio();
 ajustaTitulo();
 if('serviceWorker' in navigator && location.protocol==='https:' && !/claude/.test(location.hostname)){
   window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });

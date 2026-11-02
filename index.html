@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#2A1C10">
 <title>Matemática no Tempo: Tales e a sombra da pirâmide</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -15,25 +15,25 @@
 :root{
   --papiro:#E9D8AE; --papiro2:#E2CC98; --papiro3:#D4B271; --tinta:#2A1C10; --tinta2:#4A3420;
   --verm:#9E3B26; --sombra:#6B4A26; --fibra:rgba(170,140,86,.22); --perg:#EFE3C4; --sepia:#3E2A16; --sang:#9C4A2F;
-  --mar:#5E7F99; --grade:rgba(80,120,160,.20);
+  --mar:#5E7F99; --grade:rgba(80,120,160,.20); --sombra-card:rgba(42,28,16,.22); --apagado:#A08C6C;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --papiro:#2B2116; --papiro2:#3A2D1E; --papiro3:#5C4528; --tinta:#EBDDBE; --tinta2:#CDBB98;
     --verm:#E2876C; --sombra:#0F0A06; --fibra:rgba(0,0,0,.28); --perg:#33281C; --sepia:#EBDDBE; --sang:#E2876C;
-    --mar:#7E9DB5; --grade:rgba(150,180,210,.12);
+    --mar:#7E9DB5; --grade:rgba(150,180,210,.12); --sombra-card:rgba(0,0,0,.45); --apagado:#7D6E58;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --papiro:#2B2116; --papiro2:#3A2D1E; --papiro3:#5C4528; --tinta:#EBDDBE; --tinta2:#CDBB98;
   --verm:#E2876C; --sombra:#0F0A06; --fibra:rgba(0,0,0,.28); --perg:#33281C; --sepia:#EBDDBE; --sang:#E2876C;
-  --mar:#7E9DB5; --grade:rgba(150,180,210,.12);
+  --mar:#7E9DB5; --grade:rgba(150,180,210,.12); --sombra-card:rgba(0,0,0,.45); --apagado:#7D6E58;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:var(--papiro)}
+html,body{margin:0;height:100%;background:var(--papiro);touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{font-family:"EB Garamond",Georgia,"Times New Roman",serif;font-variant-numeric:lining-nums;color:var(--tinta);overflow:hidden;-webkit-tap-highlight-color:transparent}
 button{font:inherit;font-variant-numeric:lining-nums;cursor:pointer;color:inherit}
 :focus-visible{outline:2px solid var(--verm);outline-offset:2px}
@@ -47,7 +47,7 @@ button{font:inherit;font-variant-numeric:lining-nums;cursor:pointer;color:inheri
 .onde .meta{font-style:italic;font-size:13px;opacity:.8;white-space:nowrap}
 .bt-topo{min-height:44px;padding:0 14px;border:1.5px solid var(--papiro);border-radius:4px;background:transparent;font-family:"Cinzel",Georgia,serif;font-size:13px;color:var(--papiro)}
 .bt-topo.claro{background:var(--papiro);color:var(--tinta)}
-.fala{flex:1;min-width:0;max-height:100%;overflow-y:auto;font-style:italic;font-size:14px;line-height:1.22;padding:2px 10px;border-left:1.5px solid color-mix(in srgb,var(--papiro) 35%,transparent)}
+.fala{flex:1;min-width:0;max-height:100%;overflow-y:auto;font-style:italic;font-size:14px;line-height:1.18;padding:2px 10px;border-left:1.5px solid color-mix(in srgb,var(--papiro) 35%,transparent)}
 .fala b{font-style:normal;font-family:"Cinzel",Georgia,serif;font-weight:700;color:var(--papiro3);margin-right:6px;font-size:13px;letter-spacing:.04em}
 .fala.nova{animation:acende .7s ease}
 @keyframes acende{from{background:color-mix(in srgb,var(--papiro3) 40%,transparent)}to{background:transparent}}
@@ -114,10 +114,10 @@ button{font:inherit;font-variant-numeric:lining-nums;cursor:pointer;color:inheri
 .tela[hidden]{display:none}
 .quadric{background-color:var(--papiro);
   background-image:linear-gradient(var(--grade) 1px,transparent 1px),linear-gradient(90deg,var(--grade) 1px,transparent 1px);background-size:28px 28px}
-.inicio{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);align-items:center;gap:8px;padding-left:max(28px,env(safe-area-inset-left,0px))}
+.inicio{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:center;gap:8px;padding-left:max(28px,env(safe-area-inset-left,0px))}
 .ini-texto{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
 .ini-sobre{font-family:"Cinzel",Georgia,serif;font-size:13px;letter-spacing:.18em;color:var(--verm)}
-.ini-tit{font-family:"Cinzel",Georgia,serif;font-weight:700;font-size:clamp(34px,6.4vw,60px);line-height:1;letter-spacing:.04em;margin:2px 0 4px;color:var(--tinta)}
+.ini-tit{font-family:"Cinzel",Georgia,serif;font-weight:700;font-size:clamp(28px,5.8vw,56px);line-height:1;letter-spacing:.02em;margin:2px 0 4px;color:var(--tinta);white-space:nowrap;max-width:100%}
 .ini-linha{width:min(260px,90%);height:2px;background:var(--verm);margin:2px 0 8px}
 .ini-sub{font-style:italic;font-size:18px;line-height:1.35;margin:0 0 10px;max-width:22em;color:var(--tinta2)}
 .bt-entrar{min-height:52px;padding:0 26px;border:2px solid var(--tinta);border-radius:4px;background:var(--tinta);color:var(--papiro);font-family:"Cinzel",Georgia,serif;font-size:17px;letter-spacing:.06em}
@@ -135,15 +135,15 @@ button{font:inherit;font-variant-numeric:lining-nums;cursor:pointer;color:inheri
 .painel{min-height:0;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:10px 0 8px}
 .painel[hidden]{display:none}
 .trilho-caixa{position:relative;flex:none;min-width:0}
-.trilho{--lado:clamp(110px,calc(100vh - 222px),230px);display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:20px;padding:4px 20px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.trilho{contain:paint;--lado:clamp(110px,calc(100vh - 222px),230px);display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:20px;padding:4px 20px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .trilho::-webkit-scrollbar{display:none}
 .card{flex:none;width:var(--lado);scroll-snap-align:start;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:0;border:0;background:transparent;text-align:left}
-.card-img{position:relative;display:block;width:var(--lado);height:var(--lado);border:1.5px solid var(--tinta);border-radius:6px;background:var(--perg);overflow:hidden;box-shadow:3px 3px 0 color-mix(in srgb,var(--tinta) 22%,transparent)}
+.card-img{position:relative;display:block;width:var(--lado);height:var(--lado);border:1.5px solid var(--tinta);border-radius:6px;background:var(--perg);box-shadow:3px 3px 0 var(--sombra-card)}
 .card-img svg{display:block;width:100%;height:100%}
-.card:not(.trancado):active .card-img{transform:translate(2px,2px);box-shadow:1px 1px 0 color-mix(in srgb,var(--tinta) 22%,transparent)}
-.card.trancado .card-img svg{opacity:.4}
+.card:not(.trancado):active .card-img{box-shadow:1px 1px 0 var(--sombra-card)}
+.card.trancado .card-img{color:var(--apagado)!important}
 .cadeado{position:absolute;right:6px;top:6px;width:26px;height:26px;border-radius:50%;background:var(--tinta);color:var(--papiro);display:flex;align-items:center;justify-content:center}
-.cadeado svg{width:14px!important;height:14px!important;opacity:1!important}
+.cadeado svg{width:14px!important;height:14px!important}
 .card-num{font-family:"Cinzel",Georgia,serif;font-size:11px;letter-spacing:.1em;color:var(--verm);margin-top:4px}
 .card-tit{font-size:16px;line-height:1.15;font-weight:500;width:100%;min-height:2.3em}
 .card-est{font-size:13px;font-style:italic;color:var(--tinta2)}
@@ -393,7 +393,7 @@ $$('[data-medir]').forEach(b=>b.addEventListener('click',()=>{
 const DICAS=[
   'A estaca tem 2 passos. Compare a altura dela com o tamanho da sombra dela.',
   'Tem uma hora do dia em que a sombra da estaca fica do mesmo tamanho da estaca. Mexa na hora e meça a estaca de novo.',
-  'Nessa hora, toda sombra fica do tamanho da coisa. Mas a sombra da pirâmide começa no meio da base, escondida embaixo dela: veja o tracejado.',
+  'Nessa hora, toda sombra fica do tamanho da coisa. Mas a da pirâmide começa no meio da base, escondida embaixo dela: veja o tracejado.',
   'Altura da pirâmide = a sombra que aparece + metade da base (115 passos), tudo medido na mesma hora.'
 ];
 $('#b-dica').addEventListener('click',()=>{ const i=Math.min(est.dica,DICAS.length-1); fala(DICAS[i],'Dica'); est.dica=Math.min(est.dica+1,DICAS.length); desenha(); });
@@ -629,6 +629,7 @@ $('#aba-criar').addEventListener('click',()=>abaAtiva('criar'));
 
 function mostraTela(t){
   $('#inicio').hidden=t!=='inicio';
+  if(t==='inicio') requestAnimationFrame(ajustaTitulo);
   $('#estudos').hidden=t!=='estudos';
   if(t==='estudos') montaTrilho();
   if(t==='cap1') abreCapitulo1();
@@ -643,8 +644,17 @@ $('#b-entrar').addEventListener('click',()=>vaiPara('estudos'));
 $('#b-inicio').addEventListener('click',()=>volta('inicio'));
 $('#b-sair').addEventListener('click',()=>volta('estudos'));
 try{ history.replaceState({tela:'inicio'},''); }catch(e){}
+// diminui o título até caber, depois que a fonte de verdade carrega
+function ajustaTitulo(){
+  const t=$('.ini-tit'); if(!t||$('#inicio').hidden) return;
+  t.style.fontSize=''; let fs=parseFloat(getComputedStyle(t).fontSize);
+  while(t.scrollWidth>t.clientWidth+1&&fs>20){ fs-=1; t.style.fontSize=fs+'px'; }
+}
+window.addEventListener('resize',ajustaTitulo);
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(ajustaTitulo);
 arteInicio();
 mostraTela('inicio');
+ajustaTitulo();
 if('serviceWorker' in navigator && location.protocol==='https:' && !/claude/.test(location.hostname)){
   window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
 }

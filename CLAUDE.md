@@ -78,6 +78,10 @@ Arquivos do app (todos na raiz, sem pastas):
 - O botão voltar do Android volta uma tela (capítulo → estudos → início) em vez de fechar o app.
 - **Nome:** "Mathematica" é marca registrada da Wolfram Research (programa de matemática). Serve na tela por enquanto, mas decidir outro nome antes de publicar na Play Store. O nome do app instalado continua "Matemática no Tempo".
 - Para um capítulo novo: mudar `aberto:true` na lista `CAPS` do `index.html` e ligar o clique do cartão à abertura dele.
+- **Zoom desligado:** o app não deixa aumentar com dois dedos nem com toque duplo (`user-scalable=no` e `touch-action: manipulation`). Se o celular estiver com "forçar zoom" ligado na acessibilidade do Chrome, o zoom continua funcionando, e isso é de propósito.
+- **Lições de teste (02/11/2026):**
+  - Testar sempre com as fontes reais do Google carregadas. Com fonte de reserva, o título "Mathematica" parecia caber, mas na Cinzel real ele invadia a coluna do desenho. Hoje o título diminui sozinho até caber (`ajustaTitulo`).
+  - No Chrome do Android, os cartões do carrossel apareciam com pedaços faltando. A causa provável é recorte com canto arredondado, `color-mix` e transparência dentro de uma área que rola. Foi trocado por cores fixas (`--sombra-card`, `--apagado`) e `contain: paint`. Evitar esses efeitos em listas que rolam.
 
 ### Como o capítulo 1 funciona
 

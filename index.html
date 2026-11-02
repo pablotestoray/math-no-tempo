@@ -10,29 +10,32 @@
 <link rel="apple-touch-icon" href="icone-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=IM+Fell+English:ital@0;1&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --papiro:#E9D8AE; --papiro2:#E2CC98; --papiro3:#D4B271; --tinta:#2A1C10; --tinta2:#4A3420;
   --verm:#9E3B26; --sombra:#6B4A26; --fibra:rgba(170,140,86,.22); --perg:#EFE3C4; --sepia:#3E2A16; --sang:#9C4A2F;
+  --mar:#5E7F99; --grade:rgba(80,120,160,.20);
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --papiro:#2B2116; --papiro2:#3A2D1E; --papiro3:#5C4528; --tinta:#EBDDBE; --tinta2:#CDBB98;
     --verm:#E2876C; --sombra:#0F0A06; --fibra:rgba(0,0,0,.28); --perg:#33281C; --sepia:#EBDDBE; --sang:#E2876C;
+    --mar:#7E9DB5; --grade:rgba(150,180,210,.12);
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --papiro:#2B2116; --papiro2:#3A2D1E; --papiro3:#5C4528; --tinta:#EBDDBE; --tinta2:#CDBB98;
   --verm:#E2876C; --sombra:#0F0A06; --fibra:rgba(0,0,0,.28); --perg:#33281C; --sepia:#EBDDBE; --sang:#E2876C;
+  --mar:#7E9DB5; --grade:rgba(150,180,210,.12);
   color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--papiro)}
-body{font-family:"IM Fell English",Georgia,"Times New Roman",serif;color:var(--tinta);overflow:hidden;-webkit-tap-highlight-color:transparent}
-button{font:inherit;cursor:pointer;color:inherit}
+body{font-family:"EB Garamond",Georgia,"Times New Roman",serif;font-variant-numeric:lining-nums;color:var(--tinta);overflow:hidden;-webkit-tap-highlight-color:transparent}
+button{font:inherit;font-variant-numeric:lining-nums;cursor:pointer;color:inherit}
 :focus-visible{outline:2px solid var(--verm);outline-offset:2px}
 .fibras{background-color:var(--papiro);
   background-image:repeating-linear-gradient(90deg,var(--fibra) 0 1px,transparent 1px 18px),repeating-linear-gradient(0deg,var(--fibra) 0 1px,transparent 1px 22px)}
@@ -104,7 +107,66 @@ button{font:inherit;cursor:pointer;color:inherit}
 .sabe{border-top:1px solid var(--tinta2);padding-top:10px;margin-top:6px;font-size:15px}
 .sabe li{margin-bottom:6px;line-height:1.45}
 @media (prefers-reduced-motion: reduce){ .abertura .linha{transition:none} }
-@media (orientation: landscape) and (max-width: 700px){ .fala{font-size:13px} .onde .meta{display:none} }
+/* ---------- tela inicial e estudos ---------- */
+.bt-volta{width:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.bt-volta svg{width:22px;height:22px}
+.tela{position:fixed;inset:0;z-index:30;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+.tela[hidden]{display:none}
+.quadric{background-color:var(--papiro);
+  background-image:linear-gradient(var(--grade) 1px,transparent 1px),linear-gradient(90deg,var(--grade) 1px,transparent 1px);background-size:28px 28px}
+.inicio{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);align-items:center;gap:8px;padding-left:max(28px,env(safe-area-inset-left,0px))}
+.ini-texto{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+.ini-sobre{font-family:"Cinzel",Georgia,serif;font-size:13px;letter-spacing:.18em;color:var(--verm)}
+.ini-tit{font-family:"Cinzel",Georgia,serif;font-weight:700;font-size:clamp(34px,6.4vw,60px);line-height:1;letter-spacing:.04em;margin:2px 0 4px;color:var(--tinta)}
+.ini-linha{width:min(260px,90%);height:2px;background:var(--verm);margin:2px 0 8px}
+.ini-sub{font-style:italic;font-size:18px;line-height:1.35;margin:0 0 10px;max-width:22em;color:var(--tinta2)}
+.bt-entrar{min-height:52px;padding:0 26px;border:2px solid var(--tinta);border-radius:4px;background:var(--tinta);color:var(--papiro);font-family:"Cinzel",Georgia,serif;font-size:17px;letter-spacing:.06em}
+.ini-arte{width:100%;height:100%;max-height:100%;display:block;min-height:0}
+.ini-arte .espiral{stroke-dasharray:1200;stroke-dashoffset:1200;animation:desenha 3.2s .3s ease forwards}
+@keyframes desenha{to{stroke-dashoffset:0}}
+.estudos{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+.est-topo{display:flex;align-items:center;gap:10px;padding:4px 10px 4px 12px;background:var(--tinta);color:var(--papiro);border-bottom:4px solid var(--verm);min-height:52px}
+.est-marca{font-family:"Cinzel",Georgia,serif;font-weight:700;font-size:17px;letter-spacing:.06em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.abas{display:flex;gap:6px;flex:none}
+.aba{min-height:44px;padding:0 16px;border:1.5px solid var(--papiro);border-radius:4px;background:transparent;color:var(--papiro);font-family:"Cinzel",Georgia,serif;font-size:14px;letter-spacing:.04em;display:inline-flex;align-items:center;gap:6px}
+.aba[aria-selected="true"]{background:var(--papiro);color:var(--tinta)}
+.aba.trancada{opacity:.75}
+.aba svg{width:15px;height:15px}
+.painel{min-height:0;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:10px 0 8px}
+.painel[hidden]{display:none}
+.trilho-caixa{position:relative;flex:none;min-width:0}
+.trilho{--lado:clamp(110px,calc(100vh - 222px),230px);display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:20px;padding:4px 20px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.trilho::-webkit-scrollbar{display:none}
+.card{flex:none;width:var(--lado);scroll-snap-align:start;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:0;border:0;background:transparent;text-align:left}
+.card-img{position:relative;display:block;width:var(--lado);height:var(--lado);border:1.5px solid var(--tinta);border-radius:6px;background:var(--perg);overflow:hidden;box-shadow:3px 3px 0 color-mix(in srgb,var(--tinta) 22%,transparent)}
+.card-img svg{display:block;width:100%;height:100%}
+.card:not(.trancado):active .card-img{transform:translate(2px,2px);box-shadow:1px 1px 0 color-mix(in srgb,var(--tinta) 22%,transparent)}
+.card.trancado .card-img svg{opacity:.4}
+.cadeado{position:absolute;right:6px;top:6px;width:26px;height:26px;border-radius:50%;background:var(--tinta);color:var(--papiro);display:flex;align-items:center;justify-content:center}
+.cadeado svg{width:14px!important;height:14px!important;opacity:1!important}
+.card-num{font-family:"Cinzel",Georgia,serif;font-size:11px;letter-spacing:.1em;color:var(--verm);margin-top:4px}
+.card-tit{font-size:16px;line-height:1.15;font-weight:500;width:100%;min-height:2.3em}
+.card-est{font-size:13px;font-style:italic;color:var(--tinta2)}
+.card-est.feito,.card-est.aviso{color:var(--verm);font-style:normal}
+.trilho-nav{display:flex;align-items:center;justify-content:center;gap:14px}
+.seta{width:44px;height:36px;border:1.5px solid var(--tinta);border-radius:4px;background:transparent;display:inline-flex;align-items:center;justify-content:center}
+.seta svg{width:20px;height:20px}
+.seta:disabled{opacity:.3;cursor:default}
+.contador{font-family:"Cinzel",Georgia,serif;font-size:13px;color:var(--tinta2);min-width:4em;text-align:center}
+.trancado-box{align-self:center;max-width:440px;margin:0 16px;padding:18px 20px;border:1.5px solid var(--tinta);border-radius:6px;background:var(--perg);text-align:center}
+.trancado-box svg{width:34px;height:34px;color:var(--verm)}
+.trancado-box h2{font-family:"Cinzel",Georgia,serif;font-size:18px;margin:6px 0}
+.trancado-box p{margin:0;line-height:1.45}
+@media (orientation: portrait){
+  .inicio{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;align-content:center;gap:20px;padding:24px 24px 32px}
+  .ini-arte{height:auto;max-height:52vh}
+  .ini-arte{order:-1}
+  .trilho{--lado:min(62vw,260px)}
+  .est-marca{display:none}
+}
+@media (prefers-reduced-motion: reduce){ .ini-arte .espiral{animation:none;stroke-dashoffset:0} }
+
+@media (orientation: landscape) and (max-width: 760px){ .fala{font-size:13px} .onde .meta{display:none} }
 @media (orientation: portrait){
   .topo{flex-wrap:wrap;height:auto;row-gap:2px;padding-top:6px;padding-bottom:6px}
   .onde{flex:1}
@@ -121,6 +183,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 <body>
 <div id="app" class="fibras">
   <header class="topo">
+    <button type="button" class="bt-topo bt-volta" id="b-sair" aria-label="Voltar aos estudos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 L8 12 L15 19"/></svg></button>
     <div class="onde"><span class="lugar">600 a.C., Gizé</span><span class="meta">Meta: a altura da pirâmide</span></div>
     <div class="fala" id="fala" role="status" aria-live="polite"><b>Tales</b>Descubra a altura da pirâmide sem subir nela.</div>
     <button type="button" class="bt-topo" id="b-dica">Dica</button>
@@ -177,6 +240,43 @@ button{font:inherit;cursor:pointer;color:inherit}
 <div class="cobre modal" id="m-caderno" hidden role="dialog" aria-modal="true" aria-label="Caderno de descobertas">
   <div class="caderno" id="caderno-corpo"></div>
 </div>
+
+<section class="tela inicio quadric" id="inicio" aria-label="Início">
+  <div class="ini-texto">
+    <div class="ini-sobre">Um jogo de descobertas</div>
+    <h1 class="ini-tit">Mathematica</h1>
+    <div class="ini-linha" aria-hidden="true"></div>
+    <p class="ini-sub">De Tales a Newton: refaça as descobertas da matemática junto com quem as fez.</p>
+    <button type="button" class="bt-entrar" id="b-entrar">Entrar nos estudos</button>
+  </div>
+  <svg class="ini-arte" id="ini-arte" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Um filósofo grego aponta para uma esfera desenhada a tinta, com a espiral de ouro, entre duas colunas, com o mar ao fundo"></svg>
+</section>
+
+<section class="tela estudos fibras" id="estudos" hidden aria-label="Estudos">
+  <header class="est-topo">
+    <button type="button" class="bt-topo bt-volta" id="b-inicio" aria-label="Voltar ao início"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 L8 12 L15 19"/></svg></button>
+    <span class="est-marca">Mathematica</span>
+    <div class="abas" role="tablist" aria-label="Seções">
+      <button type="button" class="aba" role="tab" id="aba-est" aria-selected="true" aria-controls="painel-est">Estudos</button>
+      <button type="button" class="aba trancada" role="tab" id="aba-criar" aria-selected="false" aria-controls="painel-criar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11 V8 a4 4 0 0 1 8 0 V11"/></svg>Criar</button>
+    </div>
+  </header>
+  <div class="painel" id="painel-est" role="tabpanel" aria-labelledby="aba-est">
+    <div class="trilho-caixa"><div class="trilho" id="trilho"></div></div>
+    <div class="trilho-nav">
+      <button type="button" class="seta" id="seta-esq" aria-label="Capítulo anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 L8 12 L15 19"/></svg></button>
+      <span class="contador" id="contador" aria-live="polite">1 de 11</span>
+      <button type="button" class="seta" id="seta-dir" aria-label="Próximo capítulo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5 L16 12 L9 19"/></svg></button>
+    </div>
+  </div>
+  <div class="painel" id="painel-criar" role="tabpanel" aria-labelledby="aba-criar" hidden>
+    <div class="trancado-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11 V8 a4 4 0 0 1 8 0 V11"/></svg>
+      <h2>A oficina ainda está fechada</h2>
+      <p>Aqui você vai construir com as ferramentas que descobrir nos estudos: o medidor de sombras, o esquadro, a roda com π… Ela abre quando você terminar mais capítulos.</p>
+    </div>
+  </div>
+</section>
 
 <script>
 (function(){
@@ -293,7 +393,7 @@ $$('[data-medir]').forEach(b=>b.addEventListener('click',()=>{
 const DICAS=[
   'A estaca tem 2 passos. Compare a altura dela com o tamanho da sombra dela.',
   'Tem uma hora do dia em que a sombra da estaca fica do mesmo tamanho da estaca. Mexa na hora e meça a estaca de novo.',
-  'Nessa hora, a sombra de qualquer coisa fica do tamanho da coisa. Mas a sombra da pirâmide começa no meio da base, escondida embaixo dela. Olhe a linha tracejada.',
+  'Nessa hora, toda sombra fica do tamanho da coisa. Mas a sombra da pirâmide começa no meio da base, escondida embaixo dela: veja o tracejado.',
   'Altura da pirâmide = a sombra que aparece + metade da base (115 passos), tudo medido na mesma hora.'
 ];
 $('#b-dica').addEventListener('click',()=>{ const i=Math.min(est.dica,DICAS.length-1); fala(DICAS[i],'Dica'); est.dica=Math.min(est.dica+1,DICAS.length); desenha(); });
@@ -350,9 +450,10 @@ function mostraSabe(){
     '<li>No jogo, 1 passo vale 1 metro, para simplificar.</li>'+
     '<li>Lenda ou não, a matemática funciona: medir alturas por sombras e proporções é usado até hoje.</li></ul>'+
     '<p style="margin-top:10px">Fim do capítulo 1. Próximo capítulo, em breve: Eratóstenes mede o tamanho da Terra, também com sombras.</p>'+
-    '<div class="linha-bts"><button type="button" class="ferr forte" id="b-denovo">Jogar de novo</button><button type="button" class="ferr" id="b-fc2">Voltar ao jogo</button></div>';
+    '<div class="linha-bts"><button type="button" class="ferr forte" id="b-denovo">Jogar de novo</button><button type="button" class="ferr" id="b-fc2">Voltar ao jogo</button><button type="button" class="ferr" id="b-fc3">Voltar aos estudos</button></div>';
   $('#b-denovo').addEventListener('click',()=>{ est.med={}; est.dica=0; est.tentativas=0; est.v=30; $('#r-hora').value=30; $('#i-resp').value=''; fecha(mCad); desenha(); fala('De novo: a pirâmide está aí, e o sol também.'); });
   $('#b-fc2').addEventListener('click',()=>fecha(mCad));
+  $('#b-fc3').addEventListener('click',()=>{ fecha(mCad); volta('estudos'); });
 }
 $('#b-caderno').addEventListener('click',()=>mostraCaderno(false));
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ [mResp,mCad].forEach(fecha); } });
@@ -364,9 +465,186 @@ let iLinha=0, tAb=null;
 function proxima(){ if(iLinha<linhas.length){ linhas[iLinha++].classList.add('vis'); tAb=setTimeout(proxima,reduz?0:900); } }
 ab.addEventListener('click',e=>{ if(e.target.id!=='b-comecar'&&iLinha<linhas.length){ clearTimeout(tAb); linhas.forEach(l=>l.classList.add('vis')); iLinha=linhas.length; } });
 $('#b-comecar').addEventListener('click',()=>{ ab.hidden=true; fala('Não dá para subir. Mas o sol desenha a pirâmide no chão… Será que a sombra ajuda?'); });
-proxima();
-
+function abreCapitulo1(){
+  [mResp,mCad].forEach(fecha); clearTimeout(tAb);
+  linhas.forEach(l=>l.classList.remove('vis')); iLinha=0; ab.hidden=false; proxima();
+}
 desenha();
+
+/* ---------- telas: início, estudos, capítulo ---------- */
+const CAPS=[
+  {n:1, t:'Tales e a pirâmide', aberto:true},
+  {n:2, t:'Eratóstenes e a Terra'},
+  {n:3, t:'O Papiro de Rhind'},
+  {n:4, t:'A tábua da Babilônia'},
+  {n:5, t:'Cordas e música'},
+  {n:6, t:'Arquimedes e o π'},
+  {n:7, t:'A balança de al-Khwarizmi'},
+  {n:8, t:'Os coelhos de Fibonacci'},
+  {n:9, t:'Descartes e Fermat'},
+  {n:10, t:'Galileu e a queda'},
+  {n:11, t:'Newton e Leibniz'}
+];
+const tinta='stroke="currentColor" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"';
+function espiralOuro(x,y,w,passos){
+  // quadrados e arcos da espiral de ouro dentro do retângulo (x,y,w,w/φ), girando para dentro
+  const fi=(1+Math.sqrt(5))/2; let h=w/fi, quad='', arco='';
+  let dir=0;
+  for(let i=0;i<passos;i++){
+    const a=Math.min(w,h); let sx,sy,cx,cy,ax,ay,bx,by;
+    if(dir===0){ sx=x; sy=y; quad+='M'+(x+a)+' '+y+' V'+(y+h); cx=x+a; cy=y+a; ax=x; ay=y+a; bx=x+a; by=y; x+=a; w-=a; }
+    else if(dir===1){ sx=x+w-a; sy=y; quad+='M'+x+' '+(y+a)+' H'+(x+w); cx=x+w-a; cy=y+a; ax=x+w-a; ay=y; bx=x+w; by=y+a; y+=a; h-=a; }
+    else if(dir===2){ sx=x+w-a; sy=y+h-a; quad+='M'+(x+w-a)+' '+y+' V'+(y+h); cx=x+w-a; cy=y+h-a; ax=x+w; ay=y+h-a; bx=x+w-a; by=y+h; w-=a; }
+    else { sx=x; sy=y+h-a; quad+='M'+x+' '+(y+h-a)+' H'+(x+w); cx=x+a; cy=y+h-a; ax=x+a; ay=y+h; bx=x; by=y+h-a; h-=a; }
+    arco+=(i===0?'M'+ax.toFixed(2)+' '+ay.toFixed(2):'')+' A'+a.toFixed(2)+' '+a.toFixed(2)+' 0 0 1 '+bx.toFixed(2)+' '+by.toFixed(2);
+    dir=(dir+1)%4;
+  }
+  return {quad:quad,arco:arco};
+}
+function arteInicio(){
+  const x0=137, y0=72, W=156, fi=(1+Math.sqrt(5))/2, e=espiralOuro(x0,y0,W,8);
+  let colunas='';
+  [[14,44],[356,386]].forEach(c=>{
+    const [a,b]=c; colunas+='<rect x="'+(a-5)+'" y="14" width="'+(b-a+10)+'" height="9" fill="var(--perg)" stroke="var(--sepia)" stroke-width="1.4"/>'+
+      '<rect x="'+(a-2)+'" y="23" width="'+(b-a+4)+'" height="5" fill="var(--perg)" stroke="var(--sepia)" stroke-width="1.2"/>'+
+      '<rect x="'+a+'" y="28" width="'+(b-a)+'" height="226" fill="var(--perg)" stroke="var(--sepia)" stroke-width="1.4"/>';
+    for(let k=1;k<5;k++){ const xx=a+(b-a)*k/5; colunas+='<line x1="'+xx+'" y1="32" x2="'+xx+'" y2="250" stroke="var(--sepia)" stroke-width=".8" opacity=".55"/>'; }
+    colunas+='<rect x="'+(a-4)+'" y="254" width="'+(b-a+8)+'" height="6" fill="var(--perg)" stroke="var(--sepia)" stroke-width="1.4"/>';
+  });
+  let meandro='M48 266';
+  for(let x=48;x<350;x+=16) meandro+=' H'+(x+12)+' V274 H'+(x+4)+' V270 H'+(x+8)+' M'+(x+12)+' 266 H'+(x+16);
+  let tetra='';
+  for(let r=0;r<4;r++) for(let c=0;c<=r;c++) tetra+='<circle cx="'+(78+(c-r/2)*9)+'" cy="'+(30+r*8)+'" r="1.8" fill="var(--sepia)"/>';
+  $('#ini-arte').innerHTML=
+    '<defs><linearGradient id="g-mar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--mar)" stop-opacity="0"/><stop offset="1" stop-color="var(--mar)" stop-opacity=".38"/></linearGradient></defs>'+
+    '<rect x="44" y="120" width="312" height="86" fill="url(#g-mar)"/>'+
+    '<path d="M250 206 Q285 186 330 195 Q360 199 356 206 Z" fill="var(--mar)" opacity=".45"/>'+
+    '<path d="M60 206 Q78 196 104 202 L104 206 Z" fill="var(--mar)" opacity=".35"/>'+
+    '<line x1="44" y1="206" x2="356" y2="206" stroke="var(--sepia)" stroke-width="1" opacity=".6"/>'+
+    '<g transform="translate(300 186)" fill="var(--sepia)"><path d="M-12 12 H12 L8 16 H-8 Z"/><line x1="0" y1="12" x2="0" y2="-12" stroke="var(--sepia)" stroke-width="1.2"/><path d="M1 -11 L11 9 L1 9 Z" fill="var(--perg)" stroke="var(--sepia)" stroke-width="1"/></g>'+
+    tetra+
+    '<g stroke="var(--sepia)" fill="none" stroke-width="1.6">'+
+      '<circle cx="215" cy="120" r="78" fill="color-mix(in srgb,var(--perg) 70%,transparent)"/>'+
+      '<ellipse cx="215" cy="120" rx="78" ry="20" opacity=".45" stroke-width="1"/>'+
+      '<ellipse cx="215" cy="120" rx="34" ry="78" opacity=".45" stroke-width="1"/>'+
+      '<ellipse cx="215" cy="120" rx="62" ry="78" opacity=".3" stroke-width="1"/>'+
+      '<rect x="'+x0+'" y="'+y0+'" width="'+W+'" height="'+(W/fi).toFixed(2)+'" stroke-width=".9" opacity=".7"/>'+
+      '<path d="'+e.quad+'" stroke-width=".9" opacity=".7"/>'+
+      '<path class="espiral" d="'+e.arco+'" stroke="var(--verm)" stroke-width="2"/>'+
+    '</g>'+
+    colunas+
+    '<line x1="44" y1="260" x2="356" y2="260" stroke="var(--sepia)" stroke-width="1.6"/>'+
+    '<path d="'+meandro+'" stroke="var(--sepia)" fill="none" stroke-width="1.2" opacity=".7"/>'+
+    '<g fill="var(--tinta)">'+
+      '<circle cx="98" cy="160" r="8.5"/>'+
+      '<path d="M92 164 Q95 178 104 166 Z"/>'+
+      '<path d="M90 170 Q82 200 80 232 L78 258 L114 258 Q113 232 111 206 Q116 186 108 170 Z"/>'+
+      '<path d="M104 174 L132 146" stroke="var(--tinta)" stroke-width="5" stroke-linecap="round"/>'+
+      '<path d="M84 186 Q98 196 110 190 L112 198 Q96 204 82 194 Z" fill="var(--papiro3)" opacity=".8"/>'+
+    '</g>'+
+    '<g stroke="var(--sepia)" stroke-width="1.6" stroke-linecap="round" fill="none"><line x1="318" y1="214" x2="304" y2="258"/><line x1="318" y1="214" x2="334" y2="258"/><circle cx="318" cy="212" r="3" fill="var(--perg)"/><path d="M308 246 Q320 240 330 246"/></g>';
+}
+function arteCap(n){
+  const S2=(d,ex)=>'<path d="'+d+'" '+tinta+(ex||'')+'/>';
+  const ac='color:var(--sang)';
+  switch(n){
+    case 1: return '<circle cx="22" cy="22" r="7" fill="var(--sang)" stroke="none"/>'+
+      '<polygon points="46,76 86,76 66,40" fill="var(--papiro3)" opacity=".7" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>'+
+      S2('M10 76 H92')+S2('M66 40 L30 76',' stroke-dasharray="3 3" style="'+ac+'"')+
+      '<line x1="30" y1="78.5" x2="46" y2="78.5" stroke="var(--sombra)" stroke-width="4" stroke-linecap="round"/>'+
+      S2('M18 76 V66')+'<line x1="12.5" y1="78.5" x2="18" y2="78.5" stroke="var(--sombra)" stroke-width="3" stroke-linecap="round"/>';
+    case 2: return '<circle cx="50" cy="112" r="64" fill="var(--papiro3)" opacity=".35" stroke="none"/>'+S2('M-14 112 A64 64 0 0 1 114 112')+
+      S2('M50 48 V36')+S2('M50 112 L50 48',' stroke-dasharray="2 3" opacity=".6"')+
+      S2('M74.6 52.9 L79.2 41.8')+S2('M50 112 L74.6 52.9',' stroke-dasharray="2 3" opacity=".6"')+
+      '<line x1="79.2" y1="41.8" x2="73.5" y2="42.2" stroke="var(--sombra)" stroke-width="3" stroke-linecap="round"/>'+
+      S2('M50 96 A16 16 0 0 1 56.2 97.2',' style="'+ac+'"')+
+      [30,50,70,90].map(x=>S2('M'+x+' 6 V'+(x===50?34:x===90?30:24),' style="'+ac+'" stroke-dasharray="3 3"')).join('');
+    case 3: return '<rect x="14" y="26" width="72" height="48" fill="var(--papiro3)" opacity=".45" stroke="none"/>'+S2('M14 26 H86 M14 74 H86')+
+      S2('M14 24 V76 M86 24 V76',' stroke-width="4"')+S2('M22 34 H46',' style="'+ac+'" stroke-width="2.4"')+
+      S2('M22 44 H40 M46 44 H62 M22 54 H34 M40 54 H70 M22 64 H52')+
+      '<ellipse cx="68" cy="36" rx="6" ry="2.8" '+tinta+'/>'+S2('M64 41 V48 M68 41 V48 M72 41 V48');
+    case 4: return '<circle cx="50" cy="50" r="36" fill="var(--papiro3)" opacity=".55" stroke="currentColor" stroke-width="1.7"/>'+
+      S2('M32 32 H68 V68 H32 Z')+S2('M32 32 L68 68',' style="'+ac+'"')+S2('M32 68 L68 32',' opacity=".5"')+
+      S2('M38 46 l3 -3 l3 3 M46 46 l3 -3 l3 3 M54 56 l3 -3 l3 3')+S2('M20 50 l3 -3 l3 3',' opacity=".7"');
+    case 5: { let k=''; const P=[[20,78],[80,78],[80,33]];
+      const pts=[]; for(let i=0;i<4;i++) pts.push([20+15*i,78]); for(let i=0;i<3;i++) pts.push([80,78-15*i]); for(let i=0;i<5;i++) pts.push([80-12*i,33+9*i]);
+      pts.forEach(p=>k+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="2.6" fill="currentColor"/>');
+      return '<polygon points="20,78 80,78 80,33" fill="var(--papiro3)" opacity=".4" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>'+
+        S2('M72 78 V70 H80',' style="'+ac+'"')+k+'<text x="50" y="92" text-anchor="middle" font-size="10" fill="currentColor" font-family="Cinzel,serif">3 · 4 · 5</text>'; }
+    case 6: { const hex=r=>{let d='';for(let i=0;i<6;i++){const a=Math.PI/3*i;d+=(i?'L':'M')+(50+r*Math.cos(a)).toFixed(1)+' '+(50+r*Math.sin(a)).toFixed(1);}return d+'Z';};
+      return '<circle cx="50" cy="50" r="30" fill="var(--papiro3)" opacity=".35" stroke="currentColor" stroke-width="1.7"/>'+S2(hex(30),' style="'+ac+'"')+S2(hex(34.64),' opacity=".7"')+S2('M50 50 H80',' stroke-dasharray="2 3"'); }
+    case 7: return S2('M50 20 V82 M36 82 H64')+S2('M18 34 H82')+'<circle cx="50" cy="20" r="3" fill="currentColor"/>'+
+      S2('M18 34 L10 56 M18 34 L26 56 M82 34 L74 56 M82 34 L90 56')+S2('M8 56 H28 Q18 64 8 56 Z M72 56 H92 Q82 64 72 56 Z')+
+      '<rect x="12" y="46" width="12" height="10" fill="var(--papiro3)" stroke="currentColor" stroke-width="1.4"/>'+
+      '<circle cx="78" cy="53" r="3" fill="var(--sang)"/><circle cx="85" cy="53" r="3" fill="var(--sang)"/>';
+    case 8: { const e=espiralOuro(9,19,82,7); return '<rect x="9" y="19" width="82" height="'+(82/((1+Math.sqrt(5))/2)).toFixed(1)+'" fill="var(--papiro3)" opacity=".3" stroke="currentColor" stroke-width="1.4"/>'+
+      S2(e.quad,' stroke-width="1" opacity=".75"')+S2(e.arco,' style="'+ac+'" stroke-width="2"'); }
+    case 9: return S2('M14 84 H90 M18 88 V12')+S2('M22 80 Q52 0 86 80',' style="'+ac+'" stroke-width="2"')+
+      S2('M54 40 V84 M18 40 H54',' stroke-dasharray="2 3" opacity=".7"')+'<circle cx="54" cy="40" r="3.2" fill="var(--sang)"/>';
+    case 10: { let m=''; [0,1,4,9,16].forEach(d=>{const t=d/16; const x=16+t*68, y=30+t*48; m+='<line x1="'+(x-2)+'" y1="'+(y+3)+'" x2="'+(x+2)+'" y2="'+(y-3)+'" stroke="var(--sang)" stroke-width="1.6"/>';});
+      return '<polygon points="14,82 88,82 14,28" fill="var(--papiro3)" opacity=".4" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>'+
+        '<polygon points="14,28 88,82" stroke="none"/>'+m+'<circle cx="34" cy="38" r="5" fill="currentColor" transform="rotate(0)"/>'+
+        '<text x="50" y="94" text-anchor="middle" font-size="9" fill="currentColor" font-family="Cinzel,serif">1 · 3 · 5 · 7</text>'; }
+    case 11: return '<path d="M20 80 L20 60 Q34 40 48 52 Q62 64 62 80 Z" fill="var(--papiro3)" opacity=".55" stroke="none"/>'+
+      S2('M12 84 H90 M16 88 V12')+S2('M16 70 Q34 34 50 52 T88 26')+S2('M52 22 L84 72',' style="'+ac+'"')+'<circle cx="69.3" cy="45" r="3" fill="var(--sang)"/>';
+  }
+  return '';
+}
+const CADEADO='<span class="cadeado" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11 V8 a4 4 0 0 1 8 0 V11"/></svg></span>';
+function montaTrilho(){
+  $('#trilho').innerHTML=CAPS.map(c=>{
+    const feito=c.n===1&&est.resolvido;
+    const situ=c.aberto?(feito?'<span class="card-est feito">✓ Concluído</span>':'<span class="card-est">Tocar para jogar</span>'):'<span class="card-est">Em breve</span>';
+    return '<button type="button" class="card'+(c.aberto?'':' trancado')+'" data-cap="'+c.n+'" aria-label="Capítulo '+c.n+': '+c.t+(c.aberto?'':' (em breve)')+'">'+
+      '<span class="card-img" style="color:var(--sepia)"><svg viewBox="0 0 100 100" aria-hidden="true">'+arteCap(c.n)+'</svg>'+(c.aberto?'':CADEADO)+'</span>'+
+      '<span class="card-num">CAPÍTULO '+c.n+'</span><span class="card-tit">'+c.t+'</span>'+situ+'</button>';
+  }).join('');
+  $$('#trilho .card').forEach(b=>b.addEventListener('click',()=>{
+    const n=+b.dataset.cap, c=CAPS[n-1];
+    if(c.aberto){ vaiPara('cap1'); return; }
+    const e=b.querySelector('.card-est'); e.textContent=n===2?'É o próximo a ficar pronto':'Ainda está sendo feito'; e.classList.add('aviso'); e.setAttribute('role','status');
+  }));
+  atualizaSetas();
+}
+const trilho=$('#trilho');
+function passoTrilho(){ const c=trilho.querySelector('.card'); return c?c.getBoundingClientRect().width+16:200; }
+function atualizaSetas(){
+  const max=trilho.scrollWidth-trilho.clientWidth;
+  $('#seta-esq').disabled=trilho.scrollLeft<=2; $('#seta-dir').disabled=trilho.scrollLeft>=max-2;
+  const i=Math.min(CAPS.length,Math.round(trilho.scrollLeft/passoTrilho())+1);
+  $('#contador').textContent=i+' de '+CAPS.length;
+}
+trilho.addEventListener('scroll',()=>requestAnimationFrame(atualizaSetas),{passive:true});
+window.addEventListener('resize',atualizaSetas);
+$('#seta-esq').addEventListener('click',()=>trilho.scrollBy({left:-passoTrilho(),behavior:reduz?'auto':'smooth'}));
+$('#seta-dir').addEventListener('click',()=>trilho.scrollBy({left:passoTrilho(),behavior:reduz?'auto':'smooth'}));
+function abaAtiva(qual){
+  const e=qual==='est';
+  $('#aba-est').setAttribute('aria-selected',String(e)); $('#aba-criar').setAttribute('aria-selected',String(!e));
+  $('#painel-est').hidden=!e; $('#painel-criar').hidden=e;
+  if(e) atualizaSetas();
+}
+$('#aba-est').addEventListener('click',()=>abaAtiva('est'));
+$('#aba-criar').addEventListener('click',()=>abaAtiva('criar'));
+
+function mostraTela(t){
+  $('#inicio').hidden=t!=='inicio';
+  $('#estudos').hidden=t!=='estudos';
+  if(t==='estudos') montaTrilho();
+  if(t==='cap1') abreCapitulo1();
+  else { [mResp,mCad].forEach(fecha); ab.hidden=true; }
+}
+// pilha das telas, para o botão "voltar" do Android voltar uma tela em vez de fechar o app
+const pilha=['inicio'];
+function vaiPara(t){ pilha.push(t); try{ history.pushState({tela:t},''); }catch(e){} mostraTela(t); }
+function volta(t){ if(pilha.length>1&&pilha[pilha.length-2]===t){ history.back(); } else { pilha.length=0; pilha.push(t); try{ history.replaceState({tela:t},''); }catch(e){} mostraTela(t); } }
+window.addEventListener('popstate',e=>{ const t=(e.state&&e.state.tela)||'inicio'; if(pilha.length>1) pilha.pop(); if(pilha[pilha.length-1]!==t){ pilha.length=0; pilha.push(t); } mostraTela(t); });
+$('#b-entrar').addEventListener('click',()=>vaiPara('estudos'));
+$('#b-inicio').addEventListener('click',()=>volta('inicio'));
+$('#b-sair').addEventListener('click',()=>volta('estudos'));
+try{ history.replaceState({tela:'inicio'},''); }catch(e){}
+arteInicio();
+mostraTela('inicio');
 if('serviceWorker' in navigator && location.protocol==='https:' && !/claude/.test(location.hostname)){
   window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
 }

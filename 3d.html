@@ -21,7 +21,26 @@ canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block}
 .sol input{width:118px;accent-color:var(--verm);margin:0;height:28px}
 .sol b{font-family:"Cinzel",Georgia,serif;font-weight:700;color:var(--verm);font-size:14px;min-width:3.2em;text-align:right}
 /* canto de cima à direita: altura do olhar */
-.olhar{top:max(8px,env(safe-area-inset-top,0px));right:max(8px,env(safe-area-inset-right,0px))}
+.olhar{top:max(8px,env(safe-area-inset-top,0px));right:max(8px,env(safe-area-inset-right,0px));display:flex;gap:8px}
+button.forte{background:var(--tinta);color:var(--papiro)}
+.painel-r{position:fixed;inset:0;z-index:5;background:rgba(20,12,6,.45);display:flex;align-items:center;justify-content:center;padding:12px;touch-action:auto}
+.painel-r[hidden]{display:none}
+.caixa-r{background:var(--perg);border:2px solid var(--tinta);border-radius:10px;width:min(560px,100%);max-height:100%;overflow:auto;padding:12px 16px}
+.caixa-r h2{font-family:"Cinzel",Georgia,serif;font-size:17px;margin:0 0 4px}
+.sub-r{margin:0 0 4px;font-size:14px;color:var(--tinta2)}
+.lista-r{list-style:none;margin:0 0 6px;padding:0;font-size:15px}
+.lista-r li{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;padding:4px 0;border-bottom:1px solid rgba(74,52,32,.25)}
+.lista-r li b{color:var(--verm);font-weight:700}
+.lista-r li small{flex-basis:100%;font-size:13px;color:var(--tinta2);font-style:italic}
+.lista-r li .hr{margin-left:auto;font-size:13px;color:var(--tinta2)}
+.lista-r li.velha{opacity:.55}
+.lista-r li.vazio{font-style:italic;color:var(--tinta2)}
+.nota-r{margin:0 0 6px;font-size:12.5px;color:var(--tinta2)}
+.linha-r{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.linha-r input{flex:1 1 140px;min-width:120px;height:42px;font:inherit;font-size:18px;padding:0 10px;border:1.5px solid var(--tinta);border-radius:6px;background:#FBF4E2;color:var(--tinta)}
+.volta{margin:8px 0 0;min-height:1.3em;font-style:italic;color:var(--verm);font-size:15px;line-height:1.35}
+.volta.certo{font-style:normal;color:var(--tinta)}
+.volta b{color:var(--verm)}
 button{pointer-events:auto;height:42px;padding:0 14px;border:1.5px solid var(--tinta);border-radius:22px;background:rgba(233,216,174,.9);color:var(--tinta);font-family:"Cinzel",Georgia,serif;font-size:13px;letter-spacing:.03em;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
 button svg{width:16px;height:16px;flex:none}
 /* embaixo, no meio: a barra de itens (como no Minecraft) */
@@ -54,6 +73,9 @@ button svg{width:16px;height:16px;flex:none}
 </div>
 
 <div class="ui olhar">
+  <button type="button" id="b-responder" class="forte">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 5 h7 a2 2 0 0 1 2 2 v12 a2 2 0 0 0 -2 -2 h-7 Z M20 5 h-5 a2 2 0 0 0 -2 2"/><path d="M20 5 v12 h-5"/></svg>Responder
+  </button>
   <button type="button" id="b-olhar" aria-label="Alternar altura do olhar">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 12 C5 6 19 6 22 12 C19 18 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg><span id="t-olhar">Olhar de cima</span>
   </button>
@@ -66,6 +88,21 @@ button svg{width:16px;height:16px;flex:none}
   <button type="button" class="slot" id="slot-corda" aria-pressed="false" aria-label="Corda de medir">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="11" rx="6" ry="7"/><ellipse cx="12" cy="11" rx="3" ry="4"/><path d="M17 16 C19 19 21 19 22 21"/><circle cx="6.5" cy="9" r="1" fill="currentColor"/><circle cx="17.5" cy="9" r="1" fill="currentColor"/></svg><span>Corda</span>
   </button>
+</div>
+
+<div class="painel-r" id="r-painel" hidden role="dialog" aria-modal="true" aria-labelledby="r-tit">
+  <div class="caixa-r">
+    <h2 id="r-tit">Qual é a altura da pirâmide?</h2>
+    <p class="sub-r">Suas medidas (só as que você fez):</p>
+    <ul class="lista-r" id="r-lista"></ul>
+    <p class="nota-r" id="r-nota" hidden>✗ = medida de outra hora. Agora são as <span id="r-agora"></span>.</p>
+    <div class="linha-r">
+      <input id="r-num" type="text" inputmode="decimal" autocomplete="off" placeholder="altura em passos" aria-label="Altura da pirâmide, em passos">
+      <button type="button" class="forte" id="r-conferir">Conferir</button>
+      <button type="button" id="r-fechar">Voltar a medir</button>
+    </div>
+    <p class="volta" id="r-volta" aria-live="polite"></p>
+  </div>
 </div>
 
 <div class="ui dica" id="dica">Arraste à esquerda para andar · à direita para olhar · escolha um item embaixo</div>
@@ -97,14 +134,16 @@ function sunDir(v){ const e=elev(v), A=azim(v); return [-Math.sin(A)*Math.cos(e)
 function horaTxt(v){ const m=780+v; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
 
 // começa a leste da pirâmide, olhando para o oeste: a sombra aparece de perfil
-const st={ x:190, z:40, yaw:-Math.PI/2, pitch:-0.32, eye:EYE, v:30, yh:0, stick:null, hold:null, anim:null, corda:null, cordaFase:0, jx:0, jy:0, keys:{}, andando:0 };
+const st={ x:190, z:40, yaw:-Math.PI/2, pitch:-0.32, eye:EYE, v:30, yh:0, fase:0, medidas:[], stick:null, hold:null, anim:null, corda:null, cordaFase:0, jx:0, jy:0, keys:{}, andando:0 };
 
 /* ---------- câmera e projeção ---------- */
 let CAM=null;
 function makeCam(){
   const cy=Math.cos(st.yaw), sy=Math.sin(st.yaw), cp=Math.cos(st.pitch), sp=Math.sin(st.pitch);
   const F=[sy*cp,sp,cy*cp], R=[cy,0,-sy], U=cross(F,R);
-  return {F,R,U,E:[st.x,st.yh+st.eye,st.z]};
+  // balanço de quem anda: sobe e desce a cada passo e vai um pouco de um lado para o outro
+  const k=st.eye>EYE?0.2:1, bobY=Math.abs(Math.sin(st.fase))*0.11*st.andando*k, bobX=Math.sin(st.fase)*0.05*st.andando*k;
+  return {F,R,U,E:[st.x+R[0]*bobX,st.yh+st.eye+bobY-0.05*st.andando*k,st.z+R[2]*bobX]};
 }
 function toView(p){ const d=sub(p,CAM.E); return [dot(d,CAM.R),dot(d,CAM.U),dot(d,CAM.F)]; }
 function scr(v){ return [W/2+FP*v[0]/v[2], H/2-FP*v[1]/v[2]]; }
@@ -151,6 +190,7 @@ const FACES=[[PA[0],PA[1],PT],[PA[1],PA[2],PT],[PA[2],PA[3],PT],[PA[3],PA[0],PT]
 });
 const PLANOS=FACES.map(q=>({n:q.n,d:q.d})).concat([{n:[0,-1,0],d:0}]);
 // altura do chão em cada ponto: em cima da pirâmide, a altura da parede
+function naPirAntes(){ return alturaChao(st.x,st.z)>0.5; }
 function alturaChao(x,z){ const m=Math.max(Math.abs(x),Math.abs(z)); return m<HB?ALT*(1-m/HB):0; }
 // a linha do olho bate na pirâmide? devolve a distância até a parede (ou null)
 function raioPiramide(E,F){
@@ -244,13 +284,15 @@ function rotuloLivre(p,txt,cor,tam,dy){
   ctx.fillStyle=cor||'#2A1C10'; ctx.fillText(txt,s[0],s[1]); ctx.textAlign='start'; ctx.textBaseline='alphabetic';
 }
 function rotulo(p,txt,cor,tam,dy){
-  const v=toView(p); if(v[2]<NEAR) return;
-  if(atrasDaPiramide(CAM.E,p)) return;
+  const v=toView(p); if(v[2]<NEAR) return false;
+  if(atrasDaPiramide(CAM.E,p)) return false;
+  const sv=scr(v); if(sv[0]<-40||sv[0]>W+40||sv[1]<-20||sv[1]>H+20) return false;
   const s=scr(v); s[1]+=dy||0;
   ctx.font='700 '+(tam||16)+'px "EB Garamond",Georgia,serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
   ctx.lineWidth=4; ctx.strokeStyle='rgba(239,227,196,.95)'; ctx.lineJoin='round'; ctx.strokeText(txt,s[0],s[1]);
   ctx.fillStyle=cor||'#2A1C10'; ctx.fillText(txt,s[0],s[1]);
   ctx.textAlign='start'; ctx.textBaseline='alphabetic';
+  return true;
 }
 
 /* ---------- desenho ---------- */
@@ -302,7 +344,8 @@ function draw(t){
   if(st.stick&&Math.hypot(st.stick.x-CAM.E[0],1-CAM.E[1],st.stick.z-CAM.E[2])<60){
     rotulo([st.stick.x,EST_H+0.45,st.stick.z],'2 passos','#2A1C10',16);
     const meio=mul(add([st.stick.x,0,st.stick.z],sombEst),0.5);
-    rotulo(meio,'sombra '+n2(EST_H/tg),'#9E3B26',16,20);
+    // só conta como medida o que ele viu na tela
+    if(rotulo(meio,'sombra '+n2(EST_H/tg),'#9E3B26',16,20)) anota({tipo:'estaca',sombra:EST_H/tg,v:st.v});
   }
   if(st.corda&&cordaFim){ const L=Math.hypot(...sub(cordaFim,st.corda.a)); if(L>0.05) rotuloLivre(ergue(mul(add(st.corda.a,cordaFim),0.5)),'corda '+L.toFixed(1).replace('.',',')+' passos','#2A1C10',17,-18); }
   // joystick
@@ -353,8 +396,9 @@ function desenhaMao(t){
   if(st.anim){ p=clamp((t-st.anim.t0)/st.anim.dur,0,1); tipo=st.anim.tipo; }
   const item=st.hold||(tipo==='colocar'&&p<0.5?'estaca':null), segura=!!item;
   if(!segura&&!tipo) return;
-  const bob=Math.sin(t/110)*4*K*st.andando;
-  let bx=W-118*K, by=H-74*K+bob, ang=-0.18, esc=1;
+  const bob=Math.abs(Math.sin(st.fase))*7*K*st.andando;
+  const bobX=Math.sin(st.fase)*5*K*st.andando;
+  let bx=W-118*K+bobX, by=H-74*K+bob, ang=-0.18, esc=1;
   if(tipo==='colocar'){ const s=Math.sin(p*Math.PI); bx-=(W*0.22)*s; by+=40*K*s; ang-=0.5*s; esc=1-0.25*s; }
   if(tipo==='pegar'){ by+=(1-p)*220*K; }
   if(tipo==='usar'){ const s=Math.sin(p*Math.PI); bx-=(W*0.12)*s; by+=24*K*s; ang-=0.3*s; }
@@ -395,14 +439,53 @@ function hud(){
   document.getElementById('sol-ico').setAttribute('transform','translate('+x.toFixed(1)+' '+y.toFixed(1)+')');
 }
 
+/* ---------- caderno de medidas ---------- */
+function anota(m){
+  const L=st.medidas;
+  // só sombras mudam com a hora; a base e a parede, não
+  m.hora=m.tipo==='estaca'||/sombra/.test((m.a||'')+' '+(m.b||''));
+  if(m.tipo==='estaca'){ if(L.some(x=>x.tipo==='estaca'&&x.v===m.v)) return; }
+  L.unshift(m); if(L.length>10) L.pop();
+}
+const nomePonto=n=>n||'um ponto no chão';
+function textoMedida(m){
+  if(m.tipo==='estaca') return '<b>Estaca</b> de 2 passos fazia <b>sombra '+n2(m.sombra)+'</b>';
+  return '<b>Corda: '+m.L.toFixed(1).replace('.',',')+' passos</b><small>de '+nomePonto(m.a)+' até '+nomePonto(m.b)+'</small>';
+}
+function abreResposta(){
+  const lista=document.getElementById('r-lista');
+  lista.innerHTML=st.medidas.length?st.medidas.map(m=>{ const velha=m.hora&&m.v!==st.v; return '<li class="'+(velha?'velha':'')+'">'+textoMedida(m)+(m.hora?'<span class="hr">'+horaTxt(m.v)+(velha?' ✗':'')+'</span>':'')+'</li>'; }).join(''):
+    '<li class="vazio">Você ainda não mediu nada. Plante a estaca e use a corda.</li>';
+  document.getElementById('r-nota').hidden=!st.medidas.some(m=>m.hora&&m.v!==st.v);
+  document.getElementById('r-volta').textContent=''; document.getElementById('r-painel').hidden=false;
+  st.keys={}; st.jx=0; st.jy=0;
+}
+function fechaResposta(){ document.getElementById('r-painel').hidden=true; }
+function confere(){
+  const val=parseFloat(String(document.getElementById('r-num').value).replace(',','.')), out=document.getElementById('r-volta');
+  if(!isFinite(val)){ out.textContent='Escreva um número, em passos.'; return; }
+  if(Math.abs(val-ALT)<=4){ out.innerHTML='<b>Isso!</b> A pirâmide tem 146 passos de altura. Quando a sombra da estaca fica do tamanho da estaca, a sombra da pirâmide, contada desde o meio dela, também fica do tamanho dela: a parte que aparece mais a metade da base.'; out.className='volta certo'; return; }
+  out.className='volta';
+  const perto=x=>Math.abs(val-x)<=2;
+  const c=st.medidas.find(m=>m.tipo==='corda'&&perto(m.L));
+  if(c){ const nomes=(c.a||'')+' '+(c.b||'');
+    if(/topo/.test(nomes)){ out.textContent='Essa corda subiu pela parede, inclinada. A altura é reta: do topo até o meio do chão, lá dentro da pedra.'; return; }
+    if(/sombra/.test(nomes)){ out.textContent='Esse é só o pedaço da sombra que aparece. Falta o pedaço escondido embaixo da pirâmide.'; return; }
+    if(/meio da beira/.test(nomes)&&/canto/.test(nomes)){ out.textContent='Essa é a metade da base: é o pedaço da sombra que fica escondido. Falta somar a parte que aparece.'; return; }
+    if(perto(2*HB)){ out.textContent='Essa é a base inteira. A sombra escondida é só a metade dela.'; return; }
+  }
+  if(perto(HB)){ out.textContent='Essa é a metade da base, o pedaço escondido. Falta a parte da sombra que aparece.'; return; }
+  out.textContent='Ainda não é isso. Compare a estaca com a sombra dela, e meça a pirâmide na mesma hora.';
+}
+
 /* ---------- pegar, colocar e usar a corda ---------- */
 function acao(){
   if(st.anim||!st.hold) return;
   const t=performance.now(), m=alvo(st.hold); if(!m.ok) return;
   if(st.hold==='estaca'){ st.anim={tipo:'colocar',t0:t,dur:520,p:m.p,pos:false}; return; }
   // corda: primeiro toque marca o começo, o segundo marca o fim
-  if(st.cordaFase===0){ st.corda={a:m.p,b:null}; st.cordaFase=1; }
-  else { st.corda.b=m.p; st.cordaFase=0; }
+  if(st.cordaFase===0){ st.corda={a:m.p,b:null,na:m.nome}; st.cordaFase=1; }
+  else { st.corda.b=m.p; st.corda.nb=m.nome; st.cordaFase=0; anota({tipo:'corda',L:Math.hypot(...sub(st.corda.b,st.corda.a)),a:st.corda.na,b:m.nome,v:st.v}); }
   st.anim={tipo:'usar',t0:t,dur:260};
 }
 function escolhe(item){
@@ -428,8 +511,9 @@ function update(dt){
   if(yawKey) st.yaw+=yawKey*dt*1.6;
   f=clamp(f,-1,1); s=clamp(s,-1,1);
   st.andando+=((Math.hypot(f,s)>0.05?1:0)-st.andando)*Math.min(1,dt*8);
+  st.fase+=dt*(naPirAntes()?7:9.5)*st.andando; // passos: faz a câmera balançar um pouco
   // na pirâmide se anda mais devagar: é uma subida
-  const naPir=alturaChao(st.x,st.z)>0.5, sp=(naPir?5:9)*dt, sy=Math.sin(st.yaw), cy=Math.cos(st.yaw);
+  const naPir=alturaChao(st.x,st.z)>0.5, sp=(naPir?8:14)*dt, sy=Math.sin(st.yaw), cy=Math.cos(st.yaw);
   st.x=clamp(st.x+(f*sy+s*cy)*sp,-700,700); st.z=clamp(st.z+(f*cy-s*sy)*sp,-700,700);
   st.yh+=(alturaChao(st.x,st.z)-st.yh)*Math.min(1,dt*12);
 }
@@ -457,6 +541,7 @@ function acaba(e){
 }
 cv.addEventListener('pointerup',acaba); cv.addEventListener('pointercancel',acaba);
 addEventListener('keydown',e=>{
+  if(!document.getElementById('r-painel').hidden){ if(e.key==='Escape') fechaResposta(); return; }
   st.keys[e.key.length===1?e.key.toLowerCase():e.key]=true;
   if(e.key.startsWith('Arrow')||e.key===' ') e.preventDefault();
   if(e.key===' '||e.key==='Enter') acao();
@@ -477,6 +562,10 @@ function toque(id,fn){
 toque('slot-estaca',()=>escolhe('estaca'));
 toque('slot-corda',()=>escolhe('corda'));
 toque('b-olhar',()=>{ st.eye=st.eye>EYE?EYE:80; });
+toque('b-responder',()=>{ document.getElementById('r-agora').textContent=horaTxt(st.v); abreResposta(); });
+document.getElementById('r-fechar').addEventListener('click',fechaResposta);
+document.getElementById('r-conferir').addEventListener('click',confere);
+document.getElementById('r-num').addEventListener('keydown',e=>{ if(e.key==='Enter') confere(); e.stopPropagation(); });
 
 /* ---------- laço principal ---------- */
 let last=performance.now();
@@ -489,7 +578,7 @@ requestAnimationFrame(frame);
 setTimeout(()=>document.getElementById('dica').classList.add('sumiu'),6000);
 
 // para testes automáticos
-window.__mnt3d={ st, get CAM(){ return CAM; }, alvo:t=>alvo(t), atrasDaPiramide, acao, escolhe, sunDir, alturaChao };
+window.__mnt3d={ abreResposta, confere, st, get CAM(){ return CAM; }, alvo:t=>alvo(t), atrasDaPiramide, acao, escolhe, sunDir, alturaChao };
 })();
 </script>
 </body>

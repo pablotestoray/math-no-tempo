@@ -97,14 +97,14 @@ function sunDir(v){ const e=elev(v), A=azim(v); return [-Math.sin(A)*Math.cos(e)
 function horaTxt(v){ const m=780+v; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
 
 // começa a leste da pirâmide, olhando para o oeste: a sombra aparece de perfil
-const st={ x:190, z:40, yaw:-Math.PI/2, pitch:-0.32, eye:EYE, v:30, stick:null, hold:null, anim:null, corda:null, cordaFase:0, jx:0, jy:0, keys:{}, andando:0 };
+const st={ x:190, z:40, yaw:-Math.PI/2, pitch:-0.32, eye:EYE, v:30, yh:0, stick:null, hold:null, anim:null, corda:null, cordaFase:0, jx:0, jy:0, keys:{}, andando:0 };
 
 /* ---------- câmera e projeção ---------- */
 let CAM=null;
 function makeCam(){
   const cy=Math.cos(st.yaw), sy=Math.sin(st.yaw), cp=Math.cos(st.pitch), sp=Math.sin(st.pitch);
   const F=[sy*cp,sp,cy*cp], R=[cy,0,-sy], U=cross(F,R);
-  return {F,R,U,E:[st.x,st.eye,st.z]};
+  return {F,R,U,E:[st.x,st.yh+st.eye,st.z]};
 }
 function toView(p){ const d=sub(p,CAM.E); return [dot(d,CAM.R),dot(d,CAM.U),dot(d,CAM.F)]; }
 function scr(v){ return [W/2+FP*v[0]/v[2], H/2-FP*v[1]/v[2]]; }
@@ -150,6 +150,20 @@ const FACES=[[PA[0],PA[1],PT],[PA[1],PA[2],PT],[PA[2],PA[3],PT],[PA[3],PA[0],PT]
   return {f,c,n,d:dot(n,f[0])};
 });
 const PLANOS=FACES.map(q=>({n:q.n,d:q.d})).concat([{n:[0,-1,0],d:0}]);
+// altura do chão em cada ponto: em cima da pirâmide, a altura da parede
+function alturaChao(x,z){ const m=Math.max(Math.abs(x),Math.abs(z)); return m<HB?ALT*(1-m/HB):0; }
+// a linha do olho bate na pirâmide? devolve a distância até a parede (ou null)
+function raioPiramide(E,F){
+  let t0=0, t1=Infinity;
+  for(const p of PLANOS){
+    const a=dot(p.n,E)-p.d, b=dot(p.n,F);
+    if(Math.abs(b)<1e-9){ if(a>0) return null; continue; }
+    const t=-a/b;
+    if(b<0) t0=Math.max(t0,t); else t1=Math.min(t1,t);
+    if(t0>t1) return null;
+  }
+  return t0>0?t0:null;
+}
 // a linha de A até B passa por dentro da pirâmide? (serve para saber o que está na frente)
 function atrasDaPiramide(A,B){
   let t0=0, t1=1; const D=sub(B,A);
@@ -163,6 +177,27 @@ function atrasDaPiramide(A,B){
   return t1-t0>1e-3;
 }
 const C_LUZ=[0xD4,0xB2,0x71], C_SOMB=[0x6B,0x4A,0x26];
+const FIADA=7.3, BLOCO=9; // altura de cada fiada de pedra e largura de cada bloco, em passos
+function corPedra(lit,seed){
+  const v=0.2+0.8*lit, r=Math.sin(seed*12.9898+4.1)*43758.5453, j=r-Math.floor(r), f=0.9+0.16*j;
+  return 'rgb('+C_SOMB.map((c,i)=>Math.round(clamp((c+(C_LUZ[i]-c)*v)*f,0,255))).join(',')+')';
+}
+function desenhaFace(q){
+  const [B0,B1,T]=q.f, n=Math.ceil(ALT/FIADA);
+  const P=(B,y)=>add(B,mul(sub(T,B),y/ALT));
+  for(let i=0;i<n;i++){ const y0=i*FIADA, y1=Math.min(ALT,(i+1)*FIADA); poly3([P(B0,y0),P(B1,y0),P(B1,y1),P(B0,y1)],corPedra(q.lit,q.fi*97+i)); }
+  if(q.dist<900){
+    const a=clamp(1-q.dist/900,0.15,0.6);
+    const cf='rgba(42,28,16,'+(a*0.9).toFixed(2)+')', cj='rgba(42,28,16,'+(a*0.6).toFixed(2)+')';
+    for(let i=1;i<n;i++) seg3(P(B0,i*FIADA),P(B1,i*FIADA),cf,1);
+    if(q.dist<520) for(let i=0;i<n;i++){
+      const y0=i*FIADA, y1=Math.min(ALT,(i+1)*FIADA), L0=P(B0,y0), R0=P(B1,y0), L1=P(B0,y1), R1=P(B1,y1);
+      const larg=Math.hypot(...sub(R0,L0)), nb=larg/BLOCO, des=(i%2)*0.5;
+      for(let k=1;k<nb;k++){ const t=(k-des)/nb; if(t<=0||t>=1) continue; seg3(add(L0,mul(sub(R0,L0),t)),add(L1,mul(sub(R1,L1),t)),cj,1); }
+    }
+  }
+  poly3(q.f,null,'#2A1C10',1.2);
+}
 function mixCor(t){ return 'rgb('+C_SOMB.map((c,i)=>Math.round(c+(C_LUZ[i]-c)*t)).join(',')+')'; }
 
 /* ---------- onde a mira aponta no chão ---------- */
@@ -175,51 +210,39 @@ function pontosImportantes(){
   if(st.stick){ const b=[st.stick.x,0,st.stick.z]; lista.push({p:b,nome:'pé da estaca'}); lista.push({p:shadowOnGround([st.stick.x,EST_H,st.stick.z],S),nome:'ponta da sombra da estaca'}); }
   for(const c of PA) lista.push({p:c,nome:'canto da base'});
   for(const m of [[0,0,-HB],[HB,0,0],[0,0,HB],[-HB,0,0]]) lista.push({p:m,nome:'meio da beira'});
+  lista.push({p:PT,nome:'topo da pirâmide',raio:10});
   return lista;
 }
 function gruda(p){
-  let melhor=null, dm=3;
-  for(const q of pontosImportantes()){ const dd=Math.hypot(q.p[0]-p[0],q.p[2]-p[2]); if(dd<dm){ dm=dd; melhor=q; } }
+  let melhor=null, dm=Infinity;
+  for(const q of pontosImportantes()){ const dd=Math.hypot(q.p[0]-p[0],q.p[1]-p[1],q.p[2]-p[2]); if(dd<(q.raio||3)&&dd<dm){ dm=dd; melhor=q; } }
   return melhor;
 }
-// onde a linha do olho entra no quadrado da base (vista de cima)
-function entradaNaBase(E,p){
-  const D=[p[0]-E[0],p[2]-E[2]], O=[E[0],E[2]]; let t0=0, t1=1;
-  for(let k=0;k<2;k++){
-    if(Math.abs(D[k])<1e-9){ if(Math.abs(O[k])>HB) return null; continue; }
-    let a=(-HB-O[k])/D[k], b=(HB-O[k])/D[k]; if(a>b){ const x=a; a=b; b=x; }
-    t0=Math.max(t0,a); t1=Math.min(t1,b);
-  }
-  if(t0>t1) return null;
-  return [E[0]+D[0]*t0,0,E[2]+D[1]*t0];
-}
 function alvo(tipo){
-  const F=CAM.F, E=CAM.E;
-  if(tipo==='corda'){ // mirando na parede da pirâmide: a corda vai para a beira da base embaixo dela
-    const longe=add(E,mul(F,800));
-    if((F[1]>-0.02||atrasDaPiramide(E,add(E,mul(F,-E[1]/Math.min(F[1],-1e-6)))))&&atrasDaPiramide(E,longe)){
-      const q=entradaNaBase(E,longe);
-      if(q&&Math.hypot(q[0]-st.x,q[2]-st.z)<=60){ const g=gruda(q); return {ok:true,p:g?[g.p[0],0,g.p[2]]:q,nome:g?g.nome:'beira da base'}; }
-    }
-  }
-  if(F[1]>-0.02) return {ok:false,motivo:'olhe para o chão'};
-  const t=-E[1]/F[1]; let p=add(E,mul(F,t)); p[1]=0;
+  const F=CAM.F, E=CAM.E, pe=[st.x,st.yh,st.z];
+  const tP=raioPiramide(E,F), tG=F[1]<-0.01?-E[1]/F[1]:Infinity;
   const lim=tipo==='corda'?60:ALCANCE;
-  if(Math.hypot(p[0]-st.x,p[2]-st.z)>lim) return {ok:false,motivo:'chegue mais perto',p};
-  const dentro=Math.abs(p[0])<HB&&Math.abs(p[2])<HB, atras=atrasDaPiramide(E,[p[0],0.05,p[2]]);
-  if(tipo==='corda'){
-    let nome=null;
-    // mirando na pirâmide: a corda vai para a beira da base que está na sua frente
-    if(dentro||atras){ const q=entradaNaBase(E,p); if(!q) return {ok:false,motivo:'olhe para o chão',p}; p=q; nome='beira da base'; }
-    const g=gruda(p); if(g){ p=[g.p[0],0,g.p[2]]; nome=g.nome; }
-    return {ok:true,p,nome};
+  if(tP!==null&&tP<tG){ // a mira está na parede da pirâmide
+    const p=add(E,mul(F,tP));
+    if(tipo!=='corda') return {ok:false,motivo:'aqui é a pirâmide',p};
+    if(Math.hypot(...sub(p,pe))>lim) return {ok:false,motivo:'chegue mais perto',p};
+    const g=gruda(p); return {ok:true,p:g?g.p.slice():p,nome:g?g.nome:'na parede da pirâmide'};
   }
+  if(tG===Infinity) return {ok:false,motivo:tipo==='corda'?'mire no chão ou na pirâmide':'olhe para o chão'};
+  const p=add(E,mul(F,tG)); p[1]=0;
+  if(Math.hypot(p[0]-st.x,p[2]-st.z)>lim) return {ok:false,motivo:'chegue mais perto',p};
+  if(tipo==='corda'){ const g=gruda(p); return {ok:true,p:g?g.p.slice():p,nome:g?g.nome:null}; }
   if(Math.abs(p[0])<HB+1&&Math.abs(p[2])<HB+1) return {ok:false,motivo:'aqui é a pirâmide',p};
-  if(atras) return {ok:false,motivo:'a pirâmide está na frente',p};
   return {ok:true,p};
 }
 
 /* ---------- textos na cena ---------- */
+function rotuloLivre(p,txt,cor,tam,dy){
+  const v=toView(p); if(v[2]<NEAR) return; const s=scr(v); s[1]+=dy||0;
+  ctx.font='700 '+(tam||16)+'px "EB Garamond",Georgia,serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.lineWidth=4; ctx.strokeStyle='rgba(239,227,196,.95)'; ctx.lineJoin='round'; ctx.strokeText(txt,s[0],s[1]);
+  ctx.fillStyle=cor||'#2A1C10'; ctx.fillText(txt,s[0],s[1]); ctx.textAlign='start'; ctx.textBaseline='alphabetic';
+}
 function rotulo(p,txt,cor,tam,dy){
   const v=toView(p); if(v[2]<NEAR) return;
   if(atrasDaPiramide(CAM.E,p)) return;
@@ -252,8 +275,10 @@ function draw(t){
   // a corda esticada no chão
   const mira=st.hold&&!(st.anim&&st.anim.tipo!=='usar')?alvo(st.hold):null;
   let cordaFim=null;
-  if(st.corda){ cordaFim=st.corda.b||(st.cordaFase===1&&mira&&mira.ok&&st.hold==='corda'?mira.p:null); if(cordaFim) desenhaCorda(st.corda.a,cordaFim); else marcaPonto(st.corda.a); }
-  if(mira&&mira.ok&&st.hold==='corda') marcaPonto(mira.p);
+  if(st.corda) cordaFim=st.corda.b||(st.cordaFase===1&&mira&&mira.ok&&st.hold==='corda'?mira.p:null);
+  const cordaEscondida=st.corda&&atrasDaPiramide(CAM.E,ergue(st.corda.a))&&(!cordaFim||atrasDaPiramide(CAM.E,ergue(cordaFim)));
+  const pintaCorda=()=>{ if(!st.corda) return; if(cordaFim) desenhaCorda(st.corda.a,cordaFim); else marcaPonto(st.corda.a); };
+  if(cordaEscondida) pintaCorda();
   // marca onde a estaca vai ficar
   if(mira&&mira.ok&&st.hold==='estaca'){
     const c=mira.p, pts=[]; for(let i=0;i<20;i++){ const a=i/20*Math.PI*2; pts.push([c[0]+Math.cos(a)*0.6,0,c[2]+Math.sin(a)*0.6]); }
@@ -264,20 +289,22 @@ function draw(t){
   const estacaAtras=st.stick&&atrasDaPiramide(CAM.E,[st.stick.x,1,st.stick.z]);
   if(st.stick&&estacaAtras) desenhaEstaca([st.stick.x,0,st.stick.z],1);
   const fs=[];
-  for(const q of FACES){
-    if(dot(q.n,sub(CAM.E,q.c))<=0) continue;
-    fs.push({f:q.f,dist:Math.hypot(...sub(CAM.E,q.c)),cor:mixCor(0.2+0.8*Math.max(0,dot(q.n,S)))});
-  }
+  FACES.forEach((q,fi)=>{
+    if(dot(q.n,sub(CAM.E,q.c))<=0) return;
+    fs.push({f:q.f,fi,dist:Math.hypot(...sub(CAM.E,q.c)),lit:Math.max(0,dot(q.n,S))});
+  });
   fs.sort((a,b)=>b.dist-a.dist);
-  for(const q of fs) poly3(q.f,q.cor,'#2A1C10',1.2);
+  for(const q of fs) desenhaFace(q);
+  if(!cordaEscondida) pintaCorda();
+  if(mira&&mira.ok&&st.hold==='corda') marcaPonto(mira.p);
   if(st.stick&&!estacaAtras) desenhaEstaca([st.stick.x,0,st.stick.z],1);
   // números em cima das coisas
-  if(st.stick&&Math.hypot(st.stick.x-st.x,st.stick.z-st.z,st.eye)<60){
+  if(st.stick&&Math.hypot(st.stick.x-CAM.E[0],1-CAM.E[1],st.stick.z-CAM.E[2])<60){
     rotulo([st.stick.x,EST_H+0.45,st.stick.z],'2 passos','#2A1C10',16);
     const meio=mul(add([st.stick.x,0,st.stick.z],sombEst),0.5);
     rotulo(meio,'sombra '+n2(EST_H/tg),'#9E3B26',16,20);
   }
-  if(st.corda&&cordaFim){ const L=Math.hypot(cordaFim[0]-st.corda.a[0],cordaFim[2]-st.corda.a[2]); if(L>0.05) rotulo(mul(add(st.corda.a,cordaFim),0.5),'corda '+L.toFixed(1).replace('.',',')+' passos','#2A1C10',17,-18); }
+  if(st.corda&&cordaFim){ const L=Math.hypot(...sub(cordaFim,st.corda.a)); if(L>0.05) rotuloLivre(ergue(mul(add(st.corda.a,cordaFim),0.5)),'corda '+L.toFixed(1).replace('.',',')+' passos','#2A1C10',17,-18); }
   // joystick
   if(joy.on){ ctx.beginPath(); ctx.arc(joy.cx,joy.cy,56,0,Math.PI*2); ctx.strokeStyle='rgba(42,28,16,.5)'; ctx.lineWidth=2; ctx.stroke(); ctx.beginPath(); ctx.arc(joy.cx+st.jx*56,joy.cy+st.jy*-56,22,0,Math.PI*2); ctx.fillStyle='rgba(158,59,38,.6)'; ctx.fill(); }
   // mira no meio da tela
@@ -285,21 +312,24 @@ function draw(t){
   // a mão
   desenhaMao(t);
 }
+// um pouco acima do chão ou da parede, para a corda não sumir dentro da pedra
+function ergue(p){ return p[1]<0.01?[p[0],0.05,p[2]]:[p[0],p[1]+0.3,p[2]]; }
 function marcaPonto(p){
-  const v=toView([p[0],0.05,p[2]]); if(v[2]<NEAR) return; const s=scr(v), r=Math.max(3,Math.min(9,0.5*FP/v[2]));
+  const v=toView(ergue(p)); if(v[2]<NEAR) return; const s=scr(v), r=Math.max(3,Math.min(9,0.5*FP/v[2]));
   ctx.beginPath(); ctx.arc(s[0],s[1],r,0,Math.PI*2); ctx.fillStyle='#9E3B26'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='rgba(239,227,196,.95)'; ctx.stroke();
 }
 // corda com um nó a cada passo, como a corda de nós do Egito
-function desenhaCorda(a,b){
-  const L=Math.hypot(b[0]-a[0],b[2]-a[2]); if(L<0.05){ marcaPonto(a); return; }
-  seg3([a[0],0.05,a[2]],[b[0],0.05,b[2]],'#5A3A1A',3);
+function desenhaCorda(a0,b0){
+  const L=Math.hypot(...sub(b0,a0)); if(L<0.05){ marcaPonto(a0); return; }
+  const a=ergue(a0), b=ergue(b0);
+  seg3(a,b,'#5A3A1A',3);
   const passo=L>120?5:1;
   for(let k=passo;k<L;k+=passo){
-    const t=k/L, v=toView([a[0]+(b[0]-a[0])*t,0.05,a[2]+(b[2]-a[2])*t]); if(v[2]<NEAR) continue;
+    const t=k/L, v=toView([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]); if(v[2]<NEAR) continue;
     const s=scr(v), r=Math.max(1.2,Math.min(5,0.12*FP/v[2]));
     ctx.beginPath(); ctx.arc(s[0],s[1],r,0,Math.PI*2); ctx.fillStyle='#2A1C10'; ctx.fill();
   }
-  marcaPonto(a); marcaPonto(b);
+  marcaPonto(a0); marcaPonto(b0);
 }
 function desenhaMira(m){
   const x=W/2, y=H/2, r=9;
@@ -398,17 +428,16 @@ function update(dt){
   if(yawKey) st.yaw+=yawKey*dt*1.6;
   f=clamp(f,-1,1); s=clamp(s,-1,1);
   st.andando+=((Math.hypot(f,s)>0.05?1:0)-st.andando)*Math.min(1,dt*8);
-  const sp=9*dt, sy=Math.sin(st.yaw), cy=Math.cos(st.yaw);
-  let nx=st.x+(f*sy+s*cy)*sp, nz=st.z+(f*cy-s*sy)*sp;
-  const m=HB+6; // a pirâmide não deixa passar
-  if(Math.abs(nx)<m&&Math.abs(nz)<m){ if(m-Math.abs(nx)<m-Math.abs(nz)) nx=Math.sign(nx||1)*m; else nz=Math.sign(nz||1)*m; }
-  st.x=clamp(nx,-700,700); st.z=clamp(nz,-700,700);
+  // na pirâmide se anda mais devagar: é uma subida
+  const naPir=alturaChao(st.x,st.z)>0.5, sp=(naPir?5:9)*dt, sy=Math.sin(st.yaw), cy=Math.cos(st.yaw);
+  st.x=clamp(st.x+(f*sy+s*cy)*sp,-700,700); st.z=clamp(st.z+(f*cy-s*sy)*sp,-700,700);
+  st.yh+=(alturaChao(st.x,st.z)-st.yh)*Math.min(1,dt*12);
 }
 
 /* ---------- toque e mouse ---------- */
 const joy={on:false,id:null,cx:0,cy:0}, look={id:null,x:0,y:0,x0:0,y0:0,t0:0};
 cv.addEventListener('pointerdown',e=>{
-  cv.setPointerCapture(e.pointerId);
+  try{ cv.setPointerCapture(e.pointerId); }catch(_){}
   document.getElementById('dica').classList.add('sumiu');
   if(e.clientX<W*0.5){ joy.on=true; joy.id=e.pointerId; joy.cx=e.clientX; joy.cy=e.clientY; st.jx=0; st.jy=0; }
   else { look.id=e.pointerId; look.x=look.x0=e.clientX; look.y=look.y0=e.clientY; look.t0=performance.now(); }
@@ -439,9 +468,15 @@ addEventListener('keyup',e=>{ st.keys[e.key.length===1?e.key.toLowerCase():e.key
 
 /* ---------- botões ---------- */
 document.getElementById('r-hora').addEventListener('input',e=>{ st.v=+e.target.value; });
-document.getElementById('slot-estaca').addEventListener('click',()=>escolhe('estaca'));
-document.getElementById('slot-corda').addEventListener('click',()=>escolhe('corda'));
-document.getElementById('b-olhar').addEventListener('click',()=>{ st.eye=st.eye>EYE?EYE:80; });
+// com um dedo no joystick, o celular não manda "clique" para o segundo dedo: o botão age ao encostar
+function toque(id,fn){
+  const el=document.getElementById(id); let ult=0;
+  el.addEventListener('pointerdown',e=>{ e.preventDefault(); ult=performance.now(); fn(); });
+  el.addEventListener('click',()=>{ if(performance.now()-ult>700) fn(); }); // teclado e leitores de tela
+}
+toque('slot-estaca',()=>escolhe('estaca'));
+toque('slot-corda',()=>escolhe('corda'));
+toque('b-olhar',()=>{ st.eye=st.eye>EYE?EYE:80; });
 
 /* ---------- laço principal ---------- */
 let last=performance.now();
@@ -454,7 +489,7 @@ requestAnimationFrame(frame);
 setTimeout(()=>document.getElementById('dica').classList.add('sumiu'),6000);
 
 // para testes automáticos
-window.__mnt3d={ st, get CAM(){ return CAM; }, alvo:t=>alvo(t), atrasDaPiramide, acao, escolhe, sunDir };
+window.__mnt3d={ st, get CAM(){ return CAM; }, alvo:t=>alvo(t), atrasDaPiramide, acao, escolhe, sunDir, alturaChao };
 })();
 </script>
 </body>

@@ -1,4 +1,4 @@
-const CACHE='mat-no-tempo-v9';
+const CACHE='mat-no-tempo-v10';
 const ARQUIVOS=['./','index.html','cap2.html','3d.html','manifest.webmanifest','icone-192.png','icone-512.png','icone-maskable.png'];
 self.addEventListener('install',e=>{ e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ARQUIVOS))); self.skipWaiting(); });
 self.addEventListener('activate',e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k))))); self.clients.claim(); });

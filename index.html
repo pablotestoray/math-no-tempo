@@ -613,11 +613,12 @@ function arteCap(n){
   }
   return '';
 }
+function capFeito(k){ try{ const g=JSON.parse(localStorage.getItem(k)||'null'); return !!(g&&g.resolvido); }catch(e){ return false; } }
 function cap2Feito(){ try{ const g=JSON.parse(localStorage.getItem('mnt-cap2')||'null'); return !!(g&&g.resolvido); }catch(e){ return false; } }
 const CADEADO='<span class="cadeado" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11 V8 a4 4 0 0 1 8 0 V11"/></svg></span>';
 function montaTrilho(){
   $('#trilho').innerHTML=CAPS.map(c=>{
-    const feito=(c.n===1&&est.resolvido)||(c.n===2&&cap2Feito());
+    const feito=(c.n===1&&(est.resolvido||capFeito('mnt-cap1')))||(c.n===2&&cap2Feito());
     const situ=c.aberto?(feito?'<span class="card-est feito">✓ Concluído</span>':'<span class="card-est">Tocar para jogar</span>'):'<span class="card-est">Em breve</span>';
     return '<button type="button" class="card'+(c.aberto?'':' trancado')+'" data-cap="'+c.n+'" aria-label="Capítulo '+c.n+': '+c.t+(c.aberto?'':' (em breve)')+'">'+
       '<span class="card-img" style="color:var(--sepia)"><svg viewBox="0 0 100 100" aria-hidden="true">'+arteCap(c.n)+'</svg>'+(c.aberto?'':CADEADO)+'</span>'+
@@ -626,6 +627,7 @@ function montaTrilho(){
   $$('#trilho .card').forEach(b=>b.addEventListener('click',()=>{
     const n=+b.dataset.cap, c=CAPS[n-1];
     if(n===2){ try{ history.replaceState({tela:'estudos'},'','#estudos'); }catch(e){} location.href='cap2.html'; return; }
+    if(n===1){ try{ history.replaceState({tela:'estudos'},'','#estudos'); }catch(e){} location.href='3d.html'; return; }
     if(c.aberto){ vaiPara('cap1'); return; }
     const e=b.querySelector('.card-est'); e.textContent=n===3?'É o próximo a ficar pronto':'Ainda está sendo feito'; e.classList.add('aviso'); e.setAttribute('role','status');
   }));

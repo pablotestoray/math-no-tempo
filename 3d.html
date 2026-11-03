@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#2A1C10">
-<title>Mathematica: protótipo 3D, Tales em Gizé</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<title>Mathematica: Tales e a pirâmide</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{--papiro:#E9D8AE;--papiro3:#D4B271;--tinta:#2A1C10;--tinta2:#4A3420;--verm:#9E3B26;--sombra:#6B4A26;--perg:#EFE3C4;--mar:#5E7F99}
 *{box-sizing:border-box}
@@ -48,15 +48,43 @@ button svg{width:16px;height:16px;flex:none}
 .slot{width:62px;height:58px;padding:4px 0 2px;border-radius:8px;border:2px solid rgba(233,216,174,.7);background:rgba(233,216,174,.9);flex-direction:column;justify-content:center;gap:1px;font-size:10.5px;letter-spacing:.04em}
 .slot svg{width:24px;height:24px}
 .slot[aria-pressed="true"]{border-color:var(--verm);box-shadow:0 0 0 2px var(--verm);background:var(--perg)}
-.dica{left:0;right:0;top:24%;text-align:center;font-style:italic;font-size:15px;color:var(--tinta);text-shadow:0 0 6px var(--papiro),0 0 2px var(--papiro),0 0 2px var(--papiro);transition:opacity 1.2s}
+.dica{left:0;right:0;top:64%;text-align:center;font-style:italic;font-size:15px;color:var(--tinta);text-shadow:0 0 6px var(--papiro),0 0 2px var(--papiro),0 0 2px var(--papiro);transition:opacity 1.2s}
 .dica.sumiu{opacity:0}
+.btn-ico{padding:0}
+.fala{top:62px;left:50%;transform:translateX(-50%);width:min(600px,calc(100% - 24px));background:rgba(42,28,16,.88);color:var(--papiro);border-radius:10px;padding:8px 14px;font-style:italic;font-size:15px;line-height:1.3;pointer-events:auto}
+.fala b{font-family:"Cinzel",Georgia,serif;font-style:normal;font-weight:700;color:var(--papiro3);margin-right:6px;font-size:13px;letter-spacing:.04em}
+.fala[hidden]{display:none}
+.cobre{position:fixed;inset:0;z-index:10;background:var(--papiro);background-image:repeating-linear-gradient(90deg,rgba(170,140,86,.22) 0 1px,transparent 1px 18px),repeating-linear-gradient(0deg,rgba(170,140,86,.22) 0 1px,transparent 1px 22px);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:16px max(28px,env(safe-area-inset-left,0px));touch-action:auto}
+.cobre[hidden]{display:none}
+.abertura .linha{opacity:0;transition:opacity .9s ease;max-width:36em}
+.abertura .linha.vis{opacity:1}
+.ab-cap{font-family:"Cinzel",Georgia,serif;font-size:15px;letter-spacing:.12em;color:var(--verm)}
+.ab-ano{font-family:"Cinzel",Georgia,serif;font-weight:700;font-size:clamp(30px,7vw,52px);line-height:1.05;margin:.1em 0}
+.ab-lugar{font-style:italic;font-size:21px;margin:0 0 .3em}
+.ab-txt{font-size:17px;line-height:1.45;margin:.2em 0}
+.bt-grande{height:48px;padding:0 26px;border:2px solid var(--tinta);border-radius:4px;background:transparent;font-size:16px;margin-top:12px}
+.caixa-r .mao{font-family:"Caveat",cursive;font-weight:700;font-size:28px;line-height:1;margin:0 0 6px}
+.caixa-r .cab{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+.caixa-r .num{font-family:"Cinzel",Georgia,serif;font-size:13px;color:var(--verm)}
+.caixa-r .tit{font-size:24px}
+.caixa-r p{margin:0 0 8px;line-height:1.45;font-size:16px}
+.caixa-r .suas{font-family:"Caveat",cursive;font-size:21px;line-height:1.3;color:var(--verm)}
+.frac-l{display:flex;align-items:center;gap:12px;margin:6px 0 10px;font-size:17px;flex-wrap:wrap}
+.frac{display:inline-flex;flex-direction:column;align-items:center}
+.frac .n{padding:0 6px 2px;border-bottom:1.5px solid currentColor}
+.frac .d{padding-top:2px}
+.frac small{font-family:"Caveat",cursive;font-size:16px;color:var(--verm)}
+.sabe{padding-left:18px;margin:4px 0 8px;font-size:15px}
+.sabe li{margin-bottom:6px;line-height:1.4}
+@media (prefers-reduced-motion: reduce){ .abertura .linha{transition:none} }
+@media (max-width: 760px){ .olhar .rot{display:none} .olhar button{padding:0 11px} .sol input{width:92px} }
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 
 <div class="ui canto">
-  <a class="btn-ico" id="b-volta" href="index.html#estudos" aria-label="Voltar aos estudos">&lsaquo;</a>
+  <button type="button" class="btn-ico" id="b-volta" aria-label="Voltar aos estudos">&lsaquo;</button>
   <div class="pilula sol">
     <svg viewBox="0 0 60 60" aria-hidden="true">
       <circle cx="30" cy="31" r="22" fill="none" stroke="#2A1C10" stroke-width="1.2" stroke-dasharray="2 3" opacity=".7"/>
@@ -73,11 +101,14 @@ button svg{width:16px;height:16px;flex:none}
 </div>
 
 <div class="ui olhar">
+  <button type="button" id="b-dica" aria-label="Pedir uma dica">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 18 h6 M10 21 h4 M12 3 a6 6 0 0 0 -3.5 10.9 V16 h7 v-2.1 A6 6 0 0 0 12 3 Z"/></svg><span class="rot">Dica</span>
+  </button>
   <button type="button" id="b-responder" class="forte">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 5 h7 a2 2 0 0 1 2 2 v12 a2 2 0 0 0 -2 -2 h-7 Z M20 5 h-5 a2 2 0 0 0 -2 2"/><path d="M20 5 v12 h-5"/></svg>Responder
   </button>
   <button type="button" id="b-olhar" aria-label="Alternar altura do olhar">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 12 C5 6 19 6 22 12 C19 18 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg><span id="t-olhar">Olhar de cima</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 12 C5 6 19 6 22 12 C19 18 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg><span id="t-olhar" class="rot">Olhar de cima</span>
   </button>
 </div>
 
@@ -103,6 +134,17 @@ button svg{width:16px;height:16px;flex:none}
     </div>
     <p class="volta" id="r-volta" aria-live="polite"></p>
   </div>
+</div>
+
+<div class="ui fala" id="fala" hidden role="status" aria-live="polite"></div>
+
+<div class="cobre abertura" id="abertura">
+  <div class="linha ab-cap">Capítulo 1</div>
+  <div class="linha ab-ano">O ano é 600 a.C.</div>
+  <div class="linha ab-lugar">Gizé, Egito</div>
+  <p class="linha ab-txt">Tales de Mileto chegou à Grande Pirâmide. Os sacerdotes dizem que ninguém sabe a altura dela: dá para subir pela pedra, mas a altura fica lá dentro, do topo até o meio do chão.</p>
+  <p class="linha ab-txt">Ele tem uma estaca, uma corda com nós e o sol.</p>
+  <button type="button" class="linha bt-grande" id="b-comecar">Começar</button>
 </div>
 
 <div class="ui dica" id="dica">Arraste à esquerda para andar · à direita para olhar · escolha um item embaixo</div>
@@ -134,7 +176,7 @@ function sunDir(v){ const e=elev(v), A=azim(v); return [-Math.sin(A)*Math.cos(e)
 function horaTxt(v){ const m=780+v; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
 
 // começa a leste da pirâmide, olhando para o oeste: a sombra aparece de perfil
-const st={ x:190, z:40, yaw:-Math.PI/2, pitch:-0.32, eye:EYE, v:30, yh:0, fase:0, medidas:[], stick:null, hold:null, anim:null, corda:null, cordaFase:0, jx:0, jy:0, keys:{}, andando:0 };
+const st={ x:190, z:40, yaw:-Math.PI/2, pitch:-0.32, eye:EYE, v:30, yh:0, fase:0, medidas:[], dica:0, stick:null, hold:null, anim:null, corda:null, cordaFase:0, jx:0, jy:0, keys:{}, andando:0 };
 
 /* ---------- câmera e projeção ---------- */
 let CAM=null;
@@ -347,6 +389,11 @@ function draw(t){
     // só conta como medida o que ele viu na tela
     if(rotulo(meio,'sombra '+n2(EST_H/tg),'#9E3B26',16,20)) anota({tipo:'estaca',sombra:EST_H/tg,v:st.v});
   }
+  if(st.dica>=3){ // a sombra que fica escondida embaixo da pirâmide, vista "através" da pedra
+    const A=azim(st.v), d=[Math.sin(A),0,Math.cos(A)], r=HB/Math.max(Math.abs(d[0]),Math.abs(d[2]));
+    ctx.setLineDash([7,6]); seg3([0,0.05,0],mul(d,r),'#9E3B26',3); ctx.setLineDash([]);
+    rotuloLivre([d[0]*r*0.5,0.4,d[2]*r*0.5],'sombra escondida','#9E3B26',16,-12);
+  }
   if(st.corda&&cordaFim){ const L=Math.hypot(...sub(cordaFim,st.corda.a)); if(L>0.05) rotuloLivre(ergue(mul(add(st.corda.a,cordaFim),0.5)),'corda '+L.toFixed(1).replace('.',',')+' passos','#2A1C10',17,-18); }
   // joystick
   if(joy.on){ ctx.beginPath(); ctx.arc(joy.cx,joy.cy,56,0,Math.PI*2); ctx.strokeStyle='rgba(42,28,16,.5)'; ctx.lineWidth=2; ctx.stroke(); ctx.beginPath(); ctx.arc(joy.cx+st.jx*56,joy.cy+st.jy*-56,22,0,Math.PI*2); ctx.fillStyle='rgba(158,59,38,.6)'; ctx.fill(); }
@@ -461,10 +508,63 @@ function abreResposta(){
   st.keys={}; st.jx=0; st.jy=0;
 }
 function fechaResposta(){ document.getElementById('r-painel').hidden=true; }
+let htmlPergunta=null;
+function voltaPergunta(){ if(htmlPergunta){ document.querySelector('.caixa-r').innerHTML=htmlPergunta; ligaPergunta(); } fechaResposta(); }
+function acertou(val){
+  const est=st.medidas.find(m=>m.tipo==='estaca'), som=st.medidas.find(m=>m.tipo==='corda'&&/sombra/.test((m.a||'')+(m.b||''))),
+        meia=st.medidas.find(m=>m.tipo==='corda'&&/meio da beira/.test((m.a||'')+(m.b||'')));
+  try{ localStorage.setItem('mnt-cap1',JSON.stringify({resolvido:{hora:est?est.v:st.v,est:est?est.sombra:null,pir:som?som.L:null,resp:val,em3d:true}})); }catch(e){}
+  let suas='';
+  if(est) suas+='Às '+horaTxt(est.v)+', a estaca de 2 passos fazia uma sombra de '+n2(est.sombra)+' passos. ';
+  if(som) suas+='A sombra da pirâmide aparecia por '+som.L.toFixed(1).replace('.',',')+' passos. ';
+  if(meia) suas+='Do canto até o meio da beira: '+meia.L.toFixed(1).replace('.',',')+' passos. ';
+  suas+='Sua resposta: '+String(val).replace('.',',')+' passos.';
+  const cx=document.querySelector('.caixa-r'); htmlPergunta=htmlPergunta||cx.innerHTML;
+  cx.innerHTML='<p class="mao">Caderno de descobertas</p>'+
+    '<div class="cab"><span class="num">DESCOBERTA 1</span><span class="tit">Proporção</span></div>'+
+    '<p>Na mesma hora, o sol inclina todas as sombras do mesmo jeito. Por isso a divisão altura ÷ sombra dá o mesmo número para a estaca e para a pirâmide. Quando a sombra da estaca fica do tamanho da estaca, a sombra da pirâmide, contada desde o meio dela, fica do tamanho da pirâmide.</p>'+
+    '<div class="frac-l"><span class="frac"><span class="n">altura</span><span class="d">sombra</span><small>da estaca</small></span><span>=</span><span class="frac"><span class="n">altura</span><span class="d">sombra</span><small>da pirâmide</small></span></div>'+
+    '<p class="suas">'+suas+'</p>'+
+    '<p>Ferramenta nova: <i>medidor de sombras</i>. Com ela, dá para medir a altura de qualquer coisa sem subir nela.</p>'+
+    '<div class="linha-r"><button type="button" class="forte" id="b-sabe">O que se sabe de verdade</button><button type="button" id="b-seguir">Continuar explorando</button></div>';
+  document.getElementById('b-sabe').addEventListener('click',mostraSabe);
+  document.getElementById('b-seguir').addEventListener('click',voltaPergunta);
+}
+function mostraSabe(){
+  document.querySelector('.caixa-r').innerHTML='<p class="mao">O que se sabe de verdade</p><ul class="sabe">'+
+    '<li>Tales de Mileto viveu por volta de 624 a 546 a.C. Nenhum texto escrito por ele sobreviveu.</li>'+
+    '<li>A história da sombra aparece em autores gregos que escreveram séculos depois: Diógenes Laércio, que cita Jerônimo de Rodes, e Plutarco. Pode ser lenda.</li>'+
+    '<li>A Grande Pirâmide tinha cerca de 146 metros de altura quando foi construída, e cada lado da base mede cerca de 230 metros. Hoje ela é mais baixa, porque perdeu o topo e o revestimento.</li>'+
+    '<li>No jogo, 1 passo vale 1 metro, para simplificar. O sol do jogo também é simplificado: às 15:30 ele fica ao sul, a 45°.</li>'+
+    '<li>Lenda ou não, a matemática funciona: medir alturas por sombras e proporções é usado até hoje.</li></ul>'+
+    '<p>Fim do capítulo 1. Próximo capítulo: Eratóstenes mede o tamanho da Terra, também com sombras.</p>'+
+    '<div class="linha-r"><button type="button" class="forte" id="b-estudos">Voltar aos estudos</button><button type="button" id="b-seguir2">Continuar explorando</button></div>';
+  document.getElementById('b-estudos').addEventListener('click',sair);
+  document.getElementById('b-seguir2').addEventListener('click',voltaPergunta);
+}
+function sair(){ if(history.length>1) history.back(); else location.replace('./#estudos'); }
+function ligaPergunta(){
+  document.getElementById('r-fechar').addEventListener('click',fechaResposta);
+  document.getElementById('r-conferir').addEventListener('click',confere);
+  document.getElementById('r-num').addEventListener('keydown',e=>{ if(e.key==='Enter') confere(); e.stopPropagation(); });
+}
+/* ---------- falas, dicas e abertura ---------- */
+let tFala=null;
+function fala(txt,quem){
+  const f=document.getElementById('fala'); f.innerHTML='<b>'+(quem||'Tales')+'</b>'+txt; f.hidden=false;
+  clearTimeout(tFala); tFala=setTimeout(()=>{ f.hidden=true; },14000);
+}
+const DICAS=[
+  'A estaca tem 2 passos. Plante a estaca e compare o tamanho dela com o da sombra dela.',
+  'Mexa o sol. Tem uma hora em que a sombra da estaca fica do tamanho da estaca.',
+  'Nessa hora, toda sombra fica do tamanho da coisa. Mas a sombra da pirâmide começa no meio dela, escondida embaixo da pedra: veja o tracejado.',
+  'Altura = a sombra que aparece (meça com a corda) + metade da base (do canto até o meio da beira), tudo na mesma hora.'
+];
+function pedeDica(){ const i=Math.min(st.dica,DICAS.length-1); st.dica=Math.min(st.dica+1,DICAS.length); fala(DICAS[i],'Dica'); }
 function confere(){
   const val=parseFloat(String(document.getElementById('r-num').value).replace(',','.')), out=document.getElementById('r-volta');
   if(!isFinite(val)){ out.textContent='Escreva um número, em passos.'; return; }
-  if(Math.abs(val-ALT)<=4){ out.innerHTML='<b>Isso!</b> A pirâmide tem 146 passos de altura. Quando a sombra da estaca fica do tamanho da estaca, a sombra da pirâmide, contada desde o meio dela, também fica do tamanho dela: a parte que aparece mais a metade da base.'; out.className='volta certo'; return; }
+  if(Math.abs(val-ALT)<=4){ acertou(val); return; }
   out.className='volta';
   const perto=x=>Math.abs(val-x)<=2;
   const c=st.medidas.find(m=>m.tipo==='corda'&&perto(m.L));
@@ -541,6 +641,7 @@ function acaba(e){
 }
 cv.addEventListener('pointerup',acaba); cv.addEventListener('pointercancel',acaba);
 addEventListener('keydown',e=>{
+  if(!document.getElementById('abertura').hidden) return;
   if(!document.getElementById('r-painel').hidden){ if(e.key==='Escape') fechaResposta(); return; }
   st.keys[e.key.length===1?e.key.toLowerCase():e.key]=true;
   if(e.key.startsWith('Arrow')||e.key===' ') e.preventDefault();
@@ -563,9 +664,18 @@ toque('slot-estaca',()=>escolhe('estaca'));
 toque('slot-corda',()=>escolhe('corda'));
 toque('b-olhar',()=>{ st.eye=st.eye>EYE?EYE:80; });
 toque('b-responder',()=>{ document.getElementById('r-agora').textContent=horaTxt(st.v); abreResposta(); });
-document.getElementById('r-fechar').addEventListener('click',fechaResposta);
-document.getElementById('r-conferir').addEventListener('click',confere);
-document.getElementById('r-num').addEventListener('keydown',e=>{ if(e.key==='Enter') confere(); e.stopPropagation(); });
+ligaPergunta();
+toque('b-dica',pedeDica);
+toque('b-volta',sair);
+document.getElementById('fala').addEventListener('click',()=>{ document.getElementById('fala').hidden=true; });
+// abertura: o texto aparece aos poucos; tocar pula a animação
+const ab=document.getElementById('abertura'), linhas=Array.from(ab.querySelectorAll('.linha'));
+const reduz=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+let iL=0, tAb=null;
+function proxima(){ if(iL<linhas.length){ linhas[iL++].classList.add('vis'); tAb=setTimeout(proxima,reduz?0:900); } }
+ab.addEventListener('click',e=>{ if(e.target.id!=='b-comecar'&&iL<linhas.length){ clearTimeout(tAb); linhas.forEach(l=>l.classList.add('vis')); iL=linhas.length; } });
+document.getElementById('b-comecar').addEventListener('click',()=>{ ab.hidden=true; fala('Dá para subir na pirâmide, mas a altura fica lá dentro da pedra. O sol desenha a pirâmide no chão… Será que a sombra ajuda?'); });
+proxima();
 
 /* ---------- laço principal ---------- */
 let last=performance.now();
@@ -575,10 +685,11 @@ function frame(t){
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-setTimeout(()=>document.getElementById('dica').classList.add('sumiu'),6000);
+document.getElementById('dica').classList.add('sumiu');
+document.getElementById('b-comecar').addEventListener('click',()=>{ const d=document.getElementById('dica'); d.classList.remove('sumiu'); setTimeout(()=>d.classList.add('sumiu'),6000); });
 
 // para testes automáticos
-window.__mnt3d={ abreResposta, confere, st, get CAM(){ return CAM; }, alvo:t=>alvo(t), atrasDaPiramide, acao, escolhe, sunDir, alturaChao };
+window.__mnt3d={ abreResposta, confere, pedeDica, st, get CAM(){ return CAM; }, alvo:t=>alvo(t), atrasDaPiramide, acao, escolhe, sunDir, alturaChao };
 })();
 </script>
 </body>

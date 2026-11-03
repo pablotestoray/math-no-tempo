@@ -174,6 +174,7 @@ function pontosImportantes(){
   if(L>r+0.5){ lista.push({p:mul(d,L),nome:'ponta da sombra da pirâmide'}); lista.push({p:mul(d,r),nome:'onde a sombra sai da pirâmide'}); }
   if(st.stick){ const b=[st.stick.x,0,st.stick.z]; lista.push({p:b,nome:'pé da estaca'}); lista.push({p:shadowOnGround([st.stick.x,EST_H,st.stick.z],S),nome:'ponta da sombra da estaca'}); }
   for(const c of PA) lista.push({p:c,nome:'canto da base'});
+  for(const m of [[0,0,-HB],[HB,0,0],[0,0,HB],[-HB,0,0]]) lista.push({p:m,nome:'meio da beira'});
   return lista;
 }
 function gruda(p){

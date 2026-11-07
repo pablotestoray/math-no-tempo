@@ -78,6 +78,13 @@ button{font:inherit;font-variant-numeric:lining-nums;cursor:pointer;color:inheri
 .cobre[hidden]{display:none}
 .abertura{flex-direction:column;align-items:flex-start;justify-content:center;padding-left:max(28px,env(safe-area-inset-left,0px))}
 .abertura .linha{opacity:0;transition:opacity .9s ease;max-width:34em}
+.preparo{overflow:auto;justify-content:flex-start !important;align-items:center !important;padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:16px}
+.prep-caixa{max-width:40em;width:100%;margin:auto 0}
+.prep-tit{font-family:"Cinzel",Georgia,serif;font-size:clamp(20px,4vw,28px);margin:4px 0 8px;line-height:1.2}
+.prep-obj{font-size:16px;line-height:1.4;margin:0 0 8px}
+.prep-passos{margin:0 0 8px;padding-left:22px;font-size:15px;line-height:1.4}
+.prep-passos li{margin-bottom:6px}
+.prep-dica{font-style:italic;font-size:14px;color:var(--tinta2);margin:0 0 6px}
 .abertura .linha.vis{opacity:1}
 .ab-cap{font-family:"Cinzel",Georgia,serif;font-size:15px;letter-spacing:.12em;color:var(--verm)}
 .ab-ano{font-family:"Cinzel",Georgia,serif;font-weight:700;font-size:clamp(34px,8vw,56px);line-height:1.05;margin:.1em 0}
@@ -164,7 +171,23 @@ button{font:inherit;font-variant-numeric:lining-nums;cursor:pointer;color:inheri
   </footer>
 </div>
 
-<div class="cobre abertura fibras" id="abertura">
+<div class="cobre preparo fibras" id="preparo">
+  <div class="prep-caixa">
+    <div class="ab-cap">Antes de começar</div>
+    <h2 class="prep-tit">Descubra quanto mede a volta da Terra</h2>
+    <p class="prep-obj"><b>Seu objetivo:</b> achar o número de estádios da volta inteira da Terra. Você vai fazer isso em 4 passos, nessa ordem.</p>
+    <ol class="prep-passos">
+      <li><b>Ache o meio-dia.</b> Mexa a barra "Hora do dia" e toque em <b>Sombra</b> em várias horas. O meio-dia é quando a sombra fica mais curta.</li>
+      <li><b>Conte os pedaços.</b> Ainda ao meio-dia, toque em <b>Tigela</b>. O jogo conta quantas vezes a sombra cabe na volta do círculo.</li>
+      <li><b>Veja a Terra de longe.</b> Toque em <b>De longe</b>. Mexa a barra até Alexandria ficar na mesma posição da sua tigela. Olhe o pedaço entre Siena e Alexandria.</li>
+      <li><b>Faça a conta e responda.</b> Volta da Terra = <b>5.000 × número de pedaços</b>. Toque em <b>Responder</b> e escreva o resultado em estádios.</li>
+    </ol>
+    <p class="prep-dica">Você não precisa adivinhar: cada passo tem um botão. Se travar, toque em <b>Dica</b>.</p>
+    <button type="button" class="linha bt-grande" id="b-prep">Entendi, começar</button>
+  </div>
+</div>
+
+<div class="cobre abertura fibras" id="abertura" hidden>
   <div class="linha ab-cap">Capítulo 2</div>
   <div class="linha ab-ano">O ano é 240 a.C.</div>
   <div class="linha ab-lugar">Alexandria, Egito</div>
@@ -465,6 +488,7 @@ if(!(window.matchMedia&&matchMedia('(orientation: portrait)').matches)) $('#dica
 let iLinha=0, tAb=null;
 function proxima(){ if(iLinha<linhas.length){ linhas[iLinha++].classList.add('vis'); tAb=setTimeout(proxima,reduz?0:900); } }
 ab.addEventListener('click',e=>{ if(e.target.id!=='b-comecar'&&iLinha<linhas.length){ clearTimeout(tAb); linhas.forEach(l=>l.classList.add('vis')); iLinha=linhas.length; } });
+$('#b-prep').addEventListener('click',()=>{ $('#preparo').hidden=true; ab.hidden=false; });
 $('#b-comecar').addEventListener('click',()=>{ ab.hidden=true; fala('Em Siena, ao meio-dia, nada faz sombra. E aqui em Alexandria? Meça a sombra da estaca.'); });
 proxima();
 configuraBarra();

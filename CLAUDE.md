@@ -89,6 +89,7 @@ Arquivos do app (todos na raiz, sem pastas):
 ### Como o capítulo 2 funciona (`cap2.html`)
 
 - O cartão 2 dos Estudos abre `cap2.html`. Antes de sair, o `index.html` grava `#estudos` no endereço; o botão voltar do capítulo 2 faz `history.back()`, e o `index.html` abre direto nos Estudos quando vê `#estudos`.
+- **Antes de começar (07/11/2026):** tela "Antes de começar" com o objetivo (achar a volta da Terra) e os 4 passos, na ordem em que os botões aparecem (meio-dia pela Sombra, Tigela, De longe, Responder com 5.000 × pedaços). Pedido dele para não ter que adivinhar. Quando o capítulo virar 3D, esta tela muda junto. Em 360 de altura, o botão "Entendi, começar" fica embaixo e precisa rolar.
 - **Abertura:** 240 a.C., Alexandria. Eratóstenes lê que em Siena, ao meio-dia do dia mais longo do ano, o sol ilumina o fundo de um poço.
 - **Mundo:** dia do solstício (declinação 24°), Alexandria a 31,2° e Siena a 24° de latitude. Ao meio-dia o sol fica a 7,2° do alto em Alexandria (1/50 do círculo) e bem no alto em Siena. Altura do sol pela fórmula de verdade (`zenite`). Estaca de 2 passos; distância Siena–Alexandria de 5.000 estádios (dada).
 - **Barra "Hora do dia":** 10:00 a 14:00, passos de 2 minutos. Ao meio-dia a sombra da estaca dá 0,25 passos, a mais curta.

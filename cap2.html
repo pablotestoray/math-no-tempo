@@ -150,7 +150,7 @@ button:disabled{opacity:.35}
 'use strict';
 const cv=document.getElementById('c'), ctx=cv.getContext('2d');
 let W=0,H=0,FP=1,K=1;
-function resize(){ const dpr=Math.min(2,window.devicePixelRatio||1); W=innerWidth; H=innerHeight; cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); ctx.setTransform(dpr,0,0,dpr,0,0); FP=(H/2)/Math.tan(34*Math.PI/180); K=Math.min(W,H)/390; }
+function resize(){ const dpr=Math.min(2,window.devicePixelRatio||1); W=innerWidth; H=innerHeight; cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); ctx.setTransform(dpr,0,0,dpr,0,0); FP=(H/2)/Math.tan(42*Math.PI/180); K=Math.min(W,H)/390; }
 addEventListener('resize',resize); resize();
 
 const rad=d=>d*Math.PI/180, clamp=(v,a,b)=>Math.max(a,Math.min(b,v));

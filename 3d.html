@@ -154,7 +154,7 @@ button svg{width:16px;height:16px;flex:none}
 'use strict';
 const cv=document.getElementById('c'), ctx=cv.getContext('2d');
 let W=0,H=0,DPR=1,FP=1,K=1;
-function resize(){ DPR=Math.min(2,window.devicePixelRatio||1); W=innerWidth; H=innerHeight; cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR); ctx.setTransform(DPR,0,0,DPR,0,0); FP=(H/2)/Math.tan(34*Math.PI/180); K=Math.min(W,H)/390; }
+function resize(){ DPR=Math.min(2,window.devicePixelRatio||1); W=innerWidth; H=innerHeight; cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR); ctx.setTransform(DPR,0,0,DPR,0,0); FP=(H/2)/Math.tan(42*Math.PI/180); K=Math.min(W,H)/390; }
 addEventListener('resize',resize); resize();
 
 /* ---------- mundo (1 unidade = 1 passo = 1 metro) ---------- */

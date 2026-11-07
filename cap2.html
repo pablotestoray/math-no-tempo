@@ -5,497 +5,522 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#2A1C10">
 <title>Mathematica: Eratóstenes e a Terra</title>
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icone-192.png">
-<link rel="apple-touch-icon" href="icone-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --papiro:#E9D8AE; --papiro2:#E2CC98; --papiro3:#D4B271; --tinta:#2A1C10; --tinta2:#4A3420;
-  --verm:#9E3B26; --sombra:#6B4A26; --fibra:rgba(170,140,86,.22); --perg:#EFE3C4; --sepia:#3E2A16; --sang:#9C4A2F;
-  --mar:#5E7F99; --grade:rgba(80,120,160,.20); --sombra-card:rgba(42,28,16,.22); --apagado:#A08C6C;
-  color-scheme:light;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --papiro:#2B2116; --papiro2:#3A2D1E; --papiro3:#5C4528; --tinta:#EBDDBE; --tinta2:#CDBB98;
-    --verm:#E2876C; --sombra:#0F0A06; --fibra:rgba(0,0,0,.28); --perg:#33281C; --sepia:#EBDDBE; --sang:#E2876C;
-    --mar:#7E9DB5; --grade:rgba(150,180,210,.12); --sombra-card:rgba(0,0,0,.45); --apagado:#7D6E58;
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --papiro:#2B2116; --papiro2:#3A2D1E; --papiro3:#5C4528; --tinta:#EBDDBE; --tinta2:#CDBB98;
-  --verm:#E2876C; --sombra:#0F0A06; --fibra:rgba(0,0,0,.28); --perg:#33281C; --sepia:#EBDDBE; --sang:#E2876C;
-  --mar:#7E9DB5; --grade:rgba(150,180,210,.12); --sombra-card:rgba(0,0,0,.45); --apagado:#7D6E58;
-  color-scheme:dark;
-}
+:root{--papiro:#E9D8AE;--papiro3:#D4B271;--tinta:#2A1C10;--tinta2:#4A3420;--verm:#9E3B26;--sombra:#6B4A26;--perg:#EFE3C4;--mar:#5E7F99}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:var(--papiro);touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-body{font-family:"EB Garamond",Georgia,"Times New Roman",serif;font-variant-numeric:lining-nums;color:var(--tinta);overflow:hidden;-webkit-tap-highlight-color:transparent}
-button{font:inherit;font-variant-numeric:lining-nums;cursor:pointer;color:inherit}
-:focus-visible{outline:2px solid var(--verm);outline-offset:2px}
-.fibras{background-color:var(--papiro);
-  background-image:repeating-linear-gradient(90deg,var(--fibra) 0 1px,transparent 1px 18px),repeating-linear-gradient(0deg,var(--fibra) 0 1px,transparent 1px 22px)}
-#app{position:fixed;inset:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;
-  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
-.topo{display:flex;align-items:center;gap:12px;padding:4px 10px 4px 14px;background:var(--tinta);color:var(--papiro);border-bottom:4px solid var(--verm);height:66px}
-.onde{display:flex;flex-direction:column;line-height:1.15;flex:none}
-.onde .lugar{font-family:"Cinzel",Georgia,serif;font-size:15px;letter-spacing:.04em;white-space:nowrap}
-.onde .meta{font-style:italic;font-size:13px;opacity:.8;white-space:nowrap}
-.bt-topo{min-height:44px;padding:0 14px;border:1.5px solid var(--papiro);border-radius:4px;background:transparent;font-family:"Cinzel",Georgia,serif;font-size:13px;color:var(--papiro)}
-.bt-topo.claro{background:var(--papiro);color:var(--tinta)}
-.fala{flex:1;min-width:0;max-height:100%;overflow-y:auto;font-style:italic;font-size:14px;line-height:1.18;padding:2px 10px;border-left:1.5px solid color-mix(in srgb,var(--papiro) 35%,transparent)}
-.fala b{font-style:normal;font-family:"Cinzel",Georgia,serif;font-weight:700;color:var(--papiro3);margin-right:6px;font-size:13px;letter-spacing:.04em}
-.fala.nova{animation:acende .7s ease}
-@keyframes acende{from{background:color-mix(in srgb,var(--papiro3) 40%,transparent)}to{background:transparent}}
-.palco{display:grid;grid-template-columns:minmax(160px,min(220px,28%)) minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:8px;padding:8px 8px 4px;min-height:0;overflow:hidden}
-.lado{display:flex;flex-direction:column;gap:6px;min-height:0;overflow-y:auto}
-#cena{display:block;width:100%;height:100%;min-height:0}
-.bolha{background:var(--papiro);border:1.5px solid var(--tinta);border-radius:6px;padding:4px 6px 2px;flex:none}
-.bolha-tit{font-size:13px;color:var(--tinta2)}
-#perto{display:block;width:100%;height:auto}
-.medidas{background:var(--papiro);border:1px solid var(--tinta2);border-radius:6px;padding:4px 8px;font-size:14px;line-height:1.3;flex:none}
-.medidas:empty{display:none}
-.medidas .m-tit{font-family:"Cinzel",Georgia,serif;font-size:11px;letter-spacing:.06em;color:var(--tinta2)}
-.medidas .m{display:flex;align-items:baseline;gap:6px;padding:2px 0}
-.medidas .m span{flex:1;min-width:0}
-.medidas .m b{font-family:"Cinzel",Georgia,serif;font-weight:700;color:var(--verm)}
-.medidas .m small{font-size:12px;color:var(--tinta2);white-space:nowrap}
-.medidas .velha{opacity:.5}
-.medidas .velha b{text-decoration:line-through}
-.barra{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;padding:4px 10px 6px;background:var(--papiro2);border-top:1.5px solid var(--tinta)}
-.hora{flex:1 1 140px;display:flex;flex-direction:column;min-width:120px}
-.hora label{font-size:13px;color:var(--tinta2)}
-.hora b{font-family:"Cinzel",Georgia,serif;color:var(--verm);font-weight:700}
-.hora input{width:100%;accent-color:var(--verm);height:28px}
-.ferr{min-height:44px;display:inline-flex;align-items:center;gap:6px;padding:0 10px;border:1.5px solid var(--tinta);border-radius:4px;background:transparent;font-size:15px;white-space:nowrap;flex:none}
-.ferr svg{width:20px;height:20px;flex:none}
-.ferr.forte{background:var(--tinta);color:var(--papiro);font-family:"Cinzel",Georgia,serif;font-size:14px}
-.cobre{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) 16px max(16px,env(safe-area-inset-bottom,0px))}
-.cobre[hidden]{display:none}
-.abertura{flex-direction:column;align-items:flex-start;justify-content:center;padding-left:max(28px,env(safe-area-inset-left,0px))}
-.abertura .linha{opacity:0;transition:opacity .9s ease;max-width:34em}
-.preparo{overflow:auto;justify-content:flex-start !important;align-items:center !important;padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:16px}
-.prep-caixa{max-width:40em;width:100%;margin:auto 0}
-.prep-tit{font-family:"Cinzel",Georgia,serif;font-size:clamp(20px,4vw,28px);margin:4px 0 8px;line-height:1.2}
-.prep-obj{font-size:16px;line-height:1.4;margin:0 0 8px}
-.prep-passos{margin:0 0 8px;padding-left:22px;font-size:15px;line-height:1.4}
-.prep-passos li{margin-bottom:6px}
-.prep-dica{font-style:italic;font-size:14px;color:var(--tinta2);margin:0 0 6px}
-.abertura .linha.vis{opacity:1}
-.ab-cap{font-family:"Cinzel",Georgia,serif;font-size:15px;letter-spacing:.12em;color:var(--verm)}
-.ab-ano{font-family:"Cinzel",Georgia,serif;font-weight:700;font-size:clamp(34px,8vw,56px);line-height:1.05;margin:.1em 0}
-.ab-lugar{font-style:italic;font-size:22px;margin:0 0 .4em}
-.ab-txt{font-size:18px;line-height:1.5;margin:.2em 0}
-.bt-grande{min-height:48px;padding:0 26px;border:2px solid var(--tinta);border-radius:4px;background:transparent;font-family:"Cinzel",Georgia,serif;font-size:16px;letter-spacing:.04em;margin-top:14px}
-.dica-giro{font-size:14px;color:var(--tinta2);margin-top:14px}
-.modal{background:rgba(20,12,6,.45)}
-.caixa{background:var(--papiro);border:2px solid var(--tinta);border-radius:8px;padding:16px 18px;max-width:440px;width:100%;max-height:100%;overflow:auto}
-.caixa h2{font-family:"Cinzel",Georgia,serif;font-size:19px;margin:0 0 8px}
-.caixa p{margin:0 0 10px;line-height:1.45}
-.caixa input{font:inherit;font-size:20px;width:100%;padding:8px 10px;border:1.5px solid var(--tinta);border-radius:4px;background:var(--perg);color:var(--tinta)}
-.linha-bts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.retorno{min-height:1.4em;margin-top:8px;font-style:italic;color:var(--verm)}
-.caderno{background:var(--perg);color:var(--sepia);border:1px solid var(--tinta2);border-radius:4px;max-width:560px;width:100%;max-height:100%;overflow:auto;padding:18px 22px}
-.caderno .mao{font-family:"Caveat",cursive;font-weight:700;font-size:30px;line-height:1;margin:0 0 6px}
-.caderno .cab{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
-.caderno .num{font-family:"Cinzel",Georgia,serif;font-size:14px;color:var(--sang)}
-.caderno .tit{font-size:26px}
-.caderno p{margin:0 0 10px;line-height:1.5;font-size:17px}
-.caderno .suas{font-family:"Caveat",cursive;font-size:21px;line-height:1.3;color:var(--sang)}
-.frac-l{display:flex;align-items:center;gap:12px;margin:8px 0 12px;font-size:18px;flex-wrap:wrap}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--papiro);touch-action:none;-webkit-user-select:none;user-select:none;font-family:"EB Garamond",Georgia,serif;color:var(--tinta)}
+canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block}
+.ui{position:fixed;pointer-events:none}
+.pilula{pointer-events:auto;background:rgba(233,216,174,.92);border:1.5px solid var(--tinta);border-radius:24px}
+.canto{top:max(8px,env(safe-area-inset-top,0px));left:max(8px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:8px}
+.btn-ico{pointer-events:auto;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--tinta);background:rgba(233,216,174,.92);color:var(--tinta);display:flex;align-items:center;justify-content:center;font-size:26px;line-height:1;padding:0 0 3px;cursor:pointer}
+.sol{display:flex;align-items:center;gap:6px;padding:2px 12px 2px 4px;height:46px}
+.sol svg{width:42px;height:42px;flex:none}
+.sol input{width:118px;accent-color:var(--verm);margin:0;height:28px}
+.sol b{font-family:"Cinzel",Georgia,serif;font-weight:700;color:var(--verm);font-size:14px;min-width:3.2em;text-align:right}
+.topo-dir{top:max(8px,env(safe-area-inset-top,0px));right:max(8px,env(safe-area-inset-right,0px));display:flex;gap:8px}
+button{pointer-events:auto;height:42px;padding:0 14px;border:1.5px solid var(--tinta);border-radius:22px;background:rgba(233,216,174,.92);color:var(--tinta);font-family:"Cinzel",Georgia,serif;font-size:13px;letter-spacing:.03em;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+button.forte{background:var(--tinta);color:var(--papiro)}
+button svg{width:16px;height:16px;flex:none}
+button:disabled{opacity:.35}
+.objetivo{top:64px;left:50%;transform:translateX(-50%);max-width:min(560px,calc(100% - 24px));padding:5px 14px;font-size:15px;line-height:1.25;text-align:center;background:rgba(42,28,16,.86);color:var(--papiro);border-radius:16px}
+.objetivo b{font-family:"Cinzel",Georgia,serif;color:var(--papiro3);font-weight:700;margin-right:4px}
+.fala{bottom:92px;left:50%;transform:translateX(-50%);width:min(600px,calc(100% - 24px));background:rgba(42,28,16,.88);color:var(--papiro);border-radius:10px;padding:7px 14px;font-style:italic;font-size:15px;line-height:1.3;pointer-events:auto}
+.fala b{font-family:"Cinzel",Georgia,serif;font-style:normal;font-weight:700;color:var(--papiro3);margin-right:6px;font-size:13px}
+.fala[hidden]{display:none}
+.itens{bottom:max(10px,env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);display:flex;gap:8px;padding:5px;background:rgba(42,28,16,.55);border-radius:12px;pointer-events:auto}
+.slot{width:62px;height:58px;padding:4px 0 2px;border-radius:8px;border:2px solid rgba(233,216,174,.7);background:rgba(233,216,174,.92);flex-direction:column;justify-content:center;gap:1px;font-size:10.5px;letter-spacing:.04em;border-radius:8px}
+.slot svg{width:24px;height:24px}
+.slot[aria-pressed="true"]{border-color:var(--verm);box-shadow:0 0 0 2px var(--verm);background:var(--perg)}
+.slot.feito{border-color:var(--tinta)}
+.dica-chao{left:0;right:0;top:60%;text-align:center;font-style:italic;font-size:15px;text-shadow:0 0 6px var(--papiro),0 0 2px var(--papiro);transition:opacity 1.2s}
+.dica-chao.sumiu{opacity:0}
+.olhar-btn{padding:0 11px}
+@media (max-width:760px){ .rot{display:none} .sol input{width:92px} .objetivo{font-size:13.5px} }
+/* ilustrações do passo a passo */
+.prep{position:fixed;inset:0;z-index:20;background:var(--papiro);background-image:repeating-linear-gradient(90deg,rgba(170,140,86,.22) 0 1px,transparent 1px 18px),repeating-linear-gradient(0deg,rgba(170,140,86,.22) 0 1px,transparent 1px 22px);display:flex;align-items:center;justify-content:center;padding:max(10px,env(safe-area-inset-top,0px)) 14px max(10px,env(safe-area-inset-bottom,0px))}
+.prep[hidden]{display:none}
+.slide{width:min(680px,100%);max-height:100%;display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(239,227,196,.94);border:2px solid var(--tinta);border-radius:12px;padding:10px 16px;overflow:auto}
+.slide .num{font-family:"Cinzel",Georgia,serif;font-size:12px;letter-spacing:.14em;color:var(--verm)}
+.slide h2{font-family:"Cinzel",Georgia,serif;font-size:clamp(17px,3.4vw,24px);margin:0;text-align:center;line-height:1.2}
+.slide svg{width:100%;max-width:520px;height:auto;max-height:34vh}
+.slide p{margin:0;font-size:16px;line-height:1.4;text-align:center;max-width:36em}
+.slide p b{font-family:"Cinzel",Georgia,serif;color:var(--verm);font-weight:700}
+.trilha{display:flex;gap:6px;align-items:center}
+.trilha i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--tinta);display:block}
+.trilha i.on{background:var(--verm);border-color:var(--verm)}
+.nav-prep{display:flex;gap:10px;align-items:center;justify-content:space-between;width:100%;margin-top:4px;flex-wrap:wrap}
+/* resposta e caderno */
+.painel-r{position:fixed;inset:0;z-index:15;background:rgba(20,12,6,.45);display:flex;align-items:center;justify-content:center;padding:12px}
+.painel-r[hidden]{display:none}
+.caixa-r{background:var(--perg);border:2px solid var(--tinta);border-radius:10px;width:min(580px,100%);max-height:100%;overflow:auto;padding:12px 16px}
+.caixa-r h2{font-family:"Cinzel",Georgia,serif;font-size:17px;margin:0 0 4px}
+.caixa-r .mao{font-family:"Caveat",cursive;font-weight:700;font-size:28px;line-height:1;margin:0 0 6px}
+.caixa-r .cab{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+.caixa-r .num{font-family:"Cinzel",Georgia,serif;font-size:13px;color:var(--verm)}
+.caixa-r .tit{font-size:24px}
+.caixa-r p{margin:0 0 8px;line-height:1.45;font-size:16px}
+.caixa-r .suas{font-family:"Caveat",cursive;font-size:21px;line-height:1.3;color:var(--verm)}
+.lista-r{list-style:none;margin:0 0 6px;padding:0;font-size:15px}
+.lista-r li{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;padding:4px 0;border-bottom:1px solid rgba(74,52,32,.25)}
+.lista-r li b{color:var(--verm)}
+.lista-r li.velha{opacity:.55}
+.lista-r li .hr{margin-left:auto;font-size:13px;color:var(--tinta2)}
+.linha-r{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+.linha-r input{flex:1 1 140px;min-width:120px;height:42px;font:inherit;font-size:18px;padding:0 10px;border:1.5px solid var(--tinta);border-radius:6px;background:#FBF4E2;color:var(--tinta)}
+.volta{margin:8px 0 0;min-height:1.3em;font-style:italic;color:var(--verm);font-size:15px;line-height:1.35}
+.volta.certo{font-style:normal;color:var(--tinta)}
+.sabe{padding-left:18px;margin:4px 0 8px;font-size:15px}
+.sabe li{margin-bottom:6px;line-height:1.4}
+.frac-l{display:flex;align-items:center;gap:12px;margin:6px 0 10px;font-size:17px;flex-wrap:wrap}
 .frac{display:inline-flex;flex-direction:column;align-items:center}
 .frac .n{padding:0 6px 2px;border-bottom:1.5px solid currentColor}
 .frac .d{padding-top:2px}
-.frac small{font-family:"Caveat",cursive;font-size:17px;color:var(--sang)}
-.sabe{border-top:1px solid var(--tinta2);padding-top:10px;margin-top:6px;font-size:15px}
-.sabe li{margin-bottom:6px;line-height:1.45}
-@media (prefers-reduced-motion: reduce){ .abertura .linha{transition:none} }
-.bt-volta{width:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;flex:none}
-.bt-volta svg{width:22px;height:22px}
-.tela{position:fixed;inset:0;z-index:30;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
-@media (orientation: landscape) and (max-width: 760px){ .fala{font-size:13px} .onde .meta{display:none} }
-@media (orientation: portrait){
-  .topo{flex-wrap:wrap;height:auto;row-gap:2px;padding-top:6px;padding-bottom:6px}
-  .onde{flex:1}
-  .fala{order:3;flex:1 1 100%;height:4.2em;max-height:none;border-left:0;border-top:1.5px solid color-mix(in srgb,var(--papiro) 35%,transparent);padding:4px 0 0}
-  .palco{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}
-  .lado{order:2;flex-direction:row;align-items:flex-start;overflow:visible}
-  .lado .bolha{flex:1 1 50%;min-width:0}
-  .lado .medidas{flex:1 1 50%;min-width:0}
-  .barra{flex-wrap:wrap}
-  .hora{flex-basis:100%}
-}
-.poco-txt{font-size:12.5px;line-height:1.2;color:var(--tinta2);padding:0 2px 3px;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lado .medidas .m{padding:1px 0}
-@media (orientation: landscape) and (max-width: 700px){ .onde .lugar{font-size:12.5px;letter-spacing:0} .topo{gap:8px} .bolha-tit{font-size:12px} .poco-txt{padding-bottom:1px} }
-.conta b{font-variant-numeric:lining-nums tabular-nums}
-[hidden]{display:none!important}
+.frac small{font-family:"Caveat",cursive;font-size:16px;color:var(--verm)}
 </style>
 </head>
 <body>
-<div id="app" class="fibras">
-  <header class="topo">
-    <button type="button" class="bt-topo bt-volta" id="b-sair" aria-label="Voltar aos estudos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 L8 12 L15 19"/></svg></button>
-    <div class="onde"><span class="lugar">240 a.C., Alexandria</span><span class="meta">Meta: o tamanho da Terra</span></div>
-    <div class="fala" id="fala" role="status" aria-live="polite"><b>Eratóstenes</b>Quanto mede a volta inteira da Terra?</div>
-    <button type="button" class="bt-topo" id="b-dica">Dica</button>
-    <button type="button" class="bt-topo claro" id="b-caderno">Caderno</button>
-  </header>
+<canvas id="c"></canvas>
 
-  <main class="palco">
-    <div class="lado">
-      <div class="bolha">
-        <div class="bolha-tit">Em Siena, na mesma hora: o poço</div>
-        <svg id="perto" viewBox="0 0 240 78" role="img" aria-label="Corte de um poço em Siena, com a luz do sol entrando"></svg>
-        <div class="poco-txt" id="poco-txt"></div>
-      </div>
-      <div class="medidas" id="medidas" aria-live="polite"></div>
-      <div class="medidas conta" id="conta" hidden aria-live="polite"></div>
-    </div>
-    <svg id="cena" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Alexandria: uma estaca com a sua sombra e uma tigela de pedra que marca a sombra num círculo"></svg>
-  </main>
-
-  <footer class="barra">
-    <div class="hora">
-      <label for="r-hora"><span id="l-barra">Hora do dia:</span> <b id="t-hora">10:30</b></label>
-      <input id="r-hora" type="range" min="0" max="240" step="2" value="30">
-    </div>
-    <button type="button" class="ferr" data-acao="sombra" aria-label="Medir a sombra da estaca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><line x1="16" y1="3" x2="16" y2="19"></line><line x1="5" y1="21" x2="19" y2="21"></line><line x1="7" y1="19" x2="16" y2="19" stroke-width="3"></line></svg>Sombra</button>
-    <button type="button" class="ferr" data-acao="tigela" aria-label="Contar quantos pedaços cabem na tigela"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 9 A9 9 0 0 0 21 9 Z"></path><line x1="12" y1="18" x2="12" y2="9"></line></svg>Tigela</button>
-    <button type="button" class="ferr" data-acao="longe" id="b-longe" aria-label="Ver a Terra de longe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><line x1="12" y1="5" x2="12" y2="1"></line><line x1="6.5" y1="7.5" x2="4" y2="4"></line></svg><span id="t-longe">De longe</span></button>
-    <button type="button" class="ferr forte" id="b-responder">Responder</button>
-  </footer>
-</div>
-
-<div class="cobre preparo fibras" id="preparo">
-  <div class="prep-caixa">
-    <div class="ab-cap">Antes de começar</div>
-    <h2 class="prep-tit">Descubra quanto mede a volta da Terra</h2>
-    <p class="prep-obj"><b>Seu objetivo:</b> achar o número de estádios da volta inteira da Terra. Você vai fazer isso em 4 passos, nessa ordem.</p>
-    <ol class="prep-passos">
-      <li><b>Ache o meio-dia.</b> Mexa a barra "Hora do dia" e toque em <b>Sombra</b> em várias horas. O meio-dia é quando a sombra fica mais curta.</li>
-      <li><b>Conte os pedaços.</b> Ainda ao meio-dia, toque em <b>Tigela</b>. O jogo conta quantas vezes a sombra cabe na volta do círculo.</li>
-      <li><b>Veja a Terra de longe.</b> Toque em <b>De longe</b>. Mexa a barra até Alexandria ficar na mesma posição da sua tigela. Olhe o pedaço entre Siena e Alexandria.</li>
-      <li><b>Faça a conta e responda.</b> Volta da Terra = <b>5.000 × número de pedaços</b>. Toque em <b>Responder</b> e escreva o resultado em estádios.</li>
-    </ol>
-    <p class="prep-dica">Você não precisa adivinhar: cada passo tem um botão. Se travar, toque em <b>Dica</b>.</p>
-    <button type="button" class="linha bt-grande" id="b-prep">Entendi, começar</button>
+<div class="ui canto">
+  <button type="button" class="btn-ico" id="b-volta" aria-label="Voltar aos estudos">&lsaquo;</button>
+  <div class="pilula sol">
+    <svg viewBox="0 0 60 60" aria-hidden="true">
+      <path d="M8 46 A26 26 0 0 1 52 46" fill="none" stroke="#2A1C10" stroke-width="1.2" stroke-dasharray="2 3" opacity=".6"/>
+      <circle cx="30" cy="46" r="7" fill="#5E7F99" stroke="#2A1C10" stroke-width="1.4"/>
+      <g id="sol-ico"><circle r="5" fill="#9E3B26"/></g>
+    </svg>
+    <input id="r-hora" type="range" min="0" max="240" step="2" value="30" aria-label="Hora do dia: mexe o sol">
+    <b id="t-hora">10:30</b>
   </div>
 </div>
 
-<div class="cobre abertura fibras" id="abertura" hidden>
-  <div class="linha ab-cap">Capítulo 2</div>
-  <div class="linha ab-ano">O ano é 240 a.C.</div>
-  <div class="linha ab-lugar">Alexandria, Egito</div>
-  <p class="linha ab-txt">Eratóstenes cuida da Biblioteca de Alexandria. Num rolo, ele lê: em Siena, mais ao sul, ao meio-dia do dia mais longo do ano, o sol ilumina o fundo de um poço.</p>
-  <p class="linha ab-txt">Hoje é esse dia. Ele tem uma estaca, uma tigela de pedra e uma pergunta: qual é o tamanho da Terra?</p>
-  <button type="button" class="linha bt-grande" id="b-comecar">Começar</button>
-  <div class="linha dica-giro" id="dica-giro">Jogue com o celular deitado.</div>
+<div class="ui topo-dir">
+  <button type="button" id="b-dica" aria-label="Pedir uma dica">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 18 h6 M10 21 h4 M12 3 a6 6 0 0 0 -3.5 10.9 V16 h7 v-2.1 A6 6 0 0 0 12 3 Z"/></svg><span class="rot">Dica</span>
+  </button>
+  <button type="button" id="b-responder" class="forte">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 5 h7 a2 2 0 0 1 2 2 v12 a2 2 0 0 0 -2 -2 h-7 Z M20 5 h-5 a2 2 0 0 0 -2 2"/><path d="M20 5 v12 h-5"/></svg>Responder
+  </button>
+  <button type="button" id="b-olhar" class="olhar-btn" aria-label="Alternar altura do olhar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 12 C5 6 19 6 22 12 C19 18 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg><span id="t-olhar" class="rot">Olhar de cima</span>
+  </button>
 </div>
 
-<div class="cobre modal" id="m-resposta" hidden role="dialog" aria-modal="true" aria-labelledby="t-resp">
-  <div class="caixa">
-    <h2 id="t-resp">Quanto mede a volta da Terra?</h2>
-    <p>Responda em estádios, a medida de distância da época. Use o que você mediu.</p>
-    <label for="i-resp" style="font-size:14px;color:var(--tinta2)">Volta da Terra, em estádios</label>
-    <input id="i-resp" type="text" inputmode="numeric" autocomplete="off">
-    <div class="retorno" id="retorno" aria-live="polite"></div>
-    <div class="linha-bts">
-      <button type="button" class="ferr forte" id="b-conferir">Conferir</button>
-      <button type="button" class="ferr" id="b-fechar-resp">Voltar a medir</button>
+<div class="ui objetivo pilula" id="objetivo" aria-live="polite"></div>
+<div class="ui fala" id="fala" hidden role="status" aria-live="polite"></div>
+
+<div class="ui itens" role="toolbar" aria-label="Itens">
+  <button type="button" class="slot" id="slot-estaca" aria-pressed="false" aria-label="Estaca">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="14" y1="3" x2="10" y2="20"/><line x1="6" y1="21" x2="15" y2="21"/></svg><span>Estaca</span>
+  </button>
+  <button type="button" class="slot" id="slot-corda" aria-pressed="false" aria-label="Corda de medir">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="11" rx="6" ry="7"/><ellipse cx="12" cy="11" rx="3" ry="4"/><path d="M17 16 C19 19 21 19 22 21"/></svg><span>Corda</span>
+  </button>
+  <button type="button" class="slot" id="slot-angulo" aria-label="Medir o ângulo do sol">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="4"/><line x1="4" y1="20" x2="20" y2="8"/><path d="M4 13 A7 7 0 0 1 9.5 17"/></svg><span>Ângulo</span>
+  </button>
+</div>
+
+<div class="ui dica-chao" id="dica-chao">Arraste à esquerda para andar · à direita para olhar</div>
+
+<!-- passo a passo, uma tela por passo -->
+<div class="prep" id="prep" role="dialog" aria-modal="true" aria-label="Passo a passo">
+  <div class="slide" id="slide"></div>
+</div>
+
+<!-- resposta -->
+<div class="painel-r" id="r-painel" hidden role="dialog" aria-modal="true" aria-labelledby="r-tit">
+  <div class="caixa-r" id="caixa-r">
+    <h2 id="r-tit">Quanto mede a volta da Terra, em estádios?</h2>
+    <p style="font-size:14px;color:var(--tinta2);margin:0 0 4px">Suas medidas (só as que você fez):</p>
+    <ul class="lista-r" id="r-lista"></ul>
+    <div class="linha-r">
+      <input id="r-num" type="text" inputmode="numeric" autocomplete="off" placeholder="volta da Terra, em estádios" aria-label="Volta da Terra, em estádios">
+      <button type="button" class="forte" id="r-conferir">Conferir</button>
+      <button type="button" id="r-fechar">Voltar a medir</button>
     </div>
+    <p class="volta" id="r-volta" aria-live="polite"></p>
   </div>
-</div>
-
-<div class="cobre modal" id="m-caderno" hidden role="dialog" aria-modal="true" aria-label="Caderno de descobertas">
-  <div class="caderno" id="caderno-corpo"></div>
 </div>
 
 <script>
 (function(){
 'use strict';
-const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
-const reduz=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-const NS='http://www.w3.org/2000/svg';
-const n2=v=>v.toFixed(2).replace('.',','), mil=v=>Math.round(v).toLocaleString('pt-BR');
-const rad=d=>d*Math.PI/180, grau=r=>r*180/Math.PI;
+const cv=document.getElementById('c'), ctx=cv.getContext('2d');
+let W=0,H=0,FP=1,K=1;
+function resize(){ const dpr=Math.min(2,window.devicePixelRatio||1); W=innerWidth; H=innerHeight; cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); ctx.setTransform(dpr,0,0,dpr,0,0); FP=(H/2)/Math.tan(34*Math.PI/180); K=Math.min(W,H)/390; }
+addEventListener('resize',resize); resize();
 
-/* ---------- mundo ---------- */
-// Dia do solstício (declinação do sol 24°). Alexandria a 31,2° e Siena a 24° de latitude:
-// ao meio-dia o sol fica a 7,2° do alto em Alexandria (1/50 do círculo) e bem no alto em Siena.
-const DECL=24, LAT_A=31.2, LAT_S=24, EST=2, DIST=5000;
-function zenite(lat,h){ const H=rad(15*(h-12)), c=Math.sin(rad(lat))*Math.sin(rad(DECL))+Math.cos(rad(lat))*Math.cos(rad(DECL))*Math.cos(H); return grau(Math.acos(Math.min(1,c))); }
-const horaDe=v=>10+v/60;
-const horaTxt=v=>{ const m=600+v; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); };
-const est={ v:30, a:200, modo:'cidade', med:{}, dica:0, tent:0, resolvido:null, viuLonge:false, contando:false };
-try{ const g=JSON.parse(localStorage.getItem('mnt-cap2')||'null'); if(g&&g.resolvido) est.resolvido=g.resolvido; }catch(e){}
-function salvar(){ try{ localStorage.setItem('mnt-cap2',JSON.stringify({resolvido:est.resolvido})); }catch(e){} }
-function S(tag,at,pai){ const e=document.createElementNS(NS,tag); for(const k in at) e.setAttribute(k,at[k]); if(pai) pai.appendChild(e); return e; }
+const rad=d=>d*Math.PI/180, clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const norm=a=>{const l=Math.hypot(a[0],a[1],a[2])||1;return [a[0]/l,a[1]/l,a[2]/l];};
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]], sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], mul=(a,k)=>[a[0]*k,a[1]*k,a[2]*k];
+const n2=v=>v.toFixed(2).replace('.',','), n1=v=>v.toFixed(1).replace('.',',');
+const mil=v=>Math.round(v).toLocaleString('pt-BR');
 
-/* ---------- cena: cidade ---------- */
-const cena=$('#cena');
-const gCid=S('g',{},cena), gLon=S('g',{style:'display:none'},cena);
-const CHAO=246, SX=170, KH=70, TOPO=CHAO-EST*KH, BX=440, BY=132, BR=74;
-S('line',{x1:0,y1:CHAO,x2:600,y2:CHAO,stroke:'var(--tinta)','stroke-width':2},gCid);
-[[30,258],[90,268],[150,262],[230,276],[300,264],[350,280],[420,266],[500,278],[560,262]].forEach(p=>S('circle',{cx:p[0],cy:p[1],r:1.6,fill:'var(--tinta2)',opacity:.5},gCid));
-// tigela de pedra sobre um pedestal
-S('path',{d:'M'+(BX-30)+' '+CHAO+' L'+(BX-18)+' '+(BY+BR+8)+' L'+(BX+18)+' '+(BY+BR+8)+' L'+(BX+30)+' '+CHAO+' Z',fill:'var(--papiro3)',stroke:'var(--tinta)','stroke-width':1.5},gCid);
-S('path',{d:'M'+(BX-BR-6)+' '+BY+' A'+(BR+6)+' '+(BR+6)+' 0 0 0 '+(BX+BR+6)+' '+BY+' Z',fill:'var(--papiro3)',stroke:'var(--tinta)','stroke-width':1.8},gCid);
-S('path',{d:'M'+(BX-BR)+' '+BY+' A'+BR+' '+BR+' 0 0 0 '+(BX+BR)+' '+BY+' Z',fill:'var(--perg)',stroke:'var(--tinta)','stroke-width':1.2},gCid);
-const dinCid=S('g',{},gCid);
-const tTig=S('text',{x:BX,y:BY-14,'text-anchor':'middle',fill:'var(--verm)','font-family':'Caveat, cursive','font-size':22,'font-weight':700},gCid);
-S('text',{x:SX,y:CHAO+26,'text-anchor':'middle',fill:'var(--tinta2)','font-size':13,'font-style':'italic'},gCid).textContent='estaca de 2 passos';
-S('text',{x:BX,y:CHAO+26,'text-anchor':'middle',fill:'var(--tinta2)','font-size':13,'font-style':'italic'},gCid).textContent='tigela de sol';
-let marcas=0; // quantos pedaços já foram contados na tigela (desenho)
+/* ---------- Alexandria, 240 a.C.: o dia mais longo do ano ---------- */
+const EST=2, LAT=31.2, DECL=24, DIST=5000, EYE=1.7, NEAR=0.25, ALCANCE=30, ALCANCE_CORDA=60, GRUDA=3;
+const ALVO_VOLTA=DIST*50;
+function hora(v){ return 10+v/60; }
+function horaTxt(v){ const m=600+v; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
+// sol de verdade: ao meio-dia ele fica a 7,2° do alto em Alexandria
+function sol(v){
+  const h=hora(v), H=rad(15*(h-12));
+  const c=Math.sin(rad(LAT))*Math.sin(rad(DECL))+Math.cos(rad(LAT))*Math.cos(rad(DECL))*Math.cos(H);
+  const zen=Math.acos(clamp(c,-1,1)), e=Math.PI/2-zen;
+  return {zen, e, dir:[-Math.sin(H)*Math.cos(e), Math.sin(e), -Math.cos(H)*Math.cos(e)]};
+}
+function sombraDe(p,S){ const k=EST/S[1]; return [p[0]-S[0]*k,0,p[2]-S[2]*k]; }
 
-function desenhaCidade(){
-  const z=zenite(LAT_A,horaDe(est.v)), s=Math.sin(rad(z)), c=Math.cos(rad(z));
-  const somb=EST*Math.tan(rad(z))*KH, ponta=SX-somb;
-  // sol: na direção de onde vem a luz, acima da estaca
-  const t=Math.min((TOPO-20)/c,(590-SX)/Math.max(s,0.001)), sx=SX+t*s, sy=TOPO-t*c;
-  let h='<circle cx="'+sx.toFixed(1)+'" cy="'+sy.toFixed(1)+'" r="15" fill="var(--verm)"/>';
-  h+='<line x1="'+(sx-17*s).toFixed(1)+'" y1="'+(sy+17*c).toFixed(1)+'" x2="'+ponta.toFixed(1)+'" y2="'+CHAO+'" stroke="var(--verm)" stroke-width="1.5" stroke-dasharray="5 5"/>';
-  h+='<line x1="'+ponta.toFixed(1)+'" y1="'+(CHAO+3)+'" x2="'+SX+'" y2="'+(CHAO+3)+'" stroke="var(--sombra)" stroke-width="6" stroke-linecap="round"/>';
-  h+='<line x1="'+SX+'" y1="'+TOPO+'" x2="'+SX+'" y2="'+CHAO+'" stroke="var(--tinta)" stroke-width="5" stroke-linecap="round"/>';
-  // tigela: a ponta do ponteiro fica no centro; a sombra dela marca um pedaço do círculo
-  const fundoX=BX, fundoY=BY+BR, px=BX-BR*s, py=BY+BR*c;
-  if(est.med.tig&&est.med.tig.v===est.v&&marcas>0){
-    h+='<path d="M'+(BX+BR)+' '+BY+' A'+BR+' '+BR+' 0 0 0 '+(BX-BR)+' '+BY+'" fill="none" stroke="var(--tinta2)" stroke-width="1" stroke-dasharray="3 4"/>';
-    for(let i=0;i<=marcas;i++){ const ang=rad(90+i*z), x1=BX+(BR-7)*Math.cos(ang), y1=BY+(BR-7)*Math.sin(ang), x2=BX+(BR+7)*Math.cos(ang), y2=BY+(BR+7)*Math.sin(ang);
-      h+='<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="var(--verm)" stroke-width="1.6"/>'; }
-  }
-  h+='<line x1="'+(BX+BR*1.25*s).toFixed(1)+'" y1="'+(BY-BR*1.25*c).toFixed(1)+'" x2="'+px.toFixed(1)+'" y2="'+py.toFixed(1)+'" stroke="var(--verm)" stroke-width="1.3" stroke-dasharray="4 4"/>';
-  h+='<path d="M'+fundoX+' '+fundoY+' A'+BR+' '+BR+' 0 0 1 '+px.toFixed(1)+' '+py.toFixed(1)+'" fill="none" stroke="var(--sombra)" stroke-width="7" stroke-linecap="round"/>';
-  h+='<line x1="'+fundoX+'" y1="'+fundoY+'" x2="'+BX+'" y2="'+BY+'" stroke="var(--tinta)" stroke-width="3" stroke-linecap="round"/>';
-  h+='<circle cx="'+BX+'" cy="'+BY+'" r="2.6" fill="var(--tinta)"/>';
-  if(est.med.som&&est.med.som.v===est.v) h+='<text x="'+((ponta+SX)/2).toFixed(1)+'" y="'+(CHAO+46)+'" text-anchor="middle" fill="var(--verm)" font-family="Caveat, cursive" font-size="19" font-weight="700">'+n2(est.med.som.val)+' passos</text>';
-  dinCid.innerHTML=h;
-  if(!(est.med.tig&&est.med.tig.v===est.v)) tTig.textContent='';
+const st={ x:0, z:-40, yaw:0, pitch:-0.2, eye:EYE, v:30, stick:null, hold:null, corda:null, cordaFase:0,
+  medidas:[], anim:null, fase:0, andando:0, keys:{}, jx:0, jy:0, mostraAngulo:false, dica:0, passo:0, cadastrou:false };
+
+/* ---------- câmera e projeção ---------- */
+let CAM=null;
+function makeCam(){
+  const cy=Math.cos(st.yaw), sy=Math.sin(st.yaw), cp=Math.cos(st.pitch), sp=Math.sin(st.pitch);
+  const F=[sy*cp,sp,cy*cp], R=[cy,0,-sy], U=cross(F,R);
+  const k=st.eye>EYE?0.2:1, bobY=Math.abs(Math.sin(st.fase))*0.11*st.andando*k, bobX=Math.sin(st.fase)*0.05*st.andando*k;
+  return {F,R,U,E:[st.x+R[0]*bobX, st.eye+bobY-0.05*st.andando*k, st.z+R[2]*bobX]};
+}
+function toView(p){ const d=sub(p,CAM.E); return [dot(d,CAM.R),dot(d,CAM.U),dot(d,CAM.F)]; }
+function scr(v){ return [W/2+FP*v[0]/v[2], H/2-FP*v[1]/v[2]]; }
+function clipPoly(vs){ const out=[]; for(let i=0;i<vs.length;i++){ const a=vs[i], b=vs[(i+1)%vs.length], ai=a[2]>=NEAR, bi=b[2]>=NEAR; if(ai) out.push(a); if(ai!==bi){ const t=(NEAR-a[2])/(b[2]-a[2]); out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,NEAR]); } } return out; }
+function poly3(pts,fill,stroke,lw){ const vs=clipPoly(pts.map(toView)); if(vs.length<3) return; ctx.beginPath(); vs.forEach((v,i)=>{ const s=scr(v); i?ctx.lineTo(s[0],s[1]):ctx.moveTo(s[0],s[1]); }); ctx.closePath(); if(fill){ ctx.fillStyle=fill; ctx.fill(); } if(stroke){ ctx.strokeStyle=stroke; ctx.lineWidth=lw||1; ctx.stroke(); } }
+function seg3(a,b,color,lw){ let A=toView(a), B=toView(b); if(A[2]<NEAR&&B[2]<NEAR) return; if(A[2]<NEAR){ const t=(NEAR-A[2])/(B[2]-A[2]); A=[A[0]+(B[0]-A[0])*t,A[1]+(B[1]-A[1])*t,NEAR]; } if(B[2]<NEAR){ const t=(NEAR-B[2])/(A[2]-B[2]); B=[B[0]+(A[0]-B[0])*t,B[1]+(A[1]-B[1])*t,NEAR]; } const p=scr(A), q=scr(B); ctx.beginPath(); ctx.moveTo(p[0],p[1]); ctx.lineTo(q[0],q[1]); ctx.strokeStyle=color; ctx.lineWidth=lw; ctx.lineCap='round'; ctx.stroke(); }
+function rotulo(p,txt,cor,tam,dy){ const v=toView(p); if(v[2]<NEAR) return false; const s=scr(v); if(s[0]<-40||s[0]>W+40||s[1]<-20||s[1]>H+20) return false; s[1]+=dy||0; ctx.font='700 '+(tam||16)+'px "EB Garamond",Georgia,serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.lineWidth=4; ctx.strokeStyle='rgba(239,227,196,.95)'; ctx.lineJoin='round'; ctx.strokeText(txt,s[0],s[1]); ctx.fillStyle=cor||'#2A1C10'; ctx.fillText(txt,s[0],s[1]); ctx.textAlign='start'; ctx.textBaseline='alphabetic'; return true; }
+function ergue(p){ return [p[0],0.05,p[2]]; }
+function marcaPonto(p){ const v=toView(ergue(p)); if(v[2]<NEAR) return; const s=scr(v), r=Math.max(3,Math.min(9,0.5*FP/v[2])); ctx.beginPath(); ctx.arc(s[0],s[1],r,0,Math.PI*2); ctx.fillStyle='#9E3B26'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='rgba(239,227,196,.95)'; ctx.stroke(); }
+function desenhaCorda(a0,b0){
+  const L=Math.hypot(...sub(b0,a0)); if(L<0.05){ marcaPonto(a0); return; }
+  const a=ergue(a0), b=ergue(b0); seg3(a,b,'#5A3A1A',3);
+  const passo=Math.max(1,L/60);
+  for(let k=passo;k<L-0.01;k+=passo){ const t=k/L, v=toView([a[0]+(b[0]-a[0])*t,0.05,a[2]+(b[2]-a[2])*t]); if(v[2]<NEAR) continue; const s=scr(v), r=Math.max(1.2,Math.min(5,0.12*FP/v[2])); ctx.beginPath(); ctx.arc(s[0],s[1],r,0,Math.PI*2); ctx.fillStyle='#2A1C10'; ctx.fill(); }
+  marcaPonto(a0); marcaPonto(b0);
 }
 
-/* ---------- cena: a Terra de longe ---------- */
-const TX=300, TY=292, TR=200, PAU=58;
-S('rect',{x:0,y:0,width:600,height:300,fill:'var(--papiro)',opacity:.0},gLon);
-S('circle',{cx:TX,cy:TY,r:TR,fill:'var(--papiro3)',opacity:.45,stroke:'var(--tinta)','stroke-width':2},gLon);
-const dinLon=S('g',{},gLon);
-function desenhaLonge(){
-  const a=est.a/10, s=Math.sin(rad(a)), c=Math.cos(rad(a));
-  let h='';
-  // raios do sol, todos paralelos (de cima para baixo)
-  for(let x=60;x<=540;x+=48) h+='<line x1="'+x+'" y1="0" x2="'+x+'" y2="'+(TY-Math.sqrt(Math.max(0,TR*TR-(x-TX)*(x-TX)))).toFixed(1)+'" stroke="var(--verm)" stroke-width="1" stroke-dasharray="4 6" opacity=".45"/>';
-  const Sx=TX, Sy=TY-TR, Ax=TX-TR*s, Ay=TY-TR*c, Tx=TX-(TR+PAU)*s, Ty=TY-(TR+PAU)*c;
-  // o raio que passa pela ponta da estaca de Alexandria e onde ele toca o chão
-  const gy=TY-Math.sqrt(Math.max(0,TR*TR-(Tx-TX)*(Tx-TX)));
-  h+='<line x1="'+TX+'" y1="0" x2="'+TX+'" y2="'+(Sy-PAU)+'" stroke="var(--verm)" stroke-width="1.8"/>';
-  h+='<line x1="'+Tx.toFixed(1)+'" y1="0" x2="'+Tx.toFixed(1)+'" y2="'+gy.toFixed(1)+'" stroke="var(--verm)" stroke-width="1.8"/>';
-  // linhas até o centro da Terra
-  h+='<line x1="'+Sx+'" y1="'+Sy+'" x2="'+TX+'" y2="'+TY+'" stroke="var(--tinta)" stroke-width="1" stroke-dasharray="3 4"/>';
-  h+='<line x1="'+Ax.toFixed(1)+'" y1="'+Ay.toFixed(1)+'" x2="'+TX+'" y2="'+TY+'" stroke="var(--tinta)" stroke-width="1" stroke-dasharray="3 4"/>';
-  // o pedaço no centro e o mesmo pedaço na ponta da estaca
-  const rc=46, ac=rad(-90-a);
-  h+='<path d="M'+TX+' '+(TY-rc)+' A'+rc+' '+rc+' 0 0 0 '+(TX+rc*Math.cos(ac)).toFixed(1)+' '+(TY+rc*Math.sin(ac)).toFixed(1)+'" fill="none" stroke="var(--verm)" stroke-width="3"/>';
-  const rt=22;
-  h+='<path d="M'+Tx.toFixed(1)+' '+(Ty+rt).toFixed(1)+' A'+rt+' '+rt+' 0 0 1 '+(Tx+rt*s).toFixed(1)+' '+(Ty+rt*c).toFixed(1)+'" fill="none" stroke="var(--verm)" stroke-width="3"/>';
-  // sombra no chão de Alexandria
-  h+='<line x1="'+Ax.toFixed(1)+'" y1="'+Ay.toFixed(1)+'" x2="'+Tx.toFixed(1)+'" y2="'+gy.toFixed(1)+'" stroke="var(--sombra)" stroke-width="6" stroke-linecap="round"/>';
-  // estacas
-  h+='<line x1="'+Sx+'" y1="'+Sy+'" x2="'+Sx+'" y2="'+(Sy-PAU)+'" stroke="var(--tinta)" stroke-width="4" stroke-linecap="round"/>';
-  h+='<line x1="'+Ax.toFixed(1)+'" y1="'+Ay.toFixed(1)+'" x2="'+Tx.toFixed(1)+'" y2="'+Ty.toFixed(1)+'" stroke="var(--tinta)" stroke-width="4" stroke-linecap="round"/>';
-  h+='<circle cx="'+TX+'" cy="'+TY+'" r="3" fill="var(--tinta)"/>';
-  h+='<text x="'+(Sx+8)+'" y="'+(Sy+20)+'" fill="var(--tinta)" font-size="15">Siena</text>';
-  h+='<text x="'+(Ax-8).toFixed(1)+'" y="'+(Ay+20).toFixed(1)+'" text-anchor="end" fill="var(--tinta)" font-size="15">Alexandria</text>';
-  h+='<text x="'+(TX+rc+8)+'" y="'+(TY-8)+'" fill="var(--verm)" font-family="Caveat, cursive" font-size="19" font-weight="700">o mesmo pedaço</text>';
-  h+='<text x="590" y="18" text-anchor="end" fill="var(--tinta2)" font-size="12" font-style="italic">raios do sol, todos paralelos</text>';
-  dinLon.innerHTML=h;
-  // conta ao vivo
-  const N=360/a, conta=$('#conta');
-  let m='<div class="m-tit">A CONTA, AO VIVO</div>'+
-    '<div class="m"><span>Pedaços na volta</span><b>'+(Math.abs(N-Math.round(N))<.05?Math.round(N):N.toFixed(1).replace('.',','))+'</b></div>'+
-    '<div class="m"><span>Volta = 5.000 ×</span><b>'+(Math.abs(N-Math.round(N))<.05?Math.round(N):N.toFixed(1).replace('.',','))+'</b></div>'+
-    '<div class="m"><span>Volta da Terra</span><b>'+mil(DIST*N)+'</b></div>';
-  const t=est.med.tig;
-  if(t){ const igual=Math.abs(a-t.z)<0.15;
-    m+='<div class="m"><small>'+(igual?'✓ Igual à sua tigela ('+horaTxt(t.v)+')':'Sua tigela ('+horaTxt(t.v)+'): '+t.n+' pedaços')+'</small></div>'; }
-  conta.innerHTML=m;
+/* ---------- pontos onde a corda gruda ---------- */
+function pontosGrudar(){
+  const lista=[];
+  if(st.stick){ const b=[st.stick.x,0,st.stick.z]; lista.push({p:b,nome:'pé da estaca'}); lista.push({p:sombraDe([st.stick.x,EST,st.stick.z],sol(st.v).dir),nome:'ponta da sombra'}); }
+  return lista;
+}
+function gruda(p){ let melhor=null, dm=GRUDA; for(const q of pontosGrudar()){ const d=Math.hypot(q.p[0]-p[0],q.p[2]-p[2]); if(d<dm){ dm=d; melhor=q; } } return melhor; }
+function alvo(tipo){
+  const F=CAM.F, E=CAM.E;
+  if(F[1]>-0.01) return {ok:false,motivo:'olhe para o chão'};
+  const t=-E[1]/F[1]; const p=add(E,mul(F,t)); p[1]=0;
+  const lim=tipo==='corda'?ALCANCE_CORDA:ALCANCE;
+  if(Math.hypot(p[0]-st.x,p[2]-st.z)>lim) return {ok:false,motivo:'chegue mais perto',p};
+  if(tipo==='corda'){ const g=gruda(p); return {ok:true,p:g?g.p.slice():p,nome:g?g.nome:null}; }
+  return {ok:true,p};
 }
 
-/* ---------- Siena: o poço ---------- */
-const perto=$('#perto'), PL=104, PRr=136, PT=26, PF=72;
-S('defs',{},perto).innerHTML='<clipPath id="poco"><rect x="'+PL+'" y="'+PT+'" width="'+(PRr-PL)+'" height="'+(PF-PT)+'"/></clipPath>';
-S('rect',{x:PL,y:PT,width:PRr-PL,height:PF-PT,fill:'var(--sombra)',opacity:.85},perto);
-const luz=S('polygon',{fill:'#F2D27A',opacity:.9,'clip-path':'url(#poco)'},perto);
-S('rect',{x:PL,y:PF-6,width:PRr-PL,height:6,fill:'var(--mar)',opacity:.8},perto);
-S('line',{x1:0,y1:PT,x2:PL-8,y2:PT,stroke:'var(--tinta)','stroke-width':2},perto);
-S('line',{x1:PRr+8,y1:PT,x2:240,y2:PT,stroke:'var(--tinta)','stroke-width':2},perto);
-[[PL-8,PL],[PRr,PRr+8]].forEach(p=>{ S('rect',{x:p[0],y:PT,width:8,height:PF-PT+4,fill:'var(--papiro3)',stroke:'var(--tinta)','stroke-width':1.5},perto); for(let y=PT+10;y<PF;y+=12) S('line',{x1:p[0],y1:y,x2:p[1],y2:y,stroke:'var(--tinta)','stroke-width':.8,opacity:.6},perto); });
-const solP=S('circle',{r:8,fill:'var(--verm)'},perto);
-const raioP=S('line',{stroke:'var(--verm)','stroke-width':1.2,'stroke-dasharray':'3 3'},perto);
-S('path',{d:'M206 '+PT+' l0 -14 M199 '+(PT-20)+' a7 7 0 1 1 14 0 a7 7 0 1 1 -14 0',fill:'none',stroke:'var(--tinta)','stroke-width':0},perto);
-function desenhaPoco(){
-  const z=zenite(LAT_S,horaDe(est.v)), tz=Math.tan(rad(z)), d=PF-PT, desl=d*tz;
-  luz.setAttribute('points',PL+','+PT+' '+PRr+','+PT+' '+(PRr-desl).toFixed(1)+','+PF+' '+(PL-desl).toFixed(1)+','+PF);
-  const sx=Math.min(228,120+70*tz*3), sy=10;
-  solP.setAttribute('cx',sx.toFixed(1)); solP.setAttribute('cy',sy);
-  raioP.setAttribute('x1',(sx-6).toFixed(1)); raioP.setAttribute('y1',sy+6); raioP.setAttribute('x2',(PRr-Math.min(desl,PRr-PL)).toFixed(1)); raioP.setAttribute('y2',PF);
-  const lit=Math.max(0,1-desl/(PRr-PL));
-  $('#poco-txt').textContent=lit>0.97?'Sol no fundo inteiro: sem sombra.':lit>0.05?'Sol só em parte do fundo.':'Fundo do poço na sombra.';
+/* ---------- desenho ---------- */
+function desenhaEstaca(b,alfa){ const t=[b[0],EST,b[2]]; ctx.globalAlpha=alfa; seg3(b,t,'#2A1C10',6); seg3(add(b,[0,0.05,0]),add(t,[0,-0.05,0]),'#8A5E2E',3.5); ctx.globalAlpha=1; }
+function desenhaAngulo(){
+  // o ângulo entre a estaca (de cima para baixo) e o raio do sol que vai até a ponta da sombra
+  const c=[st.stick.x,EST,st.stick.z], tip=sombraDe([st.stick.x,EST,st.stick.z],sol(st.v).dir);
+  const dirT=norm(sub(tip,c)), d0=[0,-1,0], R=1.3;
+  const zen=sol(st.v).zen, w=norm(sub(dirT,mul(d0,dot(dirT,d0))));
+  let prev=null;
+  for(let i=0;i<=24;i++){ const t=zen*i/24, p=add(c,mul(add(mul(d0,Math.cos(t)),mul(w,Math.sin(t))),R)); if(prev) seg3(prev,p,'#9E3B26',2.5); prev=p; }
+  seg3(c,tip,'rgba(158,59,38,.6)',1.2);
+  const m=add(c,mul(add(mul(d0,Math.cos(zen/2)),mul(w,Math.sin(zen/2))),R*1.35));
+  rotulo(m,n1(zen*180/Math.PI)+'°','#9E3B26',17);
+}
+function draw(t){
+  const S=sol(st.v); CAM=makeCam();
+  const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#D9C48F'); g.addColorStop(0.6,'#EFE3C4'); g.addColorStop(1,'#E2CC98');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  { const sp=add(CAM.E,mul(S.dir,900)), v=toView(sp); if(v[2]>NEAR){ const p=scr(v); const gl=ctx.createRadialGradient(p[0],p[1],6,p[0],p[1],90); gl.addColorStop(0,'rgba(158,59,38,.35)'); gl.addColorStop(1,'rgba(158,59,38,0)'); ctx.fillStyle=gl; ctx.fillRect(p[0]-90,p[1]-90,180,180); ctx.beginPath(); ctx.arc(p[0],p[1],16,0,Math.PI*2); ctx.fillStyle='#9E3B26'; ctx.fill(); } }
+  poly3([[-900,0,-900],[900,0,-900],[900,0,900],[-900,0,900]],'#E2CC98');
+  for(let i=-300;i<=300;i+=20){ seg3([i,0,-300],[i,0,300],'rgba(42,28,16,.16)',1); seg3([-300,0,i],[300,0,i],'rgba(42,28,16,.16)',1); }
+  // sombra da estaca
+  let tip=null;
+  if(st.stick){ tip=sombraDe([st.stick.x,EST,st.stick.z],S.dir); seg3([st.stick.x,0,st.stick.z],tip,'rgba(42,28,16,.6)',5); }
+  // mira e fantasma da estaca
+  const mira=st.hold&&!st.anim?alvo(st.hold==='corda'?'corda':'estaca'):null;
+  if(mira&&mira.ok&&st.hold==='estaca'){ const c=mira.p, pts=[]; for(let i=0;i<20;i++){ const a=i/20*Math.PI*2; pts.push([c[0]+Math.cos(a)*0.6,0,c[2]+Math.sin(a)*0.6]); } poly3(pts,'rgba(158,59,38,.25)','#9E3B26',2); desenhaEstaca(c,0.35); }
+  // estaca plantada
+  if(st.stick) desenhaEstaca([st.stick.x,0,st.stick.z],1);
+  if(st.mostraAngulo&&st.stick) desenhaAngulo();
+  // corda
+  let fim=null;
+  if(st.corda) fim=st.corda.b||(st.cordaFase===1&&mira&&mira.ok&&st.hold==='corda'?mira.p:null);
+  if(st.corda){ if(fim) desenhaCorda(st.corda.a,fim); else marcaPonto(st.corda.a); }
+  if(mira&&mira.ok&&st.hold==='corda') marcaPonto(mira.p);
+  // números na cena
+  if(st.stick){ rotulo([st.stick.x,EST+0.45,st.stick.z],'2 passos','#2A1C10',16); if(tip){ rotulo(mul(add([st.stick.x,0,st.stick.z],tip),0.5),'sombra '+n2(EST/Math.tan(S.e)),'#9E3B26',16,20); } }
+  if(st.corda&&fim){ const L=Math.hypot(...sub(fim,st.corda.a)); if(L>0.02) rotulo(mul(add(st.corda.a,fim),0.5),'corda '+n2(L)+' passos','#2A1C10',16,-18); }
+  if(joy.on){ ctx.beginPath(); ctx.arc(joy.cx,joy.cy,56,0,Math.PI*2); ctx.strokeStyle='rgba(42,28,16,.5)'; ctx.lineWidth=2; ctx.stroke(); ctx.beginPath(); ctx.arc(joy.cx+st.jx*56,joy.cy+st.jy*-56,22,0,Math.PI*2); ctx.fillStyle='rgba(158,59,38,.6)'; ctx.fill(); }
+  desenhaMira(mira);
+  desenhaMao(t);
+}
+function desenhaMira(m){
+  const x=W/2, y=H/2, r=9;
+  ctx.strokeStyle='rgba(239,227,196,.9)'; ctx.lineWidth=4; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(x-r,y); ctx.lineTo(x+r,y); ctx.moveTo(x,y-r); ctx.lineTo(x,y+r); ctx.stroke();
+  ctx.strokeStyle=m?(m.ok?'#9E3B26':'rgba(42,28,16,.45)'):'rgba(42,28,16,.55)'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(x-r,y); ctx.lineTo(x+r,y); ctx.moveTo(x,y-r); ctx.lineTo(x,y+r); ctx.stroke();
+  let txt=null;
+  if(m&&!m.ok) txt=m.motivo;
+  else if(m&&st.hold==='estaca') txt='toque para plantar aqui';
+  else if(m&&st.hold==='corda') txt=(st.cordaFase===1?'toque na ponta da corda':'toque no começo da corda')+(m.nome?' · '+m.nome:'');
+  if(txt){ ctx.font='italic 14px "EB Garamond",Georgia,serif'; ctx.textAlign='center'; ctx.lineWidth=4; ctx.strokeStyle='rgba(239,227,196,.95)'; ctx.strokeText(txt,x,y+28); ctx.fillStyle='#2A1C10'; ctx.fillText(txt,x,y+28); ctx.textAlign='start'; }
+}
+// mão em silhueta segurando o item
+function desenhaMao(t){
+  let p=0, tipo=null;
+  if(st.anim){ p=clamp((t-st.anim.t0)/st.anim.dur,0,1); tipo=st.anim.tipo; }
+  const item=st.hold||(tipo==='colocar'&&p<0.5?'estaca':null);
+  if(!item&&!tipo) return;
+  const bob=Math.abs(Math.sin(st.fase))*7*K*st.andando, bobX=Math.sin(st.fase)*5*K*st.andando;
+  let bx=W-118*K+bobX, by=H-74*K+bob, ang=-0.18, esc=1;
+  if(tipo==='colocar'){ const s=Math.sin(p*Math.PI); bx-=(W*0.22)*s; by+=40*K*s; ang-=0.5*s; esc=1-0.25*s; }
+  if(tipo==='pegar'){ by+=(1-p)*220*K; }
+  ctx.save(); ctx.translate(bx,by); ctx.rotate(ang); ctx.scale(esc*K,esc*K);
+  ctx.fillStyle='#2A1C10'; ctx.beginPath(); ctx.moveTo(-26,12); ctx.lineTo(26,10); ctx.lineTo(120,180); ctx.lineTo(30,200); ctx.closePath(); ctx.fill();
+  if(item==='corda'){ ctx.lineWidth=7; for(let i=0;i<4;i++){ ctx.strokeStyle=i%2?'#5A3A1A':'#7A5228'; ctx.beginPath(); ctx.ellipse(-14+i*3,-46+i*2,34-i*2,46-i*3,-0.35,0,Math.PI*2); ctx.stroke(); } }
+  if(item==='estaca'){ ctx.lineCap='round'; ctx.strokeStyle='#2A1C10'; ctx.lineWidth=15; ctx.beginPath(); ctx.moveTo(-6,60); ctx.lineTo(-30,-170); ctx.stroke(); ctx.strokeStyle='#8A5E2E'; ctx.lineWidth=9; ctx.beginPath(); ctx.moveTo(-6,58); ctx.lineTo(-30,-168); ctx.stroke(); }
+  ctx.fillStyle='#2A1C10'; ctx.beginPath(); ctx.ellipse(0,4,30,24,-0.2,0,Math.PI*2); ctx.fill();
+  for(let i=0;i<4;i++){ ctx.beginPath(); ctx.ellipse(-24+i*2,-14+i*11,10,7,0.2,0,Math.PI*2); ctx.fill(); }
+  ctx.restore();
 }
 
-/* ---------- desenho e medidas ---------- */
-function desenha(){
-  const longe=est.modo==='longe';
-  gCid.style.display=longe?'none':''; gLon.style.display=longe?'':'none';
-  $('#medidas').hidden=longe; $('#conta').hidden=!longe;
-  if(longe){ $('#t-hora').textContent='cabem '+(360/(est.a/10)).toFixed(1).replace('.',',').replace(',0',''); desenhaLonge(); }
-  else { $('#t-hora').textContent=horaTxt(est.v); desenhaCidade(); listaMedidas(); }
-  desenhaPoco();
+/* ---------- itens: plantar, medir, ângulo ---------- */
+function anota(m){
+  if(m.tipo==='sombra'&&st.medidas.some(x=>x.tipo==='sombra'&&x.v===m.v)) return;
+  if(m.tipo==='angulo'&&st.medidas.some(x=>x.tipo==='angulo'&&x.v===m.v)) return;
+  st.medidas.unshift(m); if(st.medidas.length>10) st.medidas.pop();
 }
-function listaMedidas(){
-  const m=est.med, out=[];
-  const lin=(nome,val,v)=>{ const velha=v!==undefined&&v!==est.v;
-    return '<div class="m'+(velha?' velha':'')+'"><span>'+nome+'</span><b>'+val+'</b>'+(v!==undefined?'<small>'+horaTxt(v)+(velha?' ✗':'')+'</small>':'')+'</div>'; };
-  out.push(lin('Siena → Alexandria','5.000'));
-  if(m.som) out.push(lin('Sombra da estaca',n2(m.som.val),m.som.v));
-  if(m.tig) out.push(lin('Pedaços na volta',String(m.tig.n),m.tig.v));
-  const velhas=(m.som&&m.som.v!==est.v)||(m.tig&&m.tig.v!==est.v);
-  $('#medidas').innerHTML='<div class="m-tit">'+(velhas?'MEDIDAS · ✗ = OUTRA HORA':'SUAS MEDIDAS')+'</div>'+out.join('');
-}
-
-/* ---------- fala ---------- */
-function fala(txt,quem){
-  const f=$('#fala'); f.innerHTML='<b>'+(quem||'Eratóstenes')+'</b>'+txt; f.scrollTop=0;
-  f.classList.remove('nova'); void f.offsetWidth; f.classList.add('nova');
-}
-
-/* ---------- ações ---------- */
-const barra=$('#r-hora');
-function configuraBarra(){
-  if(est.modo==='longe'){ $('#l-barra').textContent='Alexandria na curva:'; barra.min=20; barra.max=400; barra.step=1; barra.value=est.a; barra.setAttribute('aria-label','Onde fica Alexandria na curva da Terra'); }
-  else { $('#l-barra').textContent='Hora do dia:'; barra.min=0; barra.max=240; barra.step=2; barra.value=est.v; barra.removeAttribute('aria-label'); }
-  $$('[data-acao="sombra"],[data-acao="tigela"]').forEach(b=>b.hidden=est.modo==='longe');
-  $('#t-longe').textContent=est.modo==='longe'?'Cidade':'De longe';
-}
-let avisouHora=false, ultimaSombra=null;
-barra.addEventListener('input',e=>{ if(est.modo==='longe') est.a=+e.target.value; else { est.v=+e.target.value; marcas=0; } desenha(); });
-barra.addEventListener('change',()=>{
-  if(est.modo==='longe'){ const t=est.med.tig; if(t&&Math.abs(est.a/10-t.z)<0.15) fala('Igual à sua tigela! O pedaço entre Siena e Alexandria é o mesmo que a sombra marca na tigela.'); return; }
-  const m=est.med, velhas=(m.som&&m.som.v!==est.v)||(m.tig&&m.tig.v!==est.v);
-  if(velhas&&!avisouHora){ avisouHora=true; fala('O sol mexeu: as medidas que eu tinha são de outra hora.'); }
-});
-$$('[data-acao]').forEach(b=>b.addEventListener('click',()=>{
-  const q=b.dataset.acao;
-  if(q==='longe'){
-    est.modo=est.modo==='longe'?'cidade':'longe'; configuraBarra(); desenha();
-    if(est.modo==='longe'&&!est.viuLonge){ est.viuLonge=true; fala('A Terra vista de longe. Os raios do sol chegam paralelos. Mexa a barra e mude onde fica Alexandria.'); }
-    return;
-  }
-  if(est.contando) return;
-  if(q==='sombra'){
-    const z=zenite(LAT_A,horaDe(est.v)), val=Math.round(EST*Math.tan(rad(z))*100)/100;
-    let txt='A sombra da estaca mede '+n2(val)+' passos.';
-    if(ultimaSombra!==null&&ultimaSombra.v!==est.v) txt+=val<ultimaSombra.val?' Diminuiu desde a última medida.':val>ultimaSombra.val?' Aumentou desde a última medida.':' Ficou igual.';
-    if(Math.abs(est.v-120)<=2) txt='A sombra da estaca mede '+n2(val)+' passos. Mais curta que isso ela não fica: é meio-dia!';
-    est.med.som={val:val,v:est.v}; ultimaSombra={val:val,v:est.v}; avisouHora=false; fala(txt); desenha(); return;
-  }
-  if(q==='tigela'){
-    const z=zenite(LAT_A,horaDe(est.v)), N=360/z, inteiros=Math.floor(N+1e-6), n=Math.round(N);
-    est.med.tig={n:n,z:z,v:est.v}; avisouHora=false; marcas=0; est.contando=true;
-    fala('Vou marcar o pedaço da sombra várias vezes, em volta do círculo inteiro…');
-    const fim=()=>{ est.contando=false; marcas=inteiros; tTig.textContent='cabem '+(Math.abs(N-n)<.05?n:'~'+n); desenha();
-      fala(Math.abs(N-n)<.05?'Cabem '+n+' pedaços iguais ao da sombra na volta do círculo: a sombra marca 1/'+n+' dele.':'Cabem cerca de '+n+' pedaços iguais ao da sombra na volta do círculo.'); };
-    if(reduz){ fim(); return; }
-    const t0=performance.now(), dur=2400;
-    (function passo(t){ const k=Math.min(1,(t-t0)/dur); marcas=Math.floor(k*inteiros); tTig.textContent=String(marcas); desenha(); if(k<1) requestAnimationFrame(passo); else fim(); })(t0);
-  }
-}));
-const DICAS=[
-  'Ao meio-dia a sombra é a mais curta do dia. Meça a estaca em várias horas e ache a sombra mais curta.',
-  'Em Siena, ao meio-dia, nada faz sombra; aqui faz. Se o chão fosse plano, seriam iguais. Toque em "De longe" e veja por quê.',
-  'Na tigela, a sombra marca um pedaço do círculo. É o mesmo pedaço da volta da Terra entre as cidades. Conte quantos cabem.',
-  'Volta da Terra = distância entre as cidades (5.000 estádios) × quantos pedaços cabem na volta, ao meio-dia.'
-];
-$('#b-dica').addEventListener('click',()=>{ const i=Math.min(est.dica,DICAS.length-1); fala(DICAS[i],'Dica'); est.dica=Math.min(est.dica+1,DICAS.length); });
-
-/* ---------- resposta ---------- */
-const mResp=$('#m-resposta'), mCad=$('#m-caderno');
-function abre(m){ m.hidden=false; const f=m.querySelector('input')||m.firstElementChild; if(f){ if(!f.matches('input')) f.setAttribute('tabindex','-1'); f.focus(); f.scrollTop=0; } }
-function fecha(m){ m.hidden=true; }
-$('#b-responder').addEventListener('click',()=>{ $('#retorno').textContent=''; abre(mResp); });
-$('#b-fechar-resp').addEventListener('click',()=>fecha(mResp));
-$('#i-resp').addEventListener('keydown',e=>{ if(e.key==='Enter') confere(); });
-$('#b-conferir').addEventListener('click',confere);
-function confere(){
-  const bruto=String($('#i-resp').value).replace(/[\s.]/g,'').replace(',','.'), val=parseFloat(bruto), r=$('#retorno'), t=est.med.tig;
-  if(!isFinite(val)){ r.textContent='Escreva um número, em estádios.'; return; }
-  const perto=(x,alvo,tol)=>Math.abs(x-alvo)<=alvo*tol;
-  if(perto(val,250000,0.05)){
-    est.resolvido={hora:t?t.v:120, n:t?t.n:50, som:est.med.som?est.med.som.val:null, resp:val};
-    salvar(); fecha(mResp); mostraCaderno(true); return;
-  }
-  est.tent++;
-  if(perto(val,DIST,0.06)) r.textContent='Esse é só o caminho de Siena até Alexandria. A volta da Terra é bem maior.';
-  else if((t&&Math.abs(val-t.n)<=2)||Math.abs(val-50)<=2) r.textContent='Esse número diz quantos pedaços cabem na volta, não o tamanho da volta. Junte com a distância entre as cidades.';
-  else if(perto(val,100,0.1)) r.textContent='Você dividiu. Pense: cada pedaço da volta mede 5.000 estádios. Quantos pedaços há?';
-  else if(t&&t.n!==50&&perto(val,DIST*t.n,0.04)) r.textContent='A conta está certa, mas a tigela foi lida às '+horaTxt(t.v)+'. Fora do meio-dia a sombra fica maior. Leia a tigela ao meio-dia.';
-  else if(perto(val,25000,0.05)||perto(val,2500000,0.05)) r.textContent='Quase: confira quantos zeros tem a sua resposta.';
-  else r.textContent='Ainda não é isso. Veja quantos pedaços cabem na tigela ao meio-dia'+(est.tent>=2?', ou peça uma dica.':'.');
-}
-
-/* ---------- caderno ---------- */
-function mostraCaderno(acabou){
-  const R=est.resolvido, c=$('#caderno-corpo');
-  if(!R){ c.innerHTML='<p class="mao">Caderno de descobertas</p><p>A descoberta deste capítulo ainda não está escrita. Quando você medir a Terra, ela fica aqui.</p><div class="linha-bts"><button type="button" class="ferr" id="b-fc">Voltar</button></div>'; }
+function acao(){
+  if(st.anim||!st.hold) return;
+  const t=performance.now(), m=alvo(st.hold); if(!m.ok){ falar(m.motivo+'.'); return; }
+  if(st.hold==='estaca'){ st.anim={tipo:'colocar',t0:t,dur:520,p:m.p,pos:false}; return; }
+  if(st.cordaFase===0){ st.corda={a:m.p,b:null}; st.cordaFase=1; }
   else {
-    let suas='Às '+horaTxt(R.hora)+', cabiam '+R.n+' pedaços da sombra na volta da tigela. 5.000 × '+R.n+' = '+mil(DIST*R.n)+' estádios. Sua resposta: '+mil(R.resp)+'.';
-    c.innerHTML='<p class="mao">Caderno de descobertas</p>'+
-      '<div class="cab"><span class="num">Descoberta 2</span><span class="tit">Fração do círculo</span></div>'+
-      '<p>Os raios do sol chegam paralelos. Por isso o pedaço do círculo que a sombra marca na tigela é o mesmo pedaço da volta da Terra entre Siena e Alexandria.</p>'+
-      '<div class="frac-l"><span class="frac"><span class="n">pedaço</span><span class="d">círculo</span><small>na tigela</small></span><span>=</span><span class="frac"><span class="n">5.000 estádios</span><span class="d">volta</span><small>da Terra</small></span></div>'+
-      '<p class="suas">'+suas+'</p>'+
-      '<p>Atalho: o pedaço é 1/50 do círculo. Hoje se diz <i>7,2 graus</i>, porque o círculo foi dividido em 360 graus, e 360 ÷ 50 = 7,2.</p>'+
-      '<p>Ferramenta nova: <i>tigela de sol</i>. Ela mostra que fração do círculo um ângulo ocupa.</p>'+
-      '<div class="linha-bts">'+(acabou?'<button type="button" class="ferr forte" id="b-sabe">O que se sabe de verdade</button>':'')+'<button type="button" class="ferr" id="b-fc">Voltar</button></div>';
-    const bs=$('#b-sabe'); if(bs) bs.addEventListener('click',mostraSabe);
+    st.corda.b=m.p; st.cordaFase=0;
+    const a=st.corda.a, b=m.p, L=Math.hypot(...sub(b,a));
+    if(st.stick){ const tip=sombraDe([st.stick.x,EST,st.stick.z],sol(st.v).dir); const perto=(p,q)=>Math.hypot(p[0]-q[0],p[2]-q[2])<0.3;
+      const pegaPe=perto(a,[st.stick.x,0,st.stick.z])||perto(b,[st.stick.x,0,st.stick.z]), pegaSombra=perto(a,tip)||perto(b,tip);
+      if(pegaPe&&pegaSombra){ anota({tipo:'sombra',L,v:st.v}); falar('A sombra mede '+n2(L)+' passos.'); if(st.v===120||Math.abs(st.v-120)<=2) falar('É o meio-dia: essa é a sombra mais curta do dia.'); }
+    }
   }
-  $('#b-fc').addEventListener('click',()=>fecha(mCad));
-  abre(mCad);
+  st.anim={tipo:'usar',t0:t,dur:260};
+  atualizaObjetivo();
+}
+function escolhe(item){
+  if(item==='angulo'){ medirAngulo(); return; }
+  if(st.anim&&st.anim.tipo!=='usar') return;
+  if(st.hold==='corda'&&st.cordaFase===1){ st.cordaFase=0; if(st.corda&&!st.corda.b) st.corda=null; }
+  if(st.hold===item){ st.hold=null; hud(); return; }
+  st.hold=item; st.anim={tipo:'pegar',t0:performance.now(),dur:320}; hud();
+}
+function medirAngulo(){
+  if(!st.stick){ falar('Plante a estaca primeiro: o ângulo é o da estaca com o raio do sol.'); return; }
+  st.mostraAngulo=true;
+  const S=sol(st.v), deg=S.zen*180/Math.PI;
+  anota({tipo:'angulo',deg,v:st.v});
+  falar('O ângulo entre a estaca e o raio do sol é de '+n1(deg)+'°. Quantas vezes ele cabe em 360°?');
+  atualizaObjetivo();
+}
+function andaAnim(t){
+  const a=st.anim; if(!a) return; const p=(t-a.t0)/a.dur;
+  if(a.tipo==='colocar'&&p>=0.5&&!a.pos){ a.pos=true; st.hold=null; st.stick={x:a.p[0],z:a.p[2]}; st.mostraAngulo=false; falar('Estaca plantada. Agora mexa o sol até o meio-dia.'); atualizaObjetivo(); hud(); }
+  if(p>=1) st.anim=null;
+}
+
+/* ---------- objetivo: o que fazer agora ---------- */
+function atualizaObjetivo(){
+  let txt;
+  if(!st.stick) txt='<b>Passo 1:</b> toque em Estaca e plante a estaca no chão.';
+  else if(!st.medidas.some(m=>m.tipo==='sombra')) txt='<b>Passo 2:</b> mexa o sol até o meio-dia, depois meça a sombra com a Corda.';
+  else if(!st.medidas.some(m=>m.tipo==='angulo')) txt='<b>Passo 3:</b> toque em Ângulo para ver quanto mede o ângulo do sol.';
+  else txt='<b>Passo 4:</b> conte quantas vezes o ângulo cabe em 360° e toque em Responder.';
+  document.getElementById('objetivo').innerHTML=txt;
+}
+let tFala=null;
+function falar(txt,quem){ const f=document.getElementById('fala'); f.innerHTML='<b>'+(quem||'Eratóstenes')+'</b>'+txt; f.hidden=false; clearTimeout(tFala); tFala=setTimeout(()=>{ f.hidden=true; },12000); }
+
+/* ---------- movimento ---------- */
+function update(dt){
+  const k=st.keys;
+  let f=(k.w||k.ArrowUp?1:0)-(k.s||k.ArrowDown?1:0)+st.jy;
+  let s=(k.d?1:0)-(k.a?1:0)+st.jx;
+  const yawKey=(k.ArrowRight||k.e?1:0)-(k.ArrowLeft||k.q?1:0);
+  if(yawKey) st.yaw+=yawKey*dt*1.6;
+  f=clamp(f,-1,1); s=clamp(s,-1,1);
+  st.andando+=((Math.hypot(f,s)>0.05?1:0)-st.andando)*Math.min(1,dt*8);
+  st.fase+=dt*9.5*st.andando;
+  const sp=9*dt, sy=Math.sin(st.yaw), cy=Math.cos(st.yaw);
+  st.x=clamp(st.x+(f*sy+s*cy)*sp,-300,300); st.z=clamp(st.z+(f*cy-s*sy)*sp,-300,300);
+}
+
+/* ---------- toque e mouse ---------- */
+const joy={on:false,id:null,cx:0,cy:0}, look={id:null,x:0,y:0,x0:0,y0:0,t0:0};
+cv.addEventListener('pointerdown',e=>{
+  try{ cv.setPointerCapture(e.pointerId); }catch(_){}
+  document.getElementById('dica-chao').classList.add('sumiu');
+  if(e.clientX<W*0.5){ joy.on=true; joy.id=e.pointerId; joy.cx=e.clientX; joy.cy=e.clientY; st.jx=0; st.jy=0; }
+  else { look.id=e.pointerId; look.x=look.x0=e.clientX; look.y=look.y0=e.clientY; look.t0=performance.now(); }
+});
+cv.addEventListener('pointermove',e=>{
+  if(joy.on&&e.pointerId===joy.id){ const dx=(e.clientX-joy.cx)/56, dy=(e.clientY-joy.cy)/56, l=Math.hypot(dx,dy)||1, m=Math.min(1,l); st.jx=dx/l*m; st.jy=-dy/l*m; }
+  if(look.id===e.pointerId){ st.yaw+=(e.clientX-look.x)*0.006; st.pitch=clamp(st.pitch-(e.clientY-look.y)*0.004,-1.2,1.0); look.x=e.clientX; look.y=e.clientY; }
+});
+function acaba(e){
+  if(joy.id===e.pointerId){ joy.on=false; joy.id=null; st.jx=0; st.jy=0; }
+  if(look.id===e.pointerId){ const parado=Math.hypot(e.clientX-look.x0,e.clientY-look.y0)<10, rapido=performance.now()-look.t0<350; if(e.type==='pointerup'&&parado&&rapido&&st.hold) acao(); look.id=null; }
+}
+cv.addEventListener('pointerup',acaba); cv.addEventListener('pointercancel',acaba);
+addEventListener('keydown',e=>{
+  if(!document.getElementById('prep').hidden||!document.getElementById('r-painel').hidden){ if(e.key==='Escape') fechaResposta(); return; }
+  st.keys[e.key.length===1?e.key.toLowerCase():e.key]=true;
+  if(e.key.startsWith('Arrow')||e.key===' ') e.preventDefault();
+  if(e.key===' '||e.key==='Enter') acao();
+  if(e.key==='1') escolhe('estaca'); if(e.key==='2') escolhe('corda'); if(e.key==='3') medirAngulo();
+  if(e.key==='r'||e.key==='R') st.eye=st.eye>EYE?EYE:80;
+});
+addEventListener('keyup',e=>{ st.keys[e.key.length===1?e.key.toLowerCase():e.key]=false; });
+// com um dedo no joystick, o botão responde ao encostar
+function toque(id,fn){ const el=document.getElementById(id); let ult=0; el.addEventListener('pointerdown',e=>{ e.preventDefault(); ult=performance.now(); fn(); }); el.addEventListener('click',()=>{ if(performance.now()-ult>700) fn(); }); }
+toque('slot-estaca',()=>escolhe('estaca'));
+toque('slot-corda',()=>escolhe('corda'));
+toque('slot-angulo',()=>escolhe('angulo'));
+toque('b-olhar',()=>{ st.eye=st.eye>EYE?EYE:80; hud(); });
+toque('b-dica',pedeDica);
+toque('b-responder',abreResposta);
+document.getElementById('b-volta').addEventListener('click',sair);
+document.getElementById('r-hora').addEventListener('input',e=>{ st.v=+e.target.value; });
+document.getElementById('r-fechar').addEventListener('click',fechaResposta);
+document.getElementById('r-conferir').addEventListener('click',confere);
+document.getElementById('r-num').addEventListener('keydown',e=>{ if(e.key==='Enter') confere(); e.stopPropagation(); });
+
+/* ---------- HUD ---------- */
+function hud(){
+  document.getElementById('t-hora').textContent=horaTxt(st.v);
+  document.getElementById('t-olhar').textContent=st.eye>EYE?'Olhar de gente':'Olhar de cima';
+  document.getElementById('slot-estaca').setAttribute('aria-pressed',String(st.hold==='estaca'));
+  document.getElementById('slot-corda').setAttribute('aria-pressed',String(st.hold==='corda'));
+  document.getElementById('slot-angulo').classList.toggle('feito',st.mostraAngulo);
+  // o sol anda pelo arco do céu conforme a hora
+  const h=hora(st.v), a=rad((h-12)*15), x=30+20*Math.sin(a), y=46-20*Math.cos(a)*0.9;
+  document.getElementById('sol-ico').setAttribute('transform','translate('+x.toFixed(1)+' '+y.toFixed(1)+')');
+}
+
+/* ---------- dica ---------- */
+const DICAS=[
+  'Use o botão Estaca embaixo e toque no chão onde quer plantar. O círculo vermelho mostra onde ela cai.',
+  'Mexa a barra do sol no canto de cima. A sombra encolhe até o meio-dia e depois volta a crescer.',
+  'Use a Corda: toque no pé da estaca e depois na ponta da sombra. A corda mostra o tamanho da sombra.',
+  'Use o Ângulo: ele mostra o ângulo entre a estaca e o raio do sol. Quantas vezes ele cabe em 360°? Volta da Terra = 5.000 × esse número.'
+];
+function pedeDica(){ const i=Math.min(st.dica,DICAS.length-1); st.dica=Math.min(st.dica+1,DICAS.length); falar(DICAS[i],'Dica'); }
+
+/* ---------- resposta e caderno ---------- */
+function abreResposta(){
+  const lista=document.getElementById('r-lista');
+  lista.innerHTML=st.medidas.length?st.medidas.map(m=>{
+    const velha=m.v!==st.v;
+    if(m.tipo==='sombra') return '<li class="'+(velha?'velha':'')+'"><span>Sombra da estaca: <b>'+n2(m.L)+' passos</b></span><span class="hr">'+horaTxt(m.v)+(velha?' ✗':'')+'</span></li>';
+    return '<li class="'+(velha?'velha':'')+'"><span>Ângulo do sol: <b>'+n1(m.deg)+'°</b></span><span class="hr">'+horaTxt(m.v)+(velha?' ✗':'')+'</span></li>';
+  }).join(''):'<li style="font-style:italic">Você ainda não mediu nada. Siga os passos da tela de objetivo.</li>';
+  document.getElementById('r-volta').textContent='';
+  document.getElementById('r-painel').hidden=false;
+  st.keys={}; st.jx=0; st.jy=0;
+}
+function fechaResposta(){ document.getElementById('r-painel').hidden=true; }
+function confere(){
+  const val=parseFloat(String(document.getElementById('r-num').value).replace(/[\s.]/g,'').replace(',','.')), out=document.getElementById('r-volta');
+  if(!isFinite(val)){ out.className='volta'; out.textContent='Escreva um número, em estádios.'; return; }
+  const ang=st.medidas.find(m=>m.tipo==='angulo');
+  if(Math.abs(val-ALVO_VOLTA)<=ALVO_VOLTA*0.05){ acertou(val); return; }
+  out.className='volta';
+  const perto=(x,alvo,tol)=>Math.abs(x-alvo)<=alvo*tol;
+  if(perto(val,DIST,0.02)) out.textContent='Esse é só o caminho de Siena até Alexandria. A volta da Terra é bem maior: quantas vezes o ângulo cabe em 360°?';
+  else if(ang&&perto(val,360/ang.deg,0.05)) out.textContent='Esse é quantas vezes o ângulo cabe em 360°, não a volta da Terra. Multiplique por 5.000.';
+  else if(perto(val,50,0.05)) out.textContent='Esse número é quantas vezes o ângulo cabe. Multiplique por 5.000 para a volta da Terra.';
+  else if(ang&&perto(val,ang.deg,0.1)) out.textContent='Esse é o ângulo, não a volta da Terra. Veja quantas vezes ele cabe em 360°.';
+  else if(ang&&ang.v!==120&&perto(val,DIST*(360/ang.deg),0.05)) out.textContent='A conta está certa, mas o ângulo foi medido fora do meio-dia. Fora do meio-dia a sombra é maior e o ângulo também. Meça ao meio-dia.';
+  else if(perto(val,25000,0.05)||perto(val,2500000,0.05)) out.textContent='Quase: confira quantos zeros tem a sua resposta.';
+  else out.textContent='Ainda não é isso. Compare o ângulo com 360° e depois multiplique por 5.000.';
+}
+function acertou(val){
+  const ang=st.medidas.find(m=>m.tipo==='angulo'), sb=st.medidas.find(m=>m.tipo==='sombra');
+  try{ localStorage.setItem('mnt-cap2',JSON.stringify({resolvido:{resp:val,deg:ang?ang.deg:null,v:st.v,em3d:true}})); }catch(e){}
+  const pedacos=ang?Math.round(360/ang.deg):50;
+  const cx=document.getElementById('caixa-r');
+  cx.innerHTML='<p class="mao">Caderno de descobertas</p>'+
+    '<div class="cab"><span class="num">DESCOBERTA 2</span><span class="tit">Fração do círculo</span></div>'+
+    '<p>Os raios do sol chegam paralelos. Por isso o ângulo entre a estaca e o raio do sol é o mesmo pedaço do círculo que separa Siena e Alexandria.</p>'+
+    '<div class="frac-l"><span class="frac"><span class="n">ângulo</span><span class="d">360°</span><small>da estaca</small></span><span>=</span><span class="frac"><span class="n">5.000 estádios</span><span class="d">volta</span><small>da Terra</small></span></div>'+
+    '<p class="suas">'+(ang?'Ao meio-dia, o ângulo deu '+n1(ang.deg)+'°. 360 ÷ '+n1(ang.deg)+' = '+pedacos+'. ':'')+'5.000 × '+pedacos+' = '+mil(DIST*pedacos)+' estádios. Sua resposta: '+mil(val)+'.</p>'+
+    '<p>Ferramenta nova: <i>o transferidor</i>. Ele mede quantas vezes um ângulo cabe no círculo.</p>'+
+    '<div class="linha-r"><button type="button" class="forte" id="b-sabe">O que se sabe de verdade</button><button type="button" id="b-seguir">Continuar explorando</button></div>';
+  document.getElementById('b-sabe').addEventListener('click',mostraSabe);
+  document.getElementById('b-seguir').addEventListener('click',fechaResposta);
 }
 function mostraSabe(){
-  $('#caderno-corpo').innerHTML='<p class="mao">O que se sabe de verdade</p><ul class="sabe">'+
+  document.getElementById('caixa-r').innerHTML='<p class="mao">O que se sabe de verdade</p><ul class="sabe">'+
     '<li>Eratóstenes de Cirene viveu por volta de 276 a 194 a.C. e cuidou da Biblioteca de Alexandria. O livro em que ele mediu a Terra se perdeu.</li>'+
     '<li>O jeito da medição chegou por Cleomedes, que escreveu uns 300 anos depois. Os números do jogo (1/50 do círculo e 5.000 estádios) são os dele.</li>'+
-    '<li>Na verdade, Siena (hoje Assuã) não fica exatamente ao sul de Alexandria, e os 5.000 estádios eram uma estimativa. A história do poço também pode ser enfeite.</li>'+
+    '<li>Siena (hoje Assuã) não fica exatamente ao sul de Alexandria, e os 5.000 estádios eram uma estimativa. A história do poço também pode ser enfeite.</li>'+
     '<li>Ninguém sabe o tamanho exato do estádio que ele usou. Por isso 250.000 estádios dá algo entre 39.000 e 46.000 km. A volta real da Terra, passando pelos polos, é de cerca de 40.000 km.</li>'+
-    '<li>Mesmo com essas incertezas, a ideia funciona: duas sombras e uma distância bastam para medir um planeta.</li></ul>'+
-    '<p style="margin-top:10px">Fim do capítulo 2.</p>'+
-    '<div class="linha-bts"><button type="button" class="ferr forte" id="b-denovo">Jogar de novo</button><button type="button" class="ferr" id="b-fc2">Voltar ao jogo</button><button type="button" class="ferr" id="b-fc3">Voltar aos estudos</button></div>';
-  $('#b-denovo').addEventListener('click',()=>{ est.med={}; est.dica=0; est.tent=0; est.v=30; est.a=200; est.modo='cidade'; marcas=0; ultimaSombra=null; configuraBarra(); $('#i-resp').value=''; fecha(mCad); desenha(); fala('De novo: o sol, a estaca e a tigela estão esperando.'); });
-  $('#b-fc2').addEventListener('click',()=>fecha(mCad));
-  $('#b-fc3').addEventListener('click',sair);
+    '<li>Mesmo com essas incertezas, a ideia funciona: uma estaca, uma corda e o sol bastam para medir um planeta.</li></ul>'+
+    '<div class="linha-r"><button type="button" class="forte" id="b-estudos">Voltar aos estudos</button><button type="button" id="b-seguir2">Continuar explorando</button></div>';
+  document.getElementById('b-estudos').addEventListener('click',sair);
+  document.getElementById('b-seguir2').addEventListener('click',fechaResposta);
 }
-$('#b-caderno').addEventListener('click',()=>mostraCaderno(false));
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') [mResp,mCad].forEach(fecha); });
-
-/* ---------- sair e abertura ---------- */
 function sair(){ if(history.length>1) history.back(); else location.replace('./#estudos'); }
-$('#b-sair').addEventListener('click',sair);
-const ab=$('#abertura'), linhas=$$('#abertura .linha');
-if(!(window.matchMedia&&matchMedia('(orientation: portrait)').matches)) $('#dica-giro').style.display='none';
-let iLinha=0, tAb=null;
-function proxima(){ if(iLinha<linhas.length){ linhas[iLinha++].classList.add('vis'); tAb=setTimeout(proxima,reduz?0:900); } }
-ab.addEventListener('click',e=>{ if(e.target.id!=='b-comecar'&&iLinha<linhas.length){ clearTimeout(tAb); linhas.forEach(l=>l.classList.add('vis')); iLinha=linhas.length; } });
-$('#b-prep').addEventListener('click',()=>{ $('#preparo').hidden=true; ab.hidden=false; });
-$('#b-comecar').addEventListener('click',()=>{ ab.hidden=true; fala('Em Siena, ao meio-dia, nada faz sombra. E aqui em Alexandria? Meça a sombra da estaca.'); });
-proxima();
-configuraBarra();
-desenha();
-if('serviceWorker' in navigator && location.protocol==='https:' && !/claude/.test(location.hostname)){
-  window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+
+/* ---------- passo a passo: uma tela por passo ---------- */
+const ILUS={
+ intro:'<circle cx="262" cy="34" r="16" fill="#9E3B26"/><line x1="236" y1="54" x2="128" y2="98" stroke="#9E3B26" stroke-width="1.5" stroke-dasharray="5 5"/><line x1="40" y1="128" x2="300" y2="128" stroke="#2A1C10" stroke-width="2"/><line x1="110" y1="128" x2="110" y2="78" stroke="#2A1C10" stroke-width="5" stroke-linecap="round"/><line x1="110" y1="128" x2="118" y2="128" stroke="#6B4A26" stroke-width="6" stroke-linecap="round"/><text x="150" y="150" font-family="EB Garamond,serif" font-style="italic" font-size="14" fill="#4A3420" text-anchor="middle">uma estaca e o sol, em Alexandria</text>',
+ p1:'<line x1="30" y1="128" x2="290" y2="128" stroke="#2A1C10" stroke-width="2"/><circle cx="160" cy="128" r="14" fill="none" stroke="#9E3B26" stroke-width="2" stroke-dasharray="4 4"/><line x1="160" y1="128" x2="160" y2="40" stroke="#2A1C10" stroke-width="6" stroke-linecap="round"/><g fill="#2A1C10"><rect x="40" y="44" width="58" height="28" rx="6" fill="#EFE3C4" stroke="#2A1C10"/><text x="69" y="63" font-family="Cinzel,serif" font-size="11" text-anchor="middle">Estaca</text></g><path d="M100 58 L140 96" stroke="#9E3B26" stroke-width="2" marker-end="none"/>',
+ p2:'<path d="M30 128 Q160 10 290 128" fill="none" stroke="#9E3B26" stroke-width="1.5" stroke-dasharray="4 5"/><circle cx="30" cy="128" r="6" fill="#9E3B26" opacity=".5"/><circle cx="160" cy="34" r="8" fill="#9E3B26"/><circle cx="290" cy="128" r="6" fill="#9E3B26" opacity=".5"/><line x1="58" y1="128" x2="58" y2="96" stroke="#2A1C10" stroke-width="5" stroke-linecap="round"/><line x1="58" y1="128" x2="20" y2="128" stroke="#6B4A26" stroke-width="5" stroke-linecap="round"/><line x1="160" y1="128" x2="160" y2="96" stroke="#2A1C10" stroke-width="5" stroke-linecap="round"/><line x1="160" y1="128" x2="156" y2="128" stroke="#6B4A26" stroke-width="5" stroke-linecap="round"/><line x1="262" y1="128" x2="262" y2="96" stroke="#2A1C10" stroke-width="5" stroke-linecap="round"/><line x1="262" y1="128" x2="300" y2="128" stroke="#6B4A26" stroke-width="5" stroke-linecap="round"/><text x="160" y="150" font-family="EB Garamond,serif" font-style="italic" font-size="14" fill="#9E3B26" text-anchor="middle">sombra mais curta = meio-dia</text>',
+ p3:'<line x1="30" y1="128" x2="290" y2="128" stroke="#2A1C10" stroke-width="2"/><line x1="160" y1="128" x2="160" y2="40" stroke="#2A1C10" stroke-width="6" stroke-linecap="round"/><line x1="160" y1="128" x2="128" y2="128" stroke="#6B4A26" stroke-width="6" stroke-linecap="round"/><path d="M160 128 Q140 150 128 128" fill="none" stroke="#5A3A1A" stroke-width="3"/><text x="224" y="132" font-family="Caveat,cursive" font-size="22" font-weight="700" fill="#9E3B26">a corda: a sombra</text>',
+ p4:'<line x1="30" y1="128" x2="290" y2="128" stroke="#2A1C10" stroke-width="2"/><line x1="160" y1="128" x2="160" y2="40" stroke="#2A1C10" stroke-width="6" stroke-linecap="round"/><line x1="160" y1="40" x2="110" y2="128" stroke="#9E3B26" stroke-width="1.6" stroke-dasharray="5 4"/><path d="M160 74 A34 34 0 0 1 143 98" fill="none" stroke="#9E3B26" stroke-width="2.5"/><text x="190" y="104" font-family="Caveat,cursive" font-size="24" font-weight="700" fill="#9E3B26">7,2°</text>',
+ p5:'<text x="160" y="70" font-family="Cinzel,serif" font-size="20" text-anchor="middle" fill="#2A1C10">360 ÷ 7,2 = 50</text><text x="160" y="112" font-family="Cinzel,serif" font-size="20" text-anchor="middle" fill="#2A1C10">5.000 × 50 = 250.000</text><text x="160" y="144" font-family="EB Garamond,serif" font-style="italic" font-size="15" text-anchor="middle" fill="#4A3420">estádios: a volta da Terra</text>'
+};
+const SLIDES=[
+ {n:'Antes de começar',t:'Alexandria, 240 a.C.',x:'Eratóstenes cuida da Biblioteca. Em Siena, ao meio-dia do dia mais longo do ano, o sol ilumina o fundo de um poço. Aqui, em Alexandria, o sol não fica no alto: uma estaca faz sombra. <b>Quanto mede a volta da Terra?</b>',i:'intro'},
+ {n:'Passo 1 de 4',t:'Plante a estaca',x:'Toque em <b>Estaca</b> embaixo. Depois toque no chão onde quer plantar: o círculo vermelho mostra o lugar.',i:'p1'},
+ {n:'Passo 2 de 4',t:'Ache o meio-dia',x:'Mexa a barra do sol, no canto de cima. A sombra encolhe até o <b>meio-dia</b> e depois cresce de novo. O meio-dia é a hora da sombra mais curta.',i:'p2'},
+ {n:'Passo 3 de 4',t:'Meça a sombra com a corda',x:'Toque em <b>Corda</b>. Toque no <b>pé da estaca</b> e depois na <b>ponta da sombra</b>. A corda mostra quantos passos ela tem.',i:'p3'},
+ {n:'Passo 4 de 4',t:'Meça o ângulo do sol',x:'Toque em <b>Ângulo</b>. O jogo mostra o ângulo entre a estaca e o raio do sol: <b>7,2°</b>, ao meio-dia. Ele é o pedaço do círculo que separa Siena e Alexandria.',i:'p4'},
+ {n:'Último passo',t:'Faça a conta e responda',x:'Quantas vezes 7,2° cabem em 360°? Esse é o número de pedaços. <b>Volta da Terra = 5.000 × pedaços.</b> Toque em <b>Responder</b> e escreva o resultado.',i:'p5'}
+];
+let slideAtual=0;
+function mostraSlide(i){
+  slideAtual=i; const s=SLIDES[i];
+  const trilha=SLIDES.map((_,k)=>'<i class="'+(k===i?'on':'')+'"></i>').join('');
+  document.getElementById('slide').innerHTML='<div class="num">'+s.n+'</div><h2>'+s.t+'</h2>'+
+    '<svg viewBox="0 0 320 160" aria-hidden="true">'+ILUS[s.i]+'</svg><p>'+s.x+'</p>'+
+    '<div class="nav-prep"><button type="button" id="pv" '+(i===0?'disabled':'')+'>&lsaquo; Voltar</button><span class="trilha">'+trilha+'</span>'+
+    (i<SLIDES.length-1?'<button type="button" class="forte" id="nx">Próximo &rsaquo;</button>':'<button type="button" class="forte" id="nx">Começar a medir</button>')+'</div>';
+  document.getElementById('pv').addEventListener('click',()=>{ if(slideAtual>0) mostraSlide(slideAtual-1); });
+  document.getElementById('nx').addEventListener('click',()=>{ if(slideAtual<SLIDES.length-1) mostraSlide(slideAtual+1); else fechaPrep(); });
 }
+function fechaPrep(){ document.getElementById('prep').hidden=true; atualizaObjetivo(); falar('Vamos lá. Siga o objetivo lá em cima, um passo de cada vez.'); }
+mostraSlide(0);
+
+/* ---------- laço principal ---------- */
+let last=performance.now();
+function frame(t){
+  const dt=Math.min(0.05,(t-last)/1000); last=t;
+  if(document.getElementById('prep').hidden){ update(dt); andaAnim(t); }
+  draw(t); hud();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+atualizaObjetivo();
+hud();
+// para testes automáticos
+window.__cap2={ st, get CAM(){ return CAM; }, alvo:t=>alvo(t), acao, escolhe, medirAngulo, confere, abreResposta, sol, horaTxt };
 })();
 </script>
 </body>

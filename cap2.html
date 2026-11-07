@@ -344,6 +344,7 @@ function atualizaObjetivo(){
   document.getElementById('objetivo').innerHTML=txt;
 }
 let tFala=null;
+document.getElementById('fala').addEventListener('click',()=>{ document.getElementById('fala').hidden=true; clearTimeout(tFala); });
 function falar(txt,quem){ const f=document.getElementById('fala'); f.innerHTML='<b>'+(quem||'Eratóstenes')+'</b>'+txt; f.hidden=false; clearTimeout(tFala); tFala=setTimeout(()=>{ f.hidden=true; },12000); }
 
 /* ---------- movimento ---------- */
